@@ -1,42 +1,17 @@
-## Welcome to GitHub Pages
+# Cadastral Classifier: a QGIS plugin to classify Spamish municipalities using cadastral information
 
-You can use the [editor on GitHub](https://github.com/TransUrban-UAH/Cadastral_Classifier/edit/gh-pages/index.md) to maintain and preview the content for your website in Markdown files.
-
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
-
-### Markdown
-
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
-
-```markdown
-Syntax highlighted code block
-
-# Header 1
-## Header 2
-### Header 3
-
-- Bulleted
-- List
-
-1. Numbered
-2. List
-
-**Bold** and _Italic_ and `Code` text
-
-[Link](url) and ![Image](src)
-```
-
-For more details see [Basic writing and formatting syntax](https://docs.github.com/en/github/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax).
-
-### Jekyll Themes
-
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/TransUrban-UAH/Cadastral_Classifier/settings/pages). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
-
-### Support or Contact
-
-Having trouble with Pages? Check out our [documentation](https://docs.github.com/categories/github-pages-basics/) or [contact support](https://support.github.com/contact) and we’ll help you sort it out.
-
-
-[link to the plugin repository](https://plugins.qgis.org/plugins/Cadastral_Classifier/)
-[link to QGIS Plugins Repository](https://plugins.qgis.org/plugins/)
 ![Icono del plugin](https://github.com/TransUrban-UAH/Cadastral_Classifier/blob/main/icon.jpg)
+
+Cadastral Classifier (CC) is a plugin to classify urban parcels of any Spanish municipality (excluding Navarra and País Vasco) using cadastral information (obtainable via official channels). It has been developed under version 3.16 of QGIS, that includes a Python 3.7 version and a QT Designer version, and it supports versión 3.0 or higher. The main objective is to offer, to a different user profiles, the possibility of carrying out classifications of spanish municipalities at parcel level, by implementing 3 types of classifications, that increase in complexity and depths on their analysis. This development has been carried out within the framework of the SIM4PLAN project, financed by the R+D+i Projects Proof of Concept 2021 from the Ministry of Science and Innovation of the Government of Spain and NextGenerationEU of the European Union, with reference PDC2021-121568-C21, as well as the grant “Stimulus to Excellence for Permanent University Professors” with reference EPU-INV/2020/009 from the UAH and the Community of Madrid, granted to Dr. Francisco Aguilera Benavente. Both sources of funding have allowed the Cadastral Classifier plugin to be made available to users free of charge.
+
+## Developer team
+This plugin has been developed by Nikolai Shurupov as the main programmer and designer and Ramón Molinero Parejo, Francisco Aguilera, Victor Rodríguez Espinosa and Ricardo Gascuñana Duro as support.
+
+## Installation
+To use this tool it is needed to download it, preferably from the official channels of QGIS, using the plugin manager of the QGIS program itselfs, introducing "Cadastral Classifier" in the search engine. Alternatively, it is possible to download it from the GitHub repository, and add the file to the directory where the rest of the QGIS plugins are saved. This path is usually: `*\QGIS\QGIS3\profiles\default\python\plugins`
+
+The QGIS Plugin repository is at: [link](https://plugins.qgis.org/plugins/)
+The CC Plugin is at: [link](https://plugins.qgis.org/plugins/Cadastral_Classifier/)
+The user manual is at: [link](https://github.com/TransUrban-UAH/user_manual.pdf/)
+
+For more information it is possible to read the following cientific research (link), that introduce and analyse the plugin and the capabilities of its results.
