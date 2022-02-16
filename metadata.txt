@@ -8,15 +8,19 @@ author=Nikolai Shurupov (Universidad de Alcalá de Henares)
 email=nikolai.shurupov@edu.uah.es
 
 about=<p><p>Cadastral Classifier is a plugin to classify urban parcels of any Spanish municipality (excluding Navarra and País Vasco) using cadastral information (obtainable via official channels)<p><p>Clasificador Catastral es un complemento para la clasificación del parcelario de cualquier municipio español (excluyendo Navarra y País Vasco) utilizando la información de la Dirección General del Catastro
-tracker=http://bugs
-repository=http://repo
+
+homepage=https://github.com/TransUrban-UAH/Cadastral_Classifier
+tracker=https://github.com/TransUrban-UAH/Cadastral_Classifier
+repository=https://github.com/TransUrban-UAH/Cadastral_Classifier
 
 changelog=
 	2022/1/28 - v1.0: First version
+	2022/2/16 - v1.1: Solved interface bugs: mixed uses frames issues, mixed uses button facilities (include, exclude and selecion activation/desactivation),
+			  fixed bugged separator within the list of categories of advanced classification, fixed help panels text scrolls, solved use_definer function issues
 
 tags=catastro, cadastre, parcel, classification, clasificacion, Spain, España
 
-category=Vectorial, Databsae
+category=Plugins, Vectorial, Databsae
 icon=icon.jpg
 experimental=False
 deprecated=False

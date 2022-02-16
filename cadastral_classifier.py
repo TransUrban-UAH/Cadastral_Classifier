@@ -393,8 +393,8 @@ class cadastral_classifier:
         self.dlg.Checkbox_Indus_mix.setEnabled(True)
         
         self.dlg.frame_threshold_uni_mx.setVisible(True)
-        self.dlg.frame_porcentaje_plu_mx.setVisible(True)
-        self.dlg.frame_porcentaje_ind_mx.setVisible(True)
+        self.dlg.frame_threshold_plu_mx.setVisible(True)
+        self.dlg.frame_threshold_ind_mx.setVisible(True)
         
     #--------------------------------------------------------------------------
      
@@ -422,8 +422,8 @@ class cadastral_classifier:
         self.dlg.Checkbox_Indus_mix.setDisabled(True)
 
         self.dlg.frame_threshold_uni_mx.setHidden(True)
-        self.dlg.frame_porcentaje_plu_mx.setHidden(True)
-        self.dlg.frame_porcentaje_ind_mx.setHidden(True)      
+        self.dlg.frame_threshold_plu_mx.setHidden(True)
+        self.dlg.frame_threshold_ind_mx.setHidden(True)      
         
     #--------------------------------------------------------------------------
     
@@ -437,11 +437,11 @@ class cadastral_classifier:
 
         if self.dlg.Checkbox_resi_plu.isChecked() == True:
             self.dlg.Checkbox_resi_plu_mix.setChecked(False)
-            self.dlg.frame_porcentaje_plu_mx.setHidden(True)
+            self.dlg.frame_threshold_plu_mx.setHidden(True)
             
         if self.dlg.Checkbox_Indus_2.isChecked() == True:
             self.dlg.Checkbox_Indus_mix.setChecked(False)
-            self.dlg.frame_porcentaje_ind_mx.setHidden(True)      
+            self.dlg.frame_threshold_ind_mx.setHidden(True)      
 
     #--------------------------------------------------------------------------
     
@@ -455,11 +455,11 @@ class cadastral_classifier:
 
         if self.dlg.Checkbox_resi_plu.isChecked() == True:
             self.dlg.Checkbox_resi_plu_mix.setChecked(True)
-            self.dlg.frame_porcentaje_plu_mx.setVisible(True)
+            self.dlg.frame_threshold_plu_mx.setVisible(True)
             
         if self.dlg.Checkbox_Indus_2.isChecked() == True:
             self.dlg.Checkbox_Indus_mix.setChecked(True)
-            self.dlg.frame_porcentaje_ind_mx.setVisible(True) 
+            self.dlg.frame_threshold_ind_mx.setVisible(True) 
         
     #--------------------------------------------------------------------------
     
@@ -670,10 +670,15 @@ class cadastral_classifier:
             
             # get the row and column indexers
             current_row = current_cell.row()
-            current_column = current_cell.column()
+            categories_column = 3
             
-            # get the strings (classes) that are saved to that category
-            string_categories = current_cell.text()
+            current_cell2 = self.dlg.table_advanced_option.item(current_row,
+                                                               categories_column)
+            try:
+                # get the strings (classes) that are saved to that category
+                string_categories = current_cell2.text()
+            except:
+                string_categories = None
             
             # if that category has any classes added (previously or by importing
             # the table)
@@ -706,14 +711,14 @@ class cadastral_classifier:
                
                 #--------------------------------------------------------------   
                 # delete the classes that were included in the category
-                current_cell.setText("")
+                current_cell2.setText("")
                 
                 # enable the cell so it is again usable to add other classes
-                current_cell.setFlags(item.flags() | Qt.ItemFlag.ItemIsEditable)
+                current_cell2.setFlags(item.flags() | Qt.ItemFlag.ItemIsEditable)
                 
                 # update the item to the table
-                self.dlg.table_advanced_option.setItem(current_row, current_column,
-                                                       current_cell)
+                self.dlg.table_advanced_option.setItem(current_row, categories_column,
+                                                       current_cell2)
  
     #-------------------------------------------------------------------------- 
 
@@ -726,7 +731,13 @@ class cadastral_classifier:
         
         # if there is a selected one
         if current_cell:
+                        
+            # get the row and column indexers
+            current_row = current_cell.row()
+            categories_column = 3
             
+            current_cell2 = self.dlg.table_advanced_option.item(current_row,
+                                                               categories_column)
             # create a list to store all the classes that user selected in the 
             # class table
             selected_items = []
@@ -776,32 +787,30 @@ class cadastral_classifier:
                 
                 # add the codes and commas to the string variable
                 categories_string += category + comma
-            
-            # get the row and column number of the cell selected by the user on 
-            # which he wants to add the classes
-            current_row = current_cell.row()
-            current_column = current_cell.column()
-            
-            # get the text the item
-            current_text = current_cell.text()
+    
+            try:
+                # get the strings (classes) that are saved to that category
+                current_text = current_cell2.text()
+            except:
+                current_text = None
             
             # if there is already a text (probably cause he added previously
             # other classes), add the new classes after a comma
             if current_text:
-                current_cell.setText(current_text + "," + categories_string)
+                current_cell2.setText(current_text + "," + categories_string)
                 
             # if it was empty directly add the classes codes in string format
             else:
-                current_cell.setText(categories_string)
+                current_cell2 = QTableWidgetItem()
+                current_cell2.setText(categories_string)
 
-            
             # Disable the option to modify the item, so user can't delete the
             # classes by mistake, and only do it with the other function
-            current_cell.setFlags(current_cell.flags() & ~Qt.ItemFlag.ItemIsEditable)
+            current_cell2.setFlags(current_cell.flags() & ~Qt.ItemFlag.ItemIsEditable)
             
             # update the item to the table
-            self.dlg.table_advanced_option.setItem(current_row, current_column,
-                                                   current_cell)
+            self.dlg.table_advanced_option.setItem(current_row, categories_column,
+                                                   current_cell2)
         
     #--------------------------------------------------------------------------
     
@@ -814,7 +823,7 @@ class cadastral_classifier:
         # saved
         filename, _filter = QFileDialog.getSaveFileName(self.dlg,
                                                         "Select output file ",
-                                                        dirname(__file__) + "\clasificaciones",
+                                                        dirname(__file__) + "\clasif",
                                                         '*.csv')
         # if a name was selected
         if filename:
@@ -865,7 +874,7 @@ class cadastral_classifier:
         # classification parameters
         filename, _filter = QFileDialog.getOpenFileName(self.dlg,
                                                         "Select input file ",
-                                                        dirname(__file__) + "\clasificaciones",
+                                                        dirname(__file__) + "\clasif",
                                                         '*.csv')
         # if a file was selected
         if filename:
@@ -1526,7 +1535,7 @@ class cadastral_classifier:
                         df_clasif_parameters_CSV.loc[int(identifier), col_name] = item.text()
                         
                     else:
-                        df_clasif_parameters_CSV.loc[int(identifier), col_name] = None
+                        df_clasif_parameters_CSV.loc[int(identifier), col_name] = ""
                 
                 # updata index value
                 identifier += 1
@@ -1692,40 +1701,43 @@ class cadastral_classifier:
             # pure residential use as a combination with this ones
             conglomerate_include = ["0221", "0213", "0511", "0521", "0512", "0522"]
             
+            # create a list with the codes of the unifamily residentials 
+            # alongside the conglomerates to work as a pure cluster
+            congregated_list_resi_uni = deepcopy(d_evaluate["RES_UNI"])
+            congregated_list_resi_uni.extend(conglomerate_include)
+            
+            # create a list with the codes of the multifamily residentials 
+            # alongside the conglomerates to work as a pure cluster
+            congregated_list_resi_plu = deepcopy(d_evaluate["RES_PLU"])
+            congregated_list_resi_plu.extend(conglomerate_include)
+            
             if self.dlg.Checkbox_resi_uni_mix.isChecked() == True and\
                 self.dlg.Checkbox_resi_uni_mix.isEnabled() == True:
                     
                 d_mixed["RES_UNI"] = self.dlg.slider_threshold_uni.value()
                 
-                # create a list with the codes of the unifamily residentials 
-                # alongside the conglomerates to work as a pure cluster
-                congregated_list_resi_uni = deepcopy(d_evaluate["RES_UNI"])
-                congregated_list_resi_uni.extend(conglomerate_include)
-
             #------------------------------------------------------------------     
             if self.dlg.Checkbox_resi_plu_mix.isChecked() == True and\
                 self.dlg.Checkbox_resi_plu_mix.isEnabled() == True:
                     
                 d_mixed["RES_PLU"] = self.dlg.slider_threshold_plu.value()
                 
-                # create a list with the codes of the multifamily residentials 
-                # alongside the conglomerates to work as a pure cluster
-                congregated_list_resi_plu = deepcopy(d_evaluate["RES_PLU"])
-                congregated_list_resi_plu.extend(conglomerate_include)
-   
             #------------------------------------------------------------------    
             if self.dlg.Checkbox_Indus_mix.isChecked() == True and\
                 self.dlg.Checkbox_Indus_mix.isEnabled() == True:
                     
                 d_mixed["IND"] = self.dlg.slider_threshold_ind.value()
-
-
+            
+            #------------------------------------------------------------------
+            
             if self.dlg.Checkbox_threshold_not_built.isChecked() == True:
                 value_threshold_not_built = float(self.dlg.slider_threshold_not_built.value() / 100)
                 
             else:
                 value_threshold_not_built = 0
-                
+            
+            #------------------------------------------------------------------
+            
             use_definer = use_function_definer(selection = "intermediate")
             
             variables.append(d_mixed)

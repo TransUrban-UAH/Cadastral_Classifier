@@ -57,11 +57,15 @@ def use_definer_basic (f, d_feature_values, lv_s_names, ls_selected, variables):
             else:
                 if lv_s_names[0] in ls_selected:
                     use = lv_s_names[0]
+                else:
+                    use = "OTROS"
                     
         # define its use as the one with the most percentage
         else:  
             if lv_s_names[0] in ls_selected:
-                use = lv_s_names[0] 
+                use = lv_s_names[0]
+            else:
+                    use = "OTROS"
     return use
 
 ###############################################################################

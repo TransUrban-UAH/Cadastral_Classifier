@@ -118,7 +118,7 @@ def table_type_generator(file_path, list_of_interest, output_csv):
     # if the user already gives the decompressed .CAT file, just create the
     # directory to store the files
 
-    elif file_name[-4:] == ".cat":
+    elif file_name[-4:].lower() == ".cat":
         
         unziped_name = file_name[:-4]
         
