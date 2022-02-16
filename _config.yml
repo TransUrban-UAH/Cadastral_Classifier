@@ -1,7 +1,3 @@
 theme: jekyll-theme-minimal
 title: Cadastral Classifier
-description: >- # this means to ignore newlines until "baseurl:"
-  QGIS plugin to classify Spamish municipalities using cadastral information
-baseurl: "" # the subpath of your site, e.g. /blog
-url: "https://transurban-uah.github.io/Cadastral_Classifier/" # the base hostname & protocol for your site, e.g. http://example.com
-github_username:  transurban-uah
+description: QGIS plugin to classify Spanish municipalities using cadastral information
