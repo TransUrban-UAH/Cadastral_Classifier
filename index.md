@@ -1,4 +1,4 @@
-# Cadastral Classifier: a QGIS plugin to classify Spamish municipalities using cadastral information
+# Cadastral Classifier: a QGIS plugin to classify Spanish municipalities using cadastral information
 
 ![Icono del plugin](https://github.com/TransUrban-UAH/Cadastral_Classifier/blob/main/icon.jpg)
 
