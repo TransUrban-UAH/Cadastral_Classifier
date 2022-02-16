@@ -21,7 +21,7 @@ Para utilizar esta herramienta hay que descargarla, preferiblemente desde los ca
 * `cadastral_classifier_dialog_base.ui`: this is the file that contains the user interface
 * `clasif`: folder that contains CSV files that define each of the classification properties
 * `diagrams`: folder that contains the images of the diagrams related to the main proceses of the tool
-* `utils`: folder that contains the different modules that the main function requires
+* `utils`: folder that contains the different modules that the main function requires. This contains the following files:
   - `cadastral_structure.py`: this script contain the structured dictionaries to extract information from CAT files to table-type format (CSV)
   - `shp_utils.py`: script that contains different methods to process Shapefile files
   - `table_type_generator.py`: script that use the cadastral structure to generate the table-types
@@ -33,7 +33,7 @@ Para utilizar esta herramienta hay que descargarla, preferiblemente desde los ca
 * `cadastral_classifier_dialog_base.ui`: archivo que contiene la interfaz de usuario (GUI) de la herramienta
 * `clasif`: carpeta que contiene los diferentes archivos CSV que definen las propiedades de cada tipo de clasificación
 * `diagrams`: carpeta que contiene las imágenes de los diagramas de cada uno de los procesos principales de la herramienta
-* `utils`: carpeta que contiene los diferentes módulos que el script principal utiliza
+* `utils`: carpeta que contiene los diferentes módulos que el script principal utiliza. Esta contiene los siguientes archivos:
   - `cadastral_structure.py`:script que contiene los diccionarios con las estructuras de las diferentes tablas tipo utilizadas por la DGC
   - `shp_utils.py`: script que contiene diferentes métodos para gestionar los archivos Shapefile
   - `table_type_generator.py`: script que se encarga de utilizar la la estructura de tablas tipos catastrales para generarlas en formato CSV
