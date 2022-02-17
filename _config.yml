@@ -2,5 +2,6 @@ theme: jekyll-theme-minimal
 title: Cadastral Classifier
 description: QGIS plugin to classify Spanish municipalities using cadastral information
 logo: /logo.png
+download: "https://github.com/TransUrban-UAH/Cadastral_Classifier/archive/refs/heads/main.zip"
 show_downloads: true
 google_analytics:
