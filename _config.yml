@@ -1,6 +1,6 @@
 theme: jekyll-theme-minimal
 title: Cadastral Classifier
 description: QGIS plugin to classify Spanish municipalities using cadastral information
-logo: /logo.jpg
+logo: /logo.png
 show_downloads: true
 google_analytics:
