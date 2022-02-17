@@ -15,7 +15,7 @@ repository=https://github.com/TransUrban-UAH/Cadastral_Classifier
 
 changelog=
 	2022/1/28 - v1.0: First version
-	2022/2/16 - v1.1: Solved interface bugs: mixed uses frames and buttons issues, list of categories of advanced classification and help panels. Solved use_definer function minor malfunction
+	2022/2/17 - v1.1: Solved interface bugs: mixed uses frames and buttons issues, list of categories of advanced classification and help panels. Solved use_definer function error
 
 tags=catastro, cadastre, parcel, classification, clasificacion, Spain, España
 
