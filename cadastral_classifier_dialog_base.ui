@@ -61,7 +61,7 @@
        <enum>Qt::StrongFocus</enum>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="Box_setup_data_Module">
        <attribute name="title">
@@ -510,7 +510,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>318</width>
+             <width>321</width>
              <height>1118</height>
             </rect>
            </property>
@@ -557,7 +557,7 @@ p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2,sans-serif'; font-weight:600;&quot;&gt;Clasificación catastral:&lt;/span&gt; &lt;/p&gt;
 &lt;p style=&quot; margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2,sans-serif'; font-weight:600;&quot;&gt;Paso 1: Datos de entrada&lt;/span&gt; &lt;/p&gt;
-&lt;p style=&quot; margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2,sans-serif';&quot;&gt;En este paso deberá seleccionar si desea trabajar solo con el parcelario urbano o también con el rústico. Tanto si desea trabajar con uno o con ambos deberá introducir los datos alfanuméricos en formato CAT y el parcelario en formato Shapefile, que previamente haya descargado de los canales oficiales de la Dirección General del Catastro. &lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2,sans-serif';&quot;&gt;En este paso deberá seleccionar si desea trabajar solo con el parcelario urbano o también con el rústico. Tanto si desea trabajar con uno o con ambos deberá introducir los datos alfanuméricos en formato CAT (o .gz) y el parcelario en formato Shapefile (o .zip), que previamente haya descargado de los canales oficiales de la Dirección General del Catastro. &lt;/span&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2,sans-serif';&quot;&gt;Así mismo deberá introducir un nombre para el archivo vectorial (formato Shapefile) de salida. Este archivo contendrá el parcelario (ubano o la combinación con el rústico) con la adición de numerosos campos nuevos. Estos incluyen todas las categorías de tercer nivel presentes en el municipio seleccionado. Junto con ellos se añaden campos relativos al área total que hay edificada en cada parcela, el área edificada sobre las plantas 0 y 1, el número de pisos que tiene y el número de inmuebles de tipo residencial.&lt;/span&gt;&lt;/p&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:'MS Shell Dlg 2,sans-serif';&quot;&gt;&lt;br /&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2,sans-serif'; font-weight:600;&quot;&gt;Paso 2: Tablas tipo opcionales&lt;/span&gt;&lt;/p&gt;
@@ -803,8 +803,8 @@ p, li { white-space: pre-wrap; }
                     <rect>
                      <x>0</x>
                      <y>0</y>
-                     <width>739</width>
-                     <height>204</height>
+                     <width>740</width>
+                     <height>216</height>
                     </rect>
                    </property>
                    <layout class="QVBoxLayout" name="verticalLayout_27">
@@ -1036,8 +1036,8 @@ p, li { white-space: pre-wrap; }
                     <rect>
                      <x>0</x>
                      <y>0</y>
-                     <width>739</width>
-                     <height>534</height>
+                     <width>740</width>
+                     <height>554</height>
                     </rect>
                    </property>
                    <layout class="QVBoxLayout" name="verticalLayout_29">
@@ -2606,7 +2606,7 @@ background-color: rgba(255, 85, 85, 120);</string>
                           <enum>QFrame::StyledPanel</enum>
                          </property>
                          <property name="text">
-                          <string>[012] Viviendas unifamiliares de carácter urbano</string>
+                          <string>[011] Viviendas colectivas de carácter urbano </string>
                          </property>
                         </widget>
                        </item>
@@ -2648,7 +2648,7 @@ background-color: rgba(150, 0, 0, 120);</string>
                           <number>1</number>
                          </property>
                          <property name="text">
-                          <string>[011] Viviendas colectivas de carácter urbano </string>
+                          <string>[012] Viviendas unifamiliares de carácter urbano</string>
                          </property>
                          <property name="margin">
                           <number>0</number>
@@ -5655,8 +5655,8 @@ parcela edificada</string>
            <property name="geometry">
             <rect>
              <x>0</x>
-             <y>-680</y>
-             <width>318</width>
+             <y>0</y>
+             <width>321</width>
              <height>1380</height>
             </rect>
            </property>
@@ -5693,7 +5693,7 @@ p, li { white-space: pre-wrap; }
 &lt;p style=&quot; margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2,sans-serif'; font-weight:600;&quot;&gt;Paso 2: Selección de un tipo de clasificación&lt;/span&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;Se ofrecen 3 tipos de clasificaciones. Cada una tiene unas particularidades y unos requerimientos. En la parte inferior se pueden observar las tablas que muestran qué categorias de tercer nivel están incluidas en cada una de las clases, para las clasificaciones básica e intermedia.  Se detalla a continuación los aspectos a tener en cuenta en cada una de ellas.&lt;/span&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2,sans-serif'; font-size:8pt; font-weight:600;&quot;&gt;Clasificación básica&lt;/span&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2,sans-serif'; font-size:8pt;&quot;&gt;:&lt;/span&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt; &lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2,sans-serif'; font-size:8pt;&quot;&gt;Esta es una clasificación sencilla en la que se incluyen seis clases. El usuario podrá elegir cuales desea que aparezcan en su clasificación, las que no seleccione se almacenaran directamente en una clase denominada “otros”.&lt;/span&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt; La clase se asigna en función del uso mayoritario de la parcela, es decir, el área edificada total para ese uso. El caso residencial es especial, ya que una parcela será clasificada como tal si presenta más del 25% edificado.&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2,sans-serif'; font-size:8pt;&quot;&gt;Esta es una clasificación sencilla en la que se incluyen 6 clases. El usuario podrá elegir cuales desea que aparezcan en su clasificación, las que no seleccione se almacenaran directamente en una clase denominada “otros”.&lt;/span&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt; La clase se asigna en función del uso mayoritario de la parcela, es decir, del área edificada total para ese uso frente al total edificado de todos los usos. El caso residencial es especial, ya que una parcela será clasificada como tal si presenta más del 25% edificado.&lt;/span&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2,sans-serif'; font-size:8pt; font-weight:600;&quot;&gt;Clasificación intermedia:&lt;/span&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt; &lt;/span&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2,sans-serif'; font-size:8pt;&quot;&gt;Esta es una clasificación más compleja, que incluye 14 clases distintas, de las cuales 3 son una diferenciación de mixtos. De igual manera que en el caso de la clasificación básica, se pueden seleccionar aquellas clases que se quieren mostrar en el resultado, quedando el resto con la clase &amp;quot;otros&amp;quot;.&lt;/span&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2,sans-serif'; font-size:8pt;&quot;&gt;Es posible desagregar los usos residencial plurifamiliar, residencial unifamiliar e industrial en clases de uso explusivo y uso mixto. En caso de no seleccionar usos mixtos, la clasificación se comporta de la misma manera que en la básica: el uso se determina por la clase que presente mayor área edificada. En caso de seleccionar usos mixtos las clases exclusivas pasan a necesitar un mínimo de área edificada (umbral) para ser clasificadas como tal. En caso de que no superen el umbral y estén por encima del 25% serán clasificadas como uso mixto, eligiendo el uso mixto con mayor porcentaje edificado. En cualquier otro caso se le asigna la clase mayoritaria.&lt;/span&gt;&lt;/p&gt;
@@ -5769,7 +5769,7 @@ p, li { white-space: pre-wrap; }
                     <rect>
                      <x>0</x>
                      <y>0</y>
-                     <width>91</width>
+                     <width>98</width>
                      <height>704</height>
                     </rect>
                    </property>
@@ -5845,8 +5845,8 @@ p, li { white-space: pre-wrap; }
                     <rect>
                      <x>0</x>
                      <y>0</y>
-                     <width>274</width>
-                     <height>301</height>
+                     <width>279</width>
+                     <height>300</height>
                     </rect>
                    </property>
                    <layout class="QVBoxLayout" name="verticalLayout_25">
@@ -6044,8 +6044,8 @@ p, li { white-space: pre-wrap; }
                     <rect>
                      <x>0</x>
                      <y>0</y>
-                     <width>94</width>
-                     <height>834</height>
+                     <width>98</width>
+                     <height>818</height>
                     </rect>
                    </property>
                    <layout class="QVBoxLayout" name="verticalLayout_22">
@@ -6174,7 +6174,7 @@ p, li { white-space: pre-wrap; }
                <enum>QTabWidget::Rounded</enum>
               </property>
               <property name="currentIndex">
-               <number>8</number>
+               <number>2</number>
               </property>
               <widget class="QWidget" name="tabWidgetPage1_2">
                <attribute name="title">
@@ -6191,8 +6191,8 @@ p, li { white-space: pre-wrap; }
                     <rect>
                      <x>0</x>
                      <y>0</y>
-                     <width>78</width>
-                     <height>306</height>
+                     <width>98</width>
+                     <height>290</height>
                     </rect>
                    </property>
                    <layout class="QVBoxLayout" name="verticalLayout_41">
@@ -6279,14 +6279,14 @@ p, li { white-space: pre-wrap; }
                      <x>0</x>
                      <y>0</y>
                      <width>364</width>
-                     <height>130</height>
+                     <height>286</height>
                     </rect>
                    </property>
                    <layout class="QVBoxLayout" name="verticalLayout_43">
                     <item>
                      <widget class="QLabel" name="label_9">
                       <property name="text">
-                       <string>[0113] Garajes, trasteros y locales en estructura 
+                       <string>- [0113] Garajes, trasteros y locales en estructura 
 
 - [0121] Edificación aislada o pareada 
 
@@ -6321,14 +6321,14 @@ p, li { white-space: pre-wrap; }
                      <x>0</x>
                      <y>0</y>
                      <width>364</width>
-                     <height>130</height>
+                     <height>286</height>
                     </rect>
                    </property>
                    <layout class="QVBoxLayout" name="verticalLayout_44">
                     <item>
                      <widget class="QLabel" name="label_10">
                       <property name="text">
-                       <string>[0113] Garajes, trasteros y locales en estructura 
+                       <string>- [0113] Garajes, trasteros y locales en estructura 
 
 - [0121] Edificación aislada o pareada 
 
@@ -6363,7 +6363,7 @@ p, li { white-space: pre-wrap; }
                      <x>0</x>
                      <y>0</y>
                      <width>288</width>
-                     <height>226</height>
+                     <height>286</height>
                     </rect>
                    </property>
                    <layout class="QVBoxLayout" name="verticalLayout_45">
@@ -6411,7 +6411,7 @@ p, li { white-space: pre-wrap; }
                      <x>0</x>
                      <y>0</y>
                      <width>288</width>
-                     <height>226</height>
+                     <height>286</height>
                     </rect>
                    </property>
                    <layout class="QVBoxLayout" name="verticalLayout_46">
@@ -6458,8 +6458,8 @@ p, li { white-space: pre-wrap; }
                     <rect>
                      <x>0</x>
                      <y>0</y>
-                     <width>70</width>
-                     <height>546</height>
+                     <width>279</width>
+                     <height>300</height>
                     </rect>
                    </property>
                    <layout class="QVBoxLayout" name="verticalLayout_40">
@@ -6513,8 +6513,8 @@ p, li { white-space: pre-wrap; }
                     <rect>
                      <x>0</x>
                      <y>0</y>
-                     <width>106</width>
-                     <height>402</height>
+                     <width>279</width>
+                     <height>300</height>
                     </rect>
                    </property>
                    <layout class="QVBoxLayout" name="verticalLayout_47">
@@ -6562,8 +6562,8 @@ p, li { white-space: pre-wrap; }
                     <rect>
                      <x>0</x>
                      <y>0</y>
-                     <width>274</width>
-                     <height>301</height>
+                     <width>279</width>
+                     <height>300</height>
                     </rect>
                    </property>
                    <layout class="QVBoxLayout" name="verticalLayout_48">
@@ -6607,8 +6607,8 @@ p, li { white-space: pre-wrap; }
                     <rect>
                      <x>0</x>
                      <y>0</y>
-                     <width>83</width>
-                     <height>194</height>
+                     <width>279</width>
+                     <height>300</height>
                     </rect>
                    </property>
                    <layout class="QVBoxLayout" name="verticalLayout_49">
@@ -6650,8 +6650,8 @@ p, li { white-space: pre-wrap; }
                     <rect>
                      <x>0</x>
                      <y>0</y>
-                     <width>105</width>
-                     <height>1090</height>
+                     <width>265</width>
+                     <height>546</height>
                     </rect>
                    </property>
                    <layout class="QVBoxLayout" name="verticalLayout_50">
@@ -6717,8 +6717,8 @@ p, li { white-space: pre-wrap; }
                     <rect>
                      <x>0</x>
                      <y>0</y>
-                     <width>91</width>
-                     <height>578</height>
+                     <width>98</width>
+                     <height>562</height>
                     </rect>
                    </property>
                    <layout class="QVBoxLayout" name="verticalLayout_51">
@@ -6770,7 +6770,7 @@ p, li { white-space: pre-wrap; }
                     <rect>
                      <x>0</x>
                      <y>0</y>
-                     <width>94</width>
+                     <width>98</width>
                      <height>258</height>
                     </rect>
                    </property>
