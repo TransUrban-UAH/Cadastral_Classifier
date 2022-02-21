@@ -15,4 +15,4 @@ The QGIS repository is at: [QGIS Repository](https://plugins.qgis.org/plugins/)
 
 The CC Plugin is at: [Plugin Repository](https://plugins.qgis.org/plugins/Cadastral_Classifier/)
 
-The user manual is at: [Manual](https://github.com/TransUrban-UAH/user_manual.pdf/)
+The user manual is at: [Manual](https://github.com/TransUrban-UAH/Cadastral_Classifier/blob/main/manual_de_usuario.pdf)
