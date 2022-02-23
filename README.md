@@ -33,7 +33,7 @@ To use this tool it is needed to download it, preferably from the official chann
   <h1 align="center" style="margin-top: 0px;">Clasificador Catastral</h1>
 </p>
 
-# Plugin de QGIS para la clasificación parcelaria de municipios españoles
+# Complemento de QGIS para la clasificación parcelaria de municipios españoles
 
 ## Resumen
 Clasificador Catastral (CC) es un complemento para la clasificación del parcelario de cualquier municipio español (excluyendo Navarra y País Vasco) utilizando la información de la Dirección General del Catastro. Ha sido desarrollado bajo la versión 3.16 de QGIS, que incluye la versión 3.7 de Python y un módulo de QT Designer, y soporta la versión 3.0 o superior. El objetivo principal es ofrecer, a diferentes perfiles de usuarios, la posibilidad de realizar clasificaciones de los municipios español a nivel de parcela, mediante 3 tipos de clasificaciones que presentan distintos niveles de complejidad y profundidad en sus analisis. Este desarrollo ha sido realizado en el marco del proyecto SIM4PLAN financiado por la convocatoria Proyectos I+D+i Pruebas de Concepto 2021 del Ministerio de Ciencia e Innovación del Gobierno de España y  NextGenerationEU de la Unión Europea, con referencia PDC2021-121568-C21, así como gracias a la ayuda “Estímulo a la Excelencia para Profesores Universitarios Permanentes” con referencia EPU-INV/2020/009 de la UAH y la Comunidad de Madrid, concedida al Dr. Francisco Aguilera Benavente. Ambas fuentes de financiación han permitido que la herramienta Clasificador catastral 1.0  sea puesta a disposición de los usuarios de forma gratuita.
