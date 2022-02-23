@@ -61,7 +61,7 @@
        <enum>Qt::StrongFocus</enum>
       </property>
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="Box_setup_data_Module">
        <attribute name="title">
@@ -510,7 +510,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>321</width>
+             <width>318</width>
              <height>1118</height>
             </rect>
            </property>
@@ -571,7 +571,14 @@ p, li { white-space: pre-wrap; }
 &lt;p style=&quot; margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;• Tipo 15: Registro de Inmueble. Existirá uno por cada bien inmueble en cada parcela catastral &lt;/p&gt;
 &lt;p style=&quot; margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;• Tipo 16: Registro de reparto de elementos comunes. Existirá al menos uno por cada elemento común que se reparte, siempre que sea necesario especificar repartos especiales. &lt;/p&gt;
 &lt;p style=&quot; margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;• Tipo 17: Registro de cultivos. Existirá uno por cada subparcela de cultivo existente dentro de la parcela catastral. &lt;/p&gt;
-&lt;p style=&quot; margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;• Tipo 90: Registro de cola. Existirá uno para todo el fichero.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+&lt;p style=&quot; margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;• Tipo 90: Registro de cola. Existirá uno para todo el fichero.&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2,sans-serif'; font-weight:600;&quot;&gt;La información de entrada necesaria debe ser adquirida por medio del &lt;/span&gt;&lt;a href=&quot;https://www.sedecatastro.gob.es/&quot;&gt;&lt;span style=&quot; font-weight:600; text-decoration: underline; color:#0000ff;&quot;&gt;Canal oficial de la Dirección General del Catastro (DGC)&lt;/span&gt;&lt;/a&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2,sans-serif'; font-weight:600;&quot;&gt;.&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2,sans-serif'; font-weight:600;&quot;&gt;Para más ayuda sobre la adquisición de los datos, así como para obtener información más detallada de la herramienta, puede consultar y/o descargar el &lt;/span&gt;&lt;a href=&quot;https://github.com/TransUrban-UAH/Cadastral_Classifier/blob/main/manual_de_usuario.pdf&quot;&gt;&lt;span style=&quot; font-weight:600; text-decoration: underline; color:#0000ff;&quot;&gt;Manual de usuario&lt;/span&gt;&lt;/a&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2,sans-serif'; font-weight:600;&quot;&gt;.&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2,sans-serif'; font-weight:600;&quot;&gt;Para consultar el código fuente de la herramienta puede acudir al &lt;/span&gt;&lt;a href=&quot;https://github.com/TransUrban-UAH/Cadastral_Classifier&quot;&gt;&lt;span style=&quot; font-weight:600; text-decoration: underline; color:#0000ff;&quot;&gt;Repositorio de GitHub&lt;/span&gt;&lt;/a&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2,sans-serif'; font-weight:600;&quot;&gt;.&lt;/span&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="openExternalLinks">
+               <bool>true</bool>
               </property>
              </widget>
             </item>
@@ -803,8 +810,8 @@ p, li { white-space: pre-wrap; }
                     <rect>
                      <x>0</x>
                      <y>0</y>
-                     <width>740</width>
-                     <height>216</height>
+                     <width>739</width>
+                     <height>204</height>
                     </rect>
                    </property>
                    <layout class="QVBoxLayout" name="verticalLayout_27">
@@ -1036,8 +1043,8 @@ p, li { white-space: pre-wrap; }
                     <rect>
                      <x>0</x>
                      <y>0</y>
-                     <width>740</width>
-                     <height>554</height>
+                     <width>739</width>
+                     <height>534</height>
                     </rect>
                    </property>
                    <layout class="QVBoxLayout" name="verticalLayout_29">
@@ -5656,7 +5663,7 @@ parcela edificada</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>321</width>
+             <width>318</width>
              <height>1380</height>
             </rect>
            </property>
@@ -5712,7 +5719,12 @@ p, li { white-space: pre-wrap; }
 &lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2,sans-serif'; font-size:8pt;&quot;&gt;■ (Guardar) permite guardar la clasificación creada como un archivo .csv para futuros usos.&lt;/span&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2,sans-serif'; font-size:8pt;&quot;&gt;Al igual que en el caso de la intermedia se ofrece la posibilidad de definir un umbral para definir las parcelas &amp;quot;sin edificar&amp;quot;.&lt;/span&gt;&lt;/p&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:'MS Shell Dlg 2,sans-serif'; font-size:8pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:'MS Shell Dlg 2,sans-serif'; font-size:8pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2,sans-serif'; font-weight:600;&quot;&gt;La información de entrada necesaria debe ser adquirida por medio del &lt;/span&gt;&lt;a href=&quot;https://www.sedecatastro.gob.es/&quot;&gt;&lt;span style=&quot; font-weight:600; text-decoration: underline; color:#0000ff;&quot;&gt;Canal oficial de la Dirección General del Catastro (DGC)&lt;/span&gt;&lt;/a&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2,sans-serif'; font-weight:600;&quot;&gt;.&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2,sans-serif'; font-weight:600;&quot;&gt;Para más ayuda sobre la adquisición de los datos, así como para obtener información más detallada de la herramienta, puede consultar y/o descargar el &lt;/span&gt;&lt;a href=&quot;https://github.com/TransUrban-UAH/Cadastral_Classifier/blob/main/manual_de_usuario.pdf&quot;&gt;&lt;span style=&quot; font-weight:600; text-decoration: underline; color:#0000ff;&quot;&gt;Manual de usuario&lt;/span&gt;&lt;/a&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2,sans-serif'; font-weight:600;&quot;&gt;.&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2,sans-serif'; font-weight:600;&quot;&gt;Para consultar el código fuente de la herramienta puede acudir al &lt;/span&gt;&lt;a href=&quot;https://github.com/TransUrban-UAH/Cadastral_Classifier&quot;&gt;&lt;span style=&quot; font-weight:600; text-decoration: underline; color:#0000ff;&quot;&gt;Repositorio de GitHub&lt;/span&gt;&lt;/a&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2,sans-serif'; font-weight:600;&quot;&gt;.&lt;/span&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="openExternalLinks">
+               <bool>true</bool>
               </property>
              </widget>
             </item>
@@ -5845,8 +5857,8 @@ p, li { white-space: pre-wrap; }
                     <rect>
                      <x>0</x>
                      <y>0</y>
-                     <width>279</width>
-                     <height>300</height>
+                     <width>274</width>
+                     <height>301</height>
                     </rect>
                    </property>
                    <layout class="QVBoxLayout" name="verticalLayout_25">
@@ -6174,7 +6186,7 @@ p, li { white-space: pre-wrap; }
                <enum>QTabWidget::Rounded</enum>
               </property>
               <property name="currentIndex">
-               <number>2</number>
+               <number>13</number>
               </property>
               <widget class="QWidget" name="tabWidgetPage1_2">
                <attribute name="title">
@@ -6192,16 +6204,18 @@ p, li { white-space: pre-wrap; }
                      <x>0</x>
                      <y>0</y>
                      <width>98</width>
-                     <height>290</height>
+                     <height>386</height>
                     </rect>
                    </property>
                    <layout class="QVBoxLayout" name="verticalLayout_41">
                     <item>
                      <widget class="QLabel" name="label_7">
                       <property name="text">
-                       <string>- [0111] Edificación abierta colectiva 
+                       <string>- [0121] Edificación aislada o pareada 
 
-- [0112] Viviendas colectivas en manzana cerrada 
+- [0122] Viviendas unifamiliares en línea o manzana cerrada 
+
+- [0123] Garajes y porches en planta baja e 
 
 - [0131] Edificación rural 
 
@@ -6236,17 +6250,19 @@ p, li { white-space: pre-wrap; }
                     <rect>
                      <x>0</x>
                      <y>0</y>
-                     <width>304</width>
-                     <height>130</height>
+                     <width>364</width>
+                     <height>162</height>
                     </rect>
                    </property>
                    <layout class="QVBoxLayout" name="verticalLayout_42">
                     <item>
                      <widget class="QLabel" name="label_8">
                       <property name="text">
-                       <string>- [0111] Edificación abierta colectiva 
+                       <string>- [0121] Edificación aislada o pareada 
 
-- [0112] Viviendas colectivas en manzana cerrada 
+- [0122] Viviendas unifamiliares en línea o manzana cerrada 
+
+- [0123] Garajes y porches en planta baja e 
 
 - [0131] Edificación rural 
 
@@ -6278,21 +6294,21 @@ p, li { white-space: pre-wrap; }
                     <rect>
                      <x>0</x>
                      <y>0</y>
-                     <width>364</width>
-                     <height>286</height>
+                     <width>305</width>
+                     <height>130</height>
                     </rect>
                    </property>
                    <layout class="QVBoxLayout" name="verticalLayout_43">
                     <item>
                      <widget class="QLabel" name="label_9">
                       <property name="text">
-                       <string>- [0113] Garajes, trasteros y locales en estructura 
+                       <string>- [0111] Edificación abierta colectiva 
 
-- [0121] Edificación aislada o pareada 
+- [0112] Viviendas colectivas en manzana cerrada 
 
-- [0122] Viviendas unifamiliares en línea o manzana cerrada 
+- [0113] Garajes, trasteros y locales en estructura 
 
-- [0123] Garajes y porches en planta baja</string>
+</string>
                       </property>
                       <property name="alignment">
                        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
@@ -6320,21 +6336,21 @@ p, li { white-space: pre-wrap; }
                     <rect>
                      <x>0</x>
                      <y>0</y>
-                     <width>364</width>
-                     <height>286</height>
+                     <width>305</width>
+                     <height>130</height>
                     </rect>
                    </property>
                    <layout class="QVBoxLayout" name="verticalLayout_44">
                     <item>
                      <widget class="QLabel" name="label_10">
                       <property name="text">
-                       <string>- [0113] Garajes, trasteros y locales en estructura 
+                       <string>- [0111] Edificación abierta colectiva 
 
-- [0121] Edificación aislada o pareada 
+- [0112] Viviendas colectivas en manzana cerrada 
 
-- [0122] Viviendas unifamiliares en línea o manzana cerrada 
+- [0113] Garajes, trasteros y locales en estructura 
 
-- [0123] Garajes y porches en planta baja</string>
+</string>
                       </property>
                       <property name="alignment">
                        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
@@ -6363,7 +6379,7 @@ p, li { white-space: pre-wrap; }
                      <x>0</x>
                      <y>0</y>
                      <width>288</width>
-                     <height>286</height>
+                     <height>226</height>
                     </rect>
                    </property>
                    <layout class="QVBoxLayout" name="verticalLayout_45">
@@ -6411,7 +6427,7 @@ p, li { white-space: pre-wrap; }
                      <x>0</x>
                      <y>0</y>
                      <width>288</width>
-                     <height>286</height>
+                     <height>226</height>
                     </rect>
                    </property>
                    <layout class="QVBoxLayout" name="verticalLayout_46">
@@ -6458,8 +6474,8 @@ p, li { white-space: pre-wrap; }
                     <rect>
                      <x>0</x>
                      <y>0</y>
-                     <width>279</width>
-                     <height>300</height>
+                     <width>98</width>
+                     <height>466</height>
                     </rect>
                    </property>
                    <layout class="QVBoxLayout" name="verticalLayout_40">
@@ -6513,8 +6529,8 @@ p, li { white-space: pre-wrap; }
                     <rect>
                      <x>0</x>
                      <y>0</y>
-                     <width>279</width>
-                     <height>300</height>
+                     <width>106</width>
+                     <height>402</height>
                     </rect>
                    </property>
                    <layout class="QVBoxLayout" name="verticalLayout_47">
@@ -6562,8 +6578,8 @@ p, li { white-space: pre-wrap; }
                     <rect>
                      <x>0</x>
                      <y>0</y>
-                     <width>279</width>
-                     <height>300</height>
+                     <width>98</width>
+                     <height>306</height>
                     </rect>
                    </property>
                    <layout class="QVBoxLayout" name="verticalLayout_48">
@@ -6607,8 +6623,8 @@ p, li { white-space: pre-wrap; }
                     <rect>
                      <x>0</x>
                      <y>0</y>
-                     <width>279</width>
-                     <height>300</height>
+                     <width>98</width>
+                     <height>194</height>
                     </rect>
                    </property>
                    <layout class="QVBoxLayout" name="verticalLayout_49">
@@ -6650,8 +6666,8 @@ p, li { white-space: pre-wrap; }
                     <rect>
                      <x>0</x>
                      <y>0</y>
-                     <width>265</width>
-                     <height>546</height>
+                     <width>105</width>
+                     <height>1090</height>
                     </rect>
                    </property>
                    <layout class="QVBoxLayout" name="verticalLayout_50">
@@ -6815,8 +6831,8 @@ p, li { white-space: pre-wrap; }
                     <rect>
                      <x>0</x>
                      <y>0</y>
-                     <width>109</width>
-                     <height>546</height>
+                     <width>274</width>
+                     <height>301</height>
                     </rect>
                    </property>
                    <layout class="QVBoxLayout" name="verticalLayout_53">
