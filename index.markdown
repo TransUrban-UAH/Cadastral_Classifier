@@ -5,24 +5,26 @@
 layout: default
 ---
 
-**Cadastral Classifier (CC)** is a plugin to classify urban parcels of any Spanish municipality (excluding Navarra and País Vasco) using cadastral information (obtainable via official channels). It has been developed under version 3.16 of QGIS, that includes a *Python 3.7* version and a QT Designer version, and it supports versión 3.0 or higher.
+**EL CLASIFICADOR CATASTRAL (CC)** es un complemento para clasificar el parcelario urbano de cualquier municipalidad española (Excluyendo Navarra y el País Vasco) usando información del catastro (obtenida desde el canal oficial). Ha sido desarrollado usando la versión 3.16 de QGIS, que incluye la versión 3.7 de Python, una versión de QT Designer, y soporta las versiones de QGIS desde la versión 3.0.
 
-The main objective is to offer, to a different user profiles, the possibility of carrying out classifications of spanish municipalities at parcel level, by implementing 3 types of classifications, that increase in complexity and depths on their analysis.
+El principal objetivo es ofrecer, para distintos perfiles de usuarios la posibilidad de clasificar las municipalidades de España a nivel de parcela implentando 3 tipos de clasificaciones, con un creciente nivel de complejidad y profundidad de análisis. 
 
-This development has been carried out within the framework of the *SIM4PLAN* project, financed by the R+D+i Projects Proof of Concept 2021 from the Ministry of Science and Innovation of the Government of Spain and NextGenerationEU of the European Union, with reference PDC2021-121568-C21, as well as the grant “Stimulus to Excellence for Permanent University Professors” with reference EPU-INV/2020/009 from the UAH and the Community of Madrid, granted to Dr. Francisco Aguilera Benavente. Both sources of funding have allowed the Cadastral Classifier plugin to be made available to users free of charge. [More Information](./another-page.html).
+El desarrollo ha sido realizado dentro del proyecto SIM4PLAN, financiado por el projecto de prueba de concepto R+D+i del ministerio de ciencia e innovación de gobierno de España, y NextGenerationEU de la unión Europea, con referencia PDC2021-121568-C21, como también a través de los fondos de estimulo a la excelencia de profesores universitarios permanentes con referencia EPU-INV/2020/009 de la comunidad de Madrid entregado a el profesor Dr. Francisco Aguilera Benavente. Ambas fuentes de financiamiento han permitido que el complemento Clasificador Catastral pueda estar disponible libre de costos para los usuarios. [Más información sobre el complemento](./)
 
-### Developer team
-This plugin has been developed by Nikolai Shurupov, Ramón Molinero Parejo, Francisco Aguilera Benavente, Victor Rodríguez Espinosa and Ricardo Gascuñana Duro.
 
-### Installation
-To use this tool it is needed to download it, preferably from the official channels of QGIS, using the plugin manager of the QGIS program itselfs, introducing "Cadastral Classifier" in the search engine. Alternatively, it is possible to download it from the GitHub repository, and add the file to the directory where the rest of the QGIS plugins are saved. This path is usually: `"*\QGIS\QGIS3\profiles\default\python\plugins"`
+### Equipo de desarrollo
+Este complemento ha sido desarrollado por Nikolai Shurupov, Ramón Molinero Parejo, Francisco Aguilera Benavente, Victor Rodríquez Espinosa y Ricardo Gascuñana Duro. 
 
-### Related
-The QGIS repository is at: [QGIS Repository](https://plugins.qgis.org/plugins/)
+### Instalación
+Para utilizar esta herramienta es necesario descargar el complemento, preferiblemente desde las fuentes oficiales de QGIS, usando el administrador de complementos de QGIS, introduciendo el nombre en inglés del complemento “Cadastral Classifier” en búsqueda. Alternativamente, es posible descargarlo desde el repositorio GitHub, y añadir el archivo al directorio donde se encuentran el resto de los complementos de QGIS. 
+Esta ruta es generalmente:`"*\QGIS\QGIS3\profiles\default\python\plugins"`
 
-The CC Plugin is at: [Plugin Repository](https://plugins.qgis.org/plugins/Cadastral_Classifier/)
+### Links
+El repositorio oficial de QGIS se encuentra en [Repositorio QGIS](https://plugins.qgis.org/plugins/)
 
-The user manual is at: [Manual](https://github.com/TransUrban-UAH/Cadastral_Classifier/blob/main/manual_de_usuario.pdf)
+El Complemento CC se encuentra en: [Repositorio del complemento](https://plugins.qgis.org/plugins/Cadastral_Classifier/)
+
+El Manual del usuario se encuentra en: [Manual](https://github.com/TransUrban-UAH/Cadastral_Classifier/blob/main/manual_de_usuario.pdf)
 
 
 
