@@ -21,7 +21,7 @@ El plugin está diseñado considerando un espectro amplio de usuarios, y por est
 
 **1- Clasificación Básica:** El clasificador agrega los usos del suelo en seis diferentes clases predefinidas.
   
-![datos_basica](datos_basica.PNG)
+![datos_basica](datos_basica.png)
 
 
 **Clasificación básica municipalidad de Peligros**
@@ -32,7 +32,7 @@ El plugin está diseñado considerando un espectro amplio de usuarios, y por est
  **2- Clasificación intermedia:** Hasta 14 clases y opciones disponibles para el usaurio para seleccionar el valor umbral para definir 4 de estás clases. (Residencia unifamiliar, Residencia plurifamiliar, Industrial mixto, y edificaciones)
 
 
-![Datos intermedia](datos_intermedia.PNG)
+![datos_intermedia](datos_intermedia.png)
 
 **Clasificación intermedia municipalidad de Peligros**
 
@@ -41,7 +41,7 @@ El plugin está diseñado considerando un espectro amplio de usuarios, y por est
 
 **3- Clasificación Avanzada:** Control completo a los usuarios para definir las clases basado en el % de cobertura de cada uso del suelo.  
 
-![Datos avanzanda](datos_avanzada.PNG)
+![Datos avanzanda](datos_avanzada.png)
 
 **Clasificación avanzada municipalidad de Peligros**
 
