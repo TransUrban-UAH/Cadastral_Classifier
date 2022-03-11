@@ -14,7 +14,7 @@ La base de datos del catastro ofrece una información muy detallada y de actuali
 
 El clasificador requiere como datos de partida la cartografía catastral (geometrías) y las tablas alfanuméricas descargables desde el portal de la [DGC](http://www.sedecatastro.gob.es/) para cualquier municipio de España (excepto la C.F de Navarra y el País Vasco).  
 
-![datos](datos.PNG)
+![datos](datos.png)
 
 El plugin está diseñado considerando un espectro amplio de usuarios, y por este motivo ofrece tres tipos de clasificaciones parcelarias con un creciente nivel de complejidad (clasificación básica con 6 usos, intermedia con 14, y avanzada, totalmente personalizable por el usuario).  
 
@@ -22,7 +22,6 @@ El plugin está diseñado considerando un espectro amplio de usuarios, y por est
 **1- Clasificación Básica:** El clasificador agrega los usos del suelo en seis diferentes clases predefinidas.
   
 ![datos_basica](datos_basica.png)
-
 
 **Clasificación básica municipalidad de Peligros**
 
