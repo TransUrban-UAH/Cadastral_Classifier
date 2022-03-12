@@ -1149,7 +1149,6 @@ class cadastral_classifier:
                         
             listOfIds = [feat.id() for feat in layer.getFeatures() if feat['TIPO'] == 'X']     
             layer.deleteFeatures(listOfIds)
-            layer.commitChanges()
             
         #----------------------------------------------------------------------
         
@@ -1177,18 +1176,16 @@ class cadastral_classifier:
         # get the new fields
         fields_name = layer.fields().names()
         
-        # get the index (numerical position) of the cadastral reference one
-        refcat_index = fields_name.index("REFCAT")
+        # get the index (numerical position) of the area attribute, and cadastral
+        # reference
+        area_index = fields_name.index("AREA")
         
         # get all the features (rows) of the layer
         features = layer.getFeatures()
-                
-        # create lists to work around the duplicates, and unique cadastral 
-        # reference numbers
-        ls_unique_refcat = []
-        ls_dup = []
-        ls_dup_actualized = []
-
+        
+        #create a dictionary to save all unique cadastral references
+        unique_ref_cat = dict()
+            
         # iterate over all features
         for f in features:
             
@@ -1197,37 +1194,41 @@ class cadastral_classifier:
             
             # store its cadastral reference number
             f_refcat = f["REFCAT"]
+                
+            # to each unique cadastral reference in the dictionary add the id
+            # of the parcel that has it
+            if f_refcat not in unique_ref_cat.keys():
+                unique_ref_cat[f_refcat] = [f_id]
             
-            # add the cadref to the list if it doesnt already have it
-            if f_refcat not in ls_unique_refcat:
-                ls_unique_refcat.append(f_refcat)
-              
+            # if the key already exist just add the id 
             else:
-                
-                # append the duplicate to the duplicates list
-                ls_dup.append(f_refcat)
-                
-                # count how many of the duplicates there is 
-                dup_num = ls_dup.count(f_refcat)
-                
-                # generate a new cadfet based on the number of duplicates
-                new_f_refcat = f_refcat + "_" + str(dup_num)
-                
-                # update the cadref field with the new cadfet generated
-                layer.changeAttributeValue(f_id, refcat_index, new_f_refcat)
-                
-                # append the new one to the actualized list
-                ls_dup_actualized.append(new_f_refcat)
-                
-        # save the changes made to the features by commiting changes to layer
-        layer.commitChanges()
+                unique_ref_cat[f_refcat].append(f_id)
         
-        # update layer provider
-        layer_provider = layer.dataProvider()
-        
-        # add the actualized values to the unique list
-        ls_unique_refcat.extend(ls_dup_actualized)
-        
+        # iterate over all the cadastral references keys
+        for key in unique_ref_cat.keys():
+            
+            # store the ids that have it
+            ls_parcels = unique_ref_cat[key]
+            
+            # for the ones that has multiple ids (multipart geometry)
+            if len(ls_parcels) > 1:
+                
+                area_fix = 0
+                
+                # summarize the area of all the ids
+                for parcel in ls_parcels:
+                    parcel_area = layer.getFeature(parcel).attribute(area_index)
+                    area_fix += parcel_area
+                    
+                # change the area of the multipart geometries. Now they have the
+                # area of the whole geometries of the multipart entity, so 
+                # the following use asignments take in account them as a single
+                # entity
+                for parcel in ls_parcels:
+                    # generate a tuple with the index of field and it's new value
+                    attr_value = {area_index:area_fix}
+                    layer_provider.changeAttributeValues({parcel:attr_value})
+            
         #----------------------------------------------------------------------
         
         # update progress
@@ -1247,35 +1248,13 @@ class cadastral_classifier:
             rows_to_remove = list(df_type_14[df_type_14["105_tip"] == "0000"].index)
             df_type_14 = df_type_14.drop(rows_to_remove)
         
-        # get a list with all possible floor categories
-        ls_floor_values = df_type_14["65_pt"].unique()
-        
-        # create a list that will store the floor categories to be excluded from 
-        # the analysis
-        ls_excluded_floors = []
-        
-        # iterate over all possibilities and if it can't be transformed to int
-        # add to the delete list
-        for item in ls_floor_values:
-            try:
-                int(item)
-                
-            except:
-                ls_excluded_floors.append(item)
-        
-        # transform the values to integer values based on the floor category 
-        # (only int values are usable since they can determine the max floor
-        # of the buildings of the parcel)
-        df_type_14["65_pt"] = df_type_14["65_pt"].apply(
-            lambda x: int(x) if x not in ls_excluded_floors and isna(x) == False else -99)
-        
         # list with all the cadastral reference numbers present in the 
         # table-type-14 dataframe
         ref_CAT_type_14 = list(df_type_14["31_pc"])
     
         # merge both (table-type-14 and SHP) cadastral reference number lists 
         # and get the set (unique) values
-        ref_CAT_type_14.extend(ls_unique_refcat)
+        ref_CAT_type_14.extend(list(unique_ref_cat.keys()))
         ref_CAT = set(ref_CAT_type_14)
                 
         # create a dictionary that will contain as keys each of the unique 
@@ -1283,9 +1262,7 @@ class cadastral_classifier:
         d_base = dict.fromkeys(ref_CAT, 0)
         
         # create a list with the fields to be added to the resulting shp
-        list_uses = ["A_TOT_EDIF", "SUP_ED_0", "SUP_ED_1", "MAX_PLANTA",
-                      "NUM_INM_R"]
-        
+        list_uses = ["A_TOT_EDIF", "SUP_ED_0", "SUP_ED_1", "NUM_INM_R"]
         
         # add to the previous list all the possible codification of categorical
         # use present in the dataframe
@@ -1328,21 +1305,11 @@ class cadastral_classifier:
             
             # iterate over all the uses (new fields that were added)
             for use in list_uses:
-                
-                # the maximum floor number will sotre the maximum value of all
-                # the edifications that are present in the parcel. It always
-                # start at 0 and increase if the edification floor is higher
-                # than current one
-                if use == "MAX_floor":
-                    if floor > d_evaluation[use][cad_ref]:
-                        
-                        # save the value in the dictionary
-                        d_evaluation[use][cad_ref] = floor
-                                 
+
                 # the number of residential buildings is evaluated one by on if
                 # it is any of the codes below. Each edification of that typology
                 # adds 1 to the variable value
-                elif use == "NUM_INM_R":
+                if use == "NUM_INM_R":
                     if tp_parc in ["0111", "0112", "0121", "0122", "0131"]:
                         d_evaluation[use][cad_ref] += 1
                 
