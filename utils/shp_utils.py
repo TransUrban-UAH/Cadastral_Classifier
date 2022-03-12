@@ -134,7 +134,7 @@ def shp_copy(shp_filepath, result_filepath):
 
     # get all the files related to the input shapefile (alongside .shp, get all
     # others, dbf, prj, etc)
-    file_list = glob(name_shp + "*")
+    file_list = glob(name_shp + ".*")
     
     # perform a copy of each file with the new route (name)
     for file in file_list:
