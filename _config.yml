@@ -28,7 +28,7 @@ show_downloads: true
 google_analytics:
 
 email: transurban.uah@gmail.com
-baseurl: "Cadastral_Classifier" # the subpath of your site, e.g. /blog
+baseurl: "" # the subpath of your site, e.g. /blog
 url: "" # the base hostname & protocol for your site, e.g. http://example.com
 twitter_username: jekyllrb
 github_username:  jekyll
