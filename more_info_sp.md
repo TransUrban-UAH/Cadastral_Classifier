@@ -1,7 +1,7 @@
 ---
-layout: default
-leng: sp
-leng-link: more-information
+layout: default_es
+lang: sp
+
 ---
 
 ### Clasificador Catastral

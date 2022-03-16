@@ -2,7 +2,9 @@
 # Feel free to add content and custom Front Matter to this file.
 # To modify the layout, see https://jekyllrb.com/docs/themes/#overriding-theme-defaults
 
-layout: default
+layout: default_es
+lang: sp
+leng-link: more-information
 ---
 
 **EL CLASIFICADOR CATASTRAL (CC)** es un complemento para clasificar el parcelario urbano de cualquier municipalidad española (Excluyendo Navarra y el País Vasco) usando información del catastro ([DGC](http://www.sedecatastro.gob.es/)). Ha sido desarrollado usando la versión 3.16 de QGIS, que incluye la versión 3.7 de Python, QT Designer, y soporta las versiones de QGIS desde la versión 3.0.

@@ -1,5 +1,7 @@
 ---
 layout: default
+lang: en
+ref : 0
 ---
 
 ### Cadastral clasiffier
@@ -24,7 +26,7 @@ The plugin is designed considering a broad spectrum of users, and for this reaso
 
 **Basic classification municipality of Peligros**
 
-[![basica](cl_b.PNG)](./basic.html "Redirect to homepage")
+[![basica](cl_b.PNG)](basic.html "Redirect to homepage")
 
 **2- Intermediate classification**: Up to 14 classes, and options for the user to define the threshold value to define four classes (Single-family residential, multi-family residential, mixed industrial, and commercial buildings).
 
