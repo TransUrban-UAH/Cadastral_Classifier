@@ -30,7 +30,7 @@ El complemento está diseñado considerando un espectro amplio de usuarios, y po
 [![basica](cl_b.PNG)](./basic.html "Redirect to homepage")
 
 
- **2- Clasificación Intermedia:** Se clasifican los usos del suelo en hasta 14 clases. Adicionalmente, el usuario puede entregar el valor umbral para definir 4 de estas clases. (Residencia unifamiliar, Residencia plurifamiliar, Industrial mixto, y edificaciones).
+ **2- Clasificación Intermedia:** Se clasifican los usos del suelo en hasta 14 clases. Adicionalmente, el usuario puede establecer un valor umbral para definir 4 de estas clases. (Residencia unifamiliar, Residencia plurifamiliar, Industrial mixto, y edificaciones).
 
 [![datos intermedio](datos_intermedia.png)](./datos_intermedio_fig.html "Redirect to homepage")
 
