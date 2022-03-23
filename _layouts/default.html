@@ -12,10 +12,11 @@
     <![endif]-->
     
   </head>
+  
   <body>
     <div class="wrapper">
       <header>
-        <h1><a href="{{ "/" | absolute_url }}">{{ site.title_in | default: site.github.repository_name }}</a></h1>
+        <h1 style ="font-size:28px;"><a href="{{ "/" | absolute_url }}">{{ site.title_in | default: site.github.repository_name }}</a></h1>
 
         {% if site.logo %}
           <img src="{{site.logo | relative_url}}" alt="Logo" />
@@ -38,7 +39,7 @@
           <li><a href="{{ site.github.repository_url }}">View On <strong>GitHub</strong></a></li>
         </ul>
         {% endif %}
-        <h4><a href="{{ "/" | absolute_url }}">Versión en castellano</a></h4>
+        <h3><a href="{{ "/" | absolute_url }}">Versión en castellano</a></h3>
       </header>
       <section>
 
