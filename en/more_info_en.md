@@ -4,7 +4,7 @@ lang: en
 ref : 0
 ---
 
-### Cadastral Classifier
+## Cadastral Classifier
 
 ### Main Problem
 
@@ -14,7 +14,7 @@ The cadastre database offers detailed and continuously updated data, from which 
 
 The Cadastral Classifier (CC) allows a simple classification of cadastral parcels into a set of urban land use categories, according to the different types of existing real estate and their occupancy percentages. It generates flexible classifications that are adjusted to the maximum temporal resolution. 
 
-The classifier requires data from the cadastral cartography (geometries) and alphanumeric tables, both available for any municipality in Spain (except the C.F. of Navarra and the Basque Country) and downloadable from the portal of the [DGC](http://www.sedecatastro.gob.es/)  
+The classifier requires data from the cadastral cartography (geometries) and alphanumeric tables, both available for any municipality in Spain (except the C.F. of Navarra and the Basque Country) and downloadable from the portal of the [DGC](http://www.sedecatastro.gob.es/).
 
 [![datos](datos.png)](./datos_fig.html "Redirect to homepage")
 
@@ -48,6 +48,6 @@ The plugin has been designed considering a broad spectrum of users. For this rea
 
 [![avanzada](cl_ad.png)](./advance.html "Redirect to homepage")
 
-See the handbook for a complete description of how to work with the Cadastral Classifier: [Handbook](https://github.com/TransUrban-UAH/Cadastral_Classifier/blob/main/manual_de_usuario.pdf)
+See the handbook for a complete description of how to work with the Cadastral Classifier: [Handbook](https://github.com/TransUrban-UAH/Cadastral_Classifier/blob/main/manual_de_usuario.pdf).
 
 [back](./)

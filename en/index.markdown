@@ -17,7 +17,9 @@ This development has been carried out as part of the proof-of-concept project �
 This plugin has been developed by Nikolai Shurupov, Ramón Molinero Parejo, Francisco Aguilera Benavente, Victor Rodríguez Espinosa and Ricardo Gascuñana Duro.
 
 ### Installation
-Users need to download the plugin, preferably from the official repository of QGIS, using the plugin manager of QGIS, type “Cadastral Classifier” in the search bar. Alternatively, it is possible to download it from the GitHub repository and add the file to the directory where the rest of the QGIS plugins are saved. This path is usually: `"*\QGIS\QGIS3\profiles\default\python\plugins"`
+Users need to download the plugin, preferably from the official repository of QGIS, using the plugin manager of QGIS, typing “Cadastral Classifier” in the search bar. Alternatively, it is possible to download it from the GitHub repository and add the file to the directory where the rest of the QGIS plugins are saved. This path is usually:
+
+`"*\QGIS\QGIS3\profiles\default\python\plugins"`
 
 
 ### Related
@@ -25,7 +27,7 @@ The QGIS repository is at: [QGIS Repository](https://plugins.qgis.org/plugins/)
 
 The CC Plugin is at: [Plugin Repository](https://plugins.qgis.org/plugins/Cadastral_Classifier/)
 
-The user manual is at: [Manual](https://github.com/TransUrban-UAH/Cadastral_Classifier/blob/main/manual_de_usuario.pdf)
+The user handbook is at: [Handbook](https://github.com/TransUrban-UAH/Cadastral_Classifier/blob/main/manual_de_usuario.pdf)
 
 
 

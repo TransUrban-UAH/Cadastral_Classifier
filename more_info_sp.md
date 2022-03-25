@@ -18,14 +18,14 @@ El clasificador requiere como datos de partida la cartografía catastral (geomet
 
 [![datos](datos.png)](./datos_fig.html "Redirect to homepage")
 
-El complemento está diseñado considerando un espectro amplio de usuarios, y por este motivo ofrece tres tipos de clasificaciones parcelarias que muestran un creciente nivel de complejidad (clasificación básica con 6 usos, intermedia con 14, y avanzada, totalmente personalizable por el usuario).  
+El complemento ha sido diseñado considerando un espectro amplio de usuarios, y por este motivo ofrece tres tipos de clasificaciones parcelarias que muestran un creciente nivel de complejidad (clasificación básica con 6 usos, intermedia con 14, y avanzada, totalmente personalizable por el usuario).  
 
 **1- Clasificación Básica:** Se clasifican los usos del suelo en seis diferentes clases predefinidas.
   
 [![datos basica](datos_basica.png)](./datos_basica_fig.html "Redirect to homepage")
 
 
-**Clasificación básica municipalidad de Peligros**
+**Clasificación básica municipio de Peligros**
 
 [![basica](cl_b.PNG)](./basic.html "Redirect to homepage")
 
@@ -35,7 +35,7 @@ El complemento está diseñado considerando un espectro amplio de usuarios, y po
 [![datos intermedio](datos_intermedia.png)](./datos_intermedio_fig.html "Redirect to homepage")
 
 
-**Clasificación intermedia municipalidad de Peligros**
+**Clasificación intermedia municipio de Peligros**
 
 
 [![Intemedia](cl_in.PNG)](./intermediate.html "Redirect to homepage")
@@ -46,7 +46,7 @@ El complemento está diseñado considerando un espectro amplio de usuarios, y po
 [![datos avanzada](datos_avanzada.png)](./datos_avanzados_fig.html "Redirect to homepage")
 
 
-**Clasificación avanzada municipalidad de Peligros**
+**Clasificación avanzada municipio de Peligros**
 
 [![avanzada](cl_ad.png)](./advance.html "Redirect to homepage")
 
