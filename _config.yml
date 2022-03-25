@@ -20,10 +20,10 @@
 
 #theme: jekyll-theme-minimal
 title: Clasificador Catastral
-description: Complemento de QGIS para clasificar información de municipalidades españolas.
+description: Complemento de QGIS para clasificar el parcelario de las municipalidades españolas utilizando información catastral.
 
 title_in: Cadastral Classifier
-description_in: QGIS plugin to classify Spanish municipalities using cadastral information.
+description_in: QGIS plugin to classify parcels of Spanish municipalities using cadastral information.
 
 logo: /logo2.png
 download: "https://github.com/TransUrban-UAH/Cadastral_Classifier/archive/refs/heads/main.zip"
