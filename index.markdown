@@ -19,7 +19,7 @@ El desarrollo ha sido realizado en el marco del proyecto de prueba de concepto �
 Este complemento ha sido desarrollado por Nikolai Shurupov, Ramón Molinero Parejo, Francisco Aguilera Benavente, Victor Rodríquez Espinosa y Ricardo Gascuñana Duro. 
 
 ### Instalación
-Para utilizar esta herramienta es necesario descargar el complemento, preferiblemente desde las fuentes oficiales de QGIS, por medio del  administrador de complementos de QGIS, buscando por el nombre en inglés “Cadastral Classifier”. Alternativamente, es posible descargarlo desde el repositorio GitHub, y añadir el archivo al directorio donde se encuentran el resto de los complementos de QGIS. Esta ruta es generalmente:
+Para utilizar esta herramienta es necesario descargar el complemento, preferiblemente desde las fuentes oficiales de QGIS, por medio del  administrador de complementos de QGIS, con el nombre en inglés “Cadastral Classifier”. Alternativamente, es posible descargarlo desde el repositorio GitHub, y añadir el archivo al directorio donde se encuentran el resto de los complementos de QGIS. Esta ruta es generalmente:
 `"*\QGIS\QGIS3\profiles\default\python\plugins"`
 
 ### Enlaces
