@@ -31,4 +31,4 @@ El Manual del usuario se encuentra en: [Manual](https://github.com/TransUrban-UA
 
 ### Entidades financiadoras
 ![logo Ministerio de Ciencia e Innovación y Agencia Estatal de Investigación](logo_CI_AEI.jpg) 
-![Unión Europea - Next Generations](logo_EU_NG.jpg) ![Plan de Recuperación, Transformación y Resiliencia](logo_PRTR.jpg) 
+![Unión Europea - Next Generations](logo_EU_NG.jpg = 250x250) ![Plan de Recuperación, Transformación y Resiliencia](logo_PRTR.jpg = 250x250) 
