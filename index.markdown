@@ -31,4 +31,4 @@ El Manual del usuario se encuentra en: [Manual](https://github.com/TransUrban-UA
 
 ### Entidades financiadoras
 <img src="logo_CI_AEI.jpg">
-<img src="logo_EU_NG.jpg" width="100" height="100"> <img src="logo_PRTR.jpg" width="100" height="100">
+<img src="logo_EU_NG.jpg" width="1000" height="200"> <img src="logo_PRTR.jpg" width="1000" height="200">
