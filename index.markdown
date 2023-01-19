@@ -33,7 +33,7 @@ El Manual del usuario se encuentra en: [Manual](https://github.com/TransUrban-UA
 [![Agencia Estatal de Investigación](./logo_AEI.JPG)] [![Unión Europea - Next Generations](logo_EU_NG.JPG)] [![Plan de Recuperación, Transformación y Resiliencia](logo_PRTR.PNG)] [![Ministerio de Ciencia e Innovación](logo_ministerio_innovacion.PNG)]
 
 <p align="center" style="margin-bottom: 0px !important;">
-  <img width="50" src="https://github.com/TransUrban-UAH/Cadastral_Classifier/blob/main/icon.JPG">
+  <img width="50" src="https://github.com/TransUrban-UAH/Cadastral_Classifier/blob/main/icon.jpg">
   <h1 align="center" style="margin-top: 0px;">Cadastral Classifier</h1>
 </p>
 
