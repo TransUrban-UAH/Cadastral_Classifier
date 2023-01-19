@@ -30,5 +30,5 @@ El Complemento CC se encuentra en: [Repositorio del complemento](https://plugins
 El Manual del usuario se encuentra en: [Manual](https://github.com/TransUrban-UAH/Cadastral_Classifier/blob/main/manual_de_usuario.pdf).
 
 ### Entidades financiadoras
-<img src="logo_CI_AEI.jpg">
-<img src="logo_EU_NG.jpg" width="750" height="200"> <img src="logo_PRTR.jpg" width="250" height="200">
+<img src="logo_CI_AEI.jpg"/>
+<img src="logo_EU_NG.jpg" width="750" height="200"/> <img src="logo_PRTR.jpg" width="250" height="200"/>
