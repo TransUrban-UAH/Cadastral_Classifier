@@ -30,7 +30,7 @@ El Complemento CC se encuentra en: [Repositorio del complemento](https://plugins
 El Manual del usuario se encuentra en: [Manual](https://github.com/TransUrban-UAH/Cadastral_Classifier/blob/main/manual_de_usuario.pdf).
 
 ### Entidades financiadoras
-[![Agencia Estatal de Investigación](./logo_AEI.JPG)] [![Unión Europea - Next Generations](logo_EU_NG.JPG)] [![Plan de Recuperación, Transformación y Resiliencia](logo_PRTR.PNG)] [![Ministerio de Ciencia e Innovación](logo_ministerio_innovacion.PNG)]
+[![Agencia Estatal de Investigación](./logo_AEI.jpg)] [![Unión Europea - Next Generations](logo_EU_NG.jpg)] [![Plan de Recuperación, Transformación y Resiliencia](logo_PRTR.png)] [![Ministerio de Ciencia e Innovación](logo_ministerio_innovacion.png)]
 
 <p align="center" style="margin-bottom: 0px !important;">
   <img width="50" src="https://github.com/TransUrban-UAH/Cadastral_Classifier/blob/main/icon.jpg">
