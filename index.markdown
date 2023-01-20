@@ -35,5 +35,5 @@ El Manual del usuario se encuentra en: [Manual](https://github.com/TransUrban-UA
 <p align="center">
   <img alt="Unón Europea - Next Generations" src="logo_EU_NG.jpg" width="45%">
 &nbsp; &nbsp; &nbsp; &nbsp;
-  <img alt="PRTR" src="logo_PRTR.jpg" width="45%">
+  <img alt="PRTR" src="logo_PRTR.jpg" width="50%">
 </p>
