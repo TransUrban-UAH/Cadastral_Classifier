@@ -36,5 +36,5 @@ The user handbook is at: [Handbook](https://github.com/TransUrban-UAH/Cadastral_
 <p align="center">
   <img alt="Unón Europea - Next Generations" src="../logo_EU_NG_ENG.jpg" width="45%">
 &nbsp; &nbsp; &nbsp; &nbsp;
-  <img alt="PRTR" src="../logo_PRTR.jpg" width="50%">
+  <img alt="PRTR" src="../logo_PRTR.jpg" width="45%">
 </p>
