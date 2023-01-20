@@ -29,5 +29,12 @@ The CC Plugin is at: [Plugin Repository](https://plugins.qgis.org/plugins/Cadast
 
 The user handbook is at: [Handbook](https://github.com/TransUrban-UAH/Cadastral_Classifier/blob/main/manual_de_usuario.pdf)
 
+### Funding
 
+<img src="logo_CI_AEI.jpg"/>
 
+<p align="center">
+  <img alt="Unón Europea - Next Generations" src="logo_EU_NG_ENG.jpg" width="45%">
+&nbsp; &nbsp; &nbsp; &nbsp;
+  <img alt="PRTR" src="logo_PRTR.jpg" width="50%">
+</p>
