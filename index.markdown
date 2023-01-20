@@ -32,8 +32,8 @@ El Manual del usuario se encuentra en: [Manual](https://github.com/TransUrban-UA
 ### Entidades financiadoras
 <img src="logo_CI_AEI.jpg"/>
 
-![alt-text-1](logo_EU_NG.jpg "title-1" =20%x) ![alt-text-2](logo_PRTR.jpg "title-2" =75%x)
-<p>
-  <img src="logo_EU_NG.jpg" width = "50%"/>
-  <img src="logo_PRTR.jpg" width = "70%"/>
+<p align="center">
+  <img alt="Unón Europea - Next Generations" src="logo_EU_NG.jpg" width="45%">
+&nbsp; &nbsp; &nbsp; &nbsp;
+  <img alt="PRTR" src="logo_PRTR.jpg" width="45%">
 </p>
