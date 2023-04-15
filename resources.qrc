@@ -1,5 +1,5 @@
 <RCC>
-    <qresource prefix="/plugins/cadastral_analyst_v11_vAlfa">
+    <qresource prefix="/plugins/cadastral_classifier">
         <file>icon.jpg</file>
         <file>folder_icon.jpg</file>
         <file>arrow_left_icon.png</file>

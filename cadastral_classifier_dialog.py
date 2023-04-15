@@ -8,8 +8,8 @@
                              -------------------
         begin                : 2021-07-22
         git sha              : $Format:%H$
-        copyright            : (C) 2021 by yo
-        email                : 1
+        copyright            : (C) 2021 by Nikolai Shurupov
+        email                : nikolai.shurupov@uah.es
  ***************************************************************************/
 
 /***************************************************************************
@@ -24,8 +24,7 @@
 
 import os
 
-from qgis.PyQt import uic
-from qgis.PyQt import QtWidgets
+from qgis.PyQt import uic, QtWidgets
 
 # This loads your .ui file so that PyQt can populate your plugin with the elements from Qt Designer
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
@@ -41,3 +40,8 @@ class cadastral_classifierDialog(QtWidgets.QDockWidget, FORM_CLASS):
         # http://qt-project.org/doc/qt-4.8/designer-using-a-ui-file.html
         # #widgets-and-dialogs-with-auto-connect
         self.setupUi(self)
+    
+
+        
+        
+

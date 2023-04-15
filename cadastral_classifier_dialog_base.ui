@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1187</width>
-    <height>789</height>
+    <width>1018</width>
+    <height>842</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -18,8 +18,8 @@
   </property>
   <property name="minimumSize">
    <size>
-    <width>1187</width>
-    <height>789</height>
+    <width>1018</width>
+    <height>842</height>
    </size>
   </property>
   <property name="maximumSize">
@@ -49,9 +49,27 @@
    <string>Clasificador Catastral</string>
   </property>
   <widget class="QWidget" name="Content_DockW">
-   <layout class="QVBoxLayout" name="verticalLayout_89">
+   <layout class="QHBoxLayout" name="horizontalLayout_38">
     <item>
-     <widget class="QTabWidget" name="Boxes">
+     <widget class="QTabWidget" name="Main">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>1000</width>
+        <height>800</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>16777215</width>
+        <height>16777215</height>
+       </size>
+      </property>
       <property name="font">
        <font>
         <pointsize>10</pointsize>
@@ -71,7 +89,73 @@
         <item>
          <layout class="QVBoxLayout" name="Vertical_quadrant_1">
           <item>
-           <widget class="QWidget" name="widget_3" native="true">
+           <widget class="QGroupBox" name="groupBox_clasif_option_2">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="title">
+             <string/>
+            </property>
+            <layout class="QHBoxLayout" name="horizontalLayout_25">
+             <property name="sizeConstraint">
+              <enum>QLayout::SetFixedSize</enum>
+             </property>
+             <item>
+              <widget class="QRadioButton" name="option_multiple_mun_p1">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="text">
+                <string>VARIOS MUNICIPIOS</string>
+               </property>
+               <property name="checked">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QRadioButton" name="option_single_mun_p1">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="text">
+                <string>ÚNICO MUNICIPIO</string>
+               </property>
+               <property name="checked">
+                <bool>false</bool>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QCheckBox" name="Option_include_rural">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="cursor">
+                <cursorShape>ArrowCursor</cursorShape>
+               </property>
+               <property name="text">
+                <string>Añadir datos rústicos</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item>
+           <widget class="QWidget" name="widget_opcion_U_multi" native="true">
             <layout class="QHBoxLayout" name="horizontalLayout_20">
              <property name="leftMargin">
               <number>0</number>
@@ -86,7 +170,95 @@
               <number>0</number>
              </property>
              <item>
-              <widget class="QGroupBox" name="Group_CAT_U">
+              <widget class="QGroupBox" name="Group_CAT_U_multi">
+               <property name="font">
+                <font>
+                 <pointsize>10</pointsize>
+                </font>
+               </property>
+               <property name="title">
+                <string>Información alfanumérica urbana (.zip)</string>
+               </property>
+               <property name="flat">
+                <bool>true</bool>
+               </property>
+               <layout class="QHBoxLayout" name="horizontalLayout_18">
+                <item>
+                 <widget class="QLineEdit" name="dir_cat_urb_multi"/>
+                </item>
+                <item>
+                 <widget class="QPushButton" name="button_cat_urb_multi">
+                  <property name="cursor">
+                   <cursorShape>PointingHandCursor</cursorShape>
+                  </property>
+                  <property name="text">
+                   <string/>
+                  </property>
+                  <property name="iconSize">
+                   <size>
+                    <width>20</width>
+                    <height>20</height>
+                   </size>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </widget>
+             </item>
+             <item>
+              <widget class="QGroupBox" name="Group_SHP_U_multi">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="title">
+                <string>Parcelario urbano (.zip)</string>
+               </property>
+               <layout class="QHBoxLayout" name="horizontalLayout_14">
+                <item>
+                 <widget class="QLineEdit" name="dir_shp_urb_multi"/>
+                </item>
+                <item>
+                 <widget class="QPushButton" name="button_shp_urb_multi">
+                  <property name="cursor">
+                   <cursorShape>PointingHandCursor</cursorShape>
+                  </property>
+                  <property name="text">
+                   <string/>
+                  </property>
+                  <property name="iconSize">
+                   <size>
+                    <width>20</width>
+                    <height>20</height>
+                   </size>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item>
+           <widget class="QWidget" name="widget_opcion_U_unique" native="true">
+            <layout class="QHBoxLayout" name="horizontalLayout_22">
+             <property name="leftMargin">
+              <number>0</number>
+             </property>
+             <property name="topMargin">
+              <number>0</number>
+             </property>
+             <property name="rightMargin">
+              <number>0</number>
+             </property>
+             <property name="bottomMargin">
+              <number>0</number>
+             </property>
+             <item>
+              <widget class="QGroupBox" name="Group_CAT_U_unique">
                <property name="font">
                 <font>
                  <pointsize>10</pointsize>
@@ -98,12 +270,12 @@
                <property name="flat">
                 <bool>true</bool>
                </property>
-               <layout class="QHBoxLayout" name="horizontalLayout_18">
+               <layout class="QHBoxLayout" name="horizontalLayout_35">
                 <item>
-                 <widget class="QLineEdit" name="dir_cat_urb"/>
+                 <widget class="QLineEdit" name="dir_cat_urb_unique"/>
                 </item>
                 <item>
-                 <widget class="QPushButton" name="button_cat_urb">
+                 <widget class="QPushButton" name="button_cat_urb_unique">
                   <property name="cursor">
                    <cursorShape>PointingHandCursor</cursorShape>
                   </property>
@@ -122,7 +294,7 @@
               </widget>
              </item>
              <item>
-              <widget class="QGroupBox" name="Group_SHP_U">
+              <widget class="QGroupBox" name="Group_SHP_U_unique">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                  <horstretch>0</horstretch>
@@ -132,12 +304,12 @@
                <property name="title">
                 <string>Parcelario urbano (.shp o .zip)</string>
                </property>
-               <layout class="QHBoxLayout" name="horizontalLayout_14">
+               <layout class="QHBoxLayout" name="horizontalLayout_15">
                 <item>
-                 <widget class="QLineEdit" name="dir_shp_urb"/>
+                 <widget class="QLineEdit" name="dir_shp_urb_unique"/>
                 </item>
                 <item>
-                 <widget class="QPushButton" name="button_shp_urb">
+                 <widget class="QPushButton" name="button_shp_urb_unique">
                   <property name="cursor">
                    <cursorShape>PointingHandCursor</cursorShape>
                   </property>
@@ -159,93 +331,208 @@
            </widget>
           </item>
           <item>
-           <widget class="QCheckBox" name="Option_include_rural">
-            <property name="cursor">
-             <cursorShape>ArrowCursor</cursorShape>
-            </property>
-            <property name="text">
-             <string>Añadir datos rústicos</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QFrame" name="frame">
-            <property name="enabled">
-             <bool>false</bool>
-            </property>
-            <property name="autoFillBackground">
-             <bool>true</bool>
+           <widget class="QFrame" name="frame_R_multi">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>100</height>
+             </size>
             </property>
             <property name="frameShape">
              <enum>QFrame::StyledPanel</enum>
             </property>
             <property name="frameShadow">
-             <enum>QFrame::Plain</enum>
+             <enum>QFrame::Raised</enum>
             </property>
-            <layout class="QHBoxLayout" name="horizontalLayout">
+            <layout class="QVBoxLayout" name="verticalLayout_3">
+             <property name="spacing">
+              <number>0</number>
+             </property>
+             <property name="leftMargin">
+              <number>0</number>
+             </property>
+             <property name="topMargin">
+              <number>0</number>
+             </property>
+             <property name="rightMargin">
+              <number>0</number>
+             </property>
+             <property name="bottomMargin">
+              <number>0</number>
+             </property>
              <item>
-              <widget class="QGroupBox" name="Group_CAT_R">
-               <property name="focusPolicy">
-                <enum>Qt::NoFocus</enum>
-               </property>
-               <property name="title">
-                <string>Información alfanumérica rústica (.CAT o .gz)</string>
-               </property>
-               <property name="flat">
+              <widget class="QFrame" name="frame_3">
+               <property name="enabled">
                 <bool>true</bool>
                </property>
-               <layout class="QHBoxLayout" name="horizontalLayout_19">
+               <property name="frameShape">
+                <enum>QFrame::StyledPanel</enum>
+               </property>
+               <property name="frameShadow">
+                <enum>QFrame::Raised</enum>
+               </property>
+               <layout class="QHBoxLayout" name="horizontalLayout_3">
                 <item>
-                 <widget class="QLineEdit" name="dir_cat_rust"/>
+                 <widget class="QGroupBox" name="Group_CAT_R_unique">
+                  <property name="enabled">
+                   <bool>false</bool>
+                  </property>
+                  <property name="focusPolicy">
+                   <enum>Qt::NoFocus</enum>
+                  </property>
+                  <property name="title">
+                   <string>Información alfanumérica rústica (.CAT o .gz)</string>
+                  </property>
+                  <property name="flat">
+                   <bool>true</bool>
+                  </property>
+                  <layout class="QHBoxLayout" name="horizontalLayout_36">
+                   <item>
+                    <widget class="QLineEdit" name="dir_cat_rust_unique"/>
+                   </item>
+                   <item>
+                    <widget class="QPushButton" name="button_cat_rust_unique">
+                     <property name="cursor">
+                      <cursorShape>PointingHandCursor</cursorShape>
+                     </property>
+                     <property name="text">
+                      <string/>
+                     </property>
+                     <property name="iconSize">
+                      <size>
+                       <width>20</width>
+                       <height>20</height>
+                      </size>
+                     </property>
+                    </widget>
+                   </item>
+                  </layout>
+                 </widget>
                 </item>
                 <item>
-                 <widget class="QPushButton" name="button_cat_rust">
-                  <property name="cursor">
-                   <cursorShape>PointingHandCursor</cursorShape>
+                 <widget class="QGroupBox" name="Group_SHP_R_unique">
+                  <property name="enabled">
+                   <bool>false</bool>
                   </property>
-                  <property name="text">
-                   <string/>
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
                   </property>
-                  <property name="iconSize">
-                   <size>
-                    <width>20</width>
-                    <height>20</height>
-                   </size>
+                  <property name="title">
+                   <string>Parcelario rústico (.shp o .zip)</string>
                   </property>
+                  <layout class="QHBoxLayout" name="horizontalLayout_37">
+                   <item>
+                    <widget class="QLineEdit" name="dir_shp_rust_unique"/>
+                   </item>
+                   <item>
+                    <widget class="QPushButton" name="button_shp_rust_unique">
+                     <property name="cursor">
+                      <cursorShape>PointingHandCursor</cursorShape>
+                     </property>
+                     <property name="text">
+                      <string/>
+                     </property>
+                     <property name="iconSize">
+                      <size>
+                       <width>20</width>
+                       <height>20</height>
+                      </size>
+                     </property>
+                    </widget>
+                   </item>
+                  </layout>
                  </widget>
                 </item>
                </layout>
               </widget>
              </item>
              <item>
-              <widget class="QGroupBox" name="Group_SHP_R">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
+              <widget class="QFrame" name="frame_5">
+               <property name="enabled">
+                <bool>true</bool>
                </property>
-               <property name="title">
-                <string>Parcelario rústico (.shp o .zip)</string>
+               <property name="frameShape">
+                <enum>QFrame::StyledPanel</enum>
                </property>
-               <layout class="QHBoxLayout" name="horizontalLayout_27">
+               <property name="frameShadow">
+                <enum>QFrame::Raised</enum>
+               </property>
+               <layout class="QHBoxLayout" name="horizontalLayout_6">
                 <item>
-                 <widget class="QLineEdit" name="dir_shp_rust"/>
+                 <widget class="QGroupBox" name="Group_CAT_R_multi">
+                  <property name="enabled">
+                   <bool>false</bool>
+                  </property>
+                  <property name="focusPolicy">
+                   <enum>Qt::NoFocus</enum>
+                  </property>
+                  <property name="title">
+                   <string>Información alfanumérica rústica (.zip)</string>
+                  </property>
+                  <property name="flat">
+                   <bool>true</bool>
+                  </property>
+                  <layout class="QHBoxLayout" name="horizontalLayout_19">
+                   <item>
+                    <widget class="QLineEdit" name="dir_cat_rust_multi"/>
+                   </item>
+                   <item>
+                    <widget class="QPushButton" name="button_cat_rust_multi">
+                     <property name="cursor">
+                      <cursorShape>PointingHandCursor</cursorShape>
+                     </property>
+                     <property name="text">
+                      <string/>
+                     </property>
+                     <property name="iconSize">
+                      <size>
+                       <width>20</width>
+                       <height>20</height>
+                      </size>
+                     </property>
+                    </widget>
+                   </item>
+                  </layout>
+                 </widget>
                 </item>
                 <item>
-                 <widget class="QPushButton" name="button_shp_rust">
-                  <property name="cursor">
-                   <cursorShape>PointingHandCursor</cursorShape>
+                 <widget class="QGroupBox" name="Group_SHP_R_multi">
+                  <property name="enabled">
+                   <bool>false</bool>
                   </property>
-                  <property name="text">
-                   <string/>
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
                   </property>
-                  <property name="iconSize">
-                   <size>
-                    <width>20</width>
-                    <height>20</height>
-                   </size>
+                  <property name="title">
+                   <string>Parcelario rústico (.zip)</string>
                   </property>
+                  <layout class="QHBoxLayout" name="horizontalLayout_27">
+                   <item>
+                    <widget class="QLineEdit" name="dir_shp_rust_multi"/>
+                   </item>
+                   <item>
+                    <widget class="QPushButton" name="button_shp_rust_multi">
+                     <property name="cursor">
+                      <cursorShape>PointingHandCursor</cursorShape>
+                     </property>
+                     <property name="text">
+                      <string/>
+                     </property>
+                     <property name="iconSize">
+                      <size>
+                       <width>20</width>
+                       <height>20</height>
+                      </size>
+                     </property>
+                    </widget>
+                   </item>
+                  </layout>
                  </widget>
                 </item>
                </layout>
@@ -255,26 +542,16 @@
            </widget>
           </item>
           <item>
-           <spacer name="horizontalSpacer_2">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>40</width>
-              <height>20</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-          <item>
-           <widget class="QGroupBox" name="Group_SHP_output_edif">
+           <widget class="QGroupBox" name="Group_output_wd_edif">
             <property name="title">
-             <string>Nombre del archivo de salida (.shp) </string>
+             <string>Directorio de trabajo para el guardado de ficheros resultantes</string>
+            </property>
+            <property name="flat">
+             <bool>true</bool>
             </property>
             <layout class="QHBoxLayout" name="horizontalLayout_26">
              <item>
-              <widget class="QLineEdit" name="dir_result"/>
+              <widget class="QLineEdit" name="dir_output_result_p1"/>
              </item>
              <item>
               <widget class="QPushButton" name="button_output_result_edif">
@@ -296,17 +573,100 @@
            </widget>
           </item>
           <item>
-           <spacer name="horizontalSpacer">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
+           <widget class="QFrame" name="frame_seleccion_mun">
+            <property name="enabled">
+             <bool>false</bool>
             </property>
-            <property name="sizeHint" stdset="0">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
              <size>
-              <width>40</width>
-              <height>20</height>
+              <width>0</width>
+              <height>100</height>
              </size>
             </property>
-           </spacer>
+            <property name="frameShape">
+             <enum>QFrame::StyledPanel</enum>
+            </property>
+            <property name="frameShadow">
+             <enum>QFrame::Raised</enum>
+            </property>
+            <layout class="QVBoxLayout" name="verticalLayout_26">
+             <item>
+              <layout class="QHBoxLayout" name="horizontalLayout_filter">
+               <item>
+                <widget class="QLineEdit" name="filtro_mun"/>
+               </item>
+               <item>
+                <widget class="QPushButton" name="button_selec_todos_mun">
+                 <property name="cursor">
+                  <cursorShape>PointingHandCursor</cursorShape>
+                 </property>
+                 <property name="text">
+                  <string>Seleccionar todos</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QPushButton" name="button_deselec_todos_mun">
+                 <property name="cursor">
+                  <cursorShape>PointingHandCursor</cursorShape>
+                 </property>
+                 <property name="text">
+                  <string>Borrar todos</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+             <item>
+              <layout class="QHBoxLayout" name="horizontalLayout_filter_info">
+               <item>
+                <widget class="QListWidget" name="mun_list">
+                 <property name="mouseTracking">
+                  <bool>true</bool>
+                 </property>
+                 <property name="tabletTracking">
+                  <bool>true</bool>
+                 </property>
+                 <property name="contextMenuPolicy">
+                  <enum>Qt::CustomContextMenu</enum>
+                 </property>
+                 <property name="acceptDrops">
+                  <bool>false</bool>
+                 </property>
+                 <property name="editTriggers">
+                  <set>QAbstractItemView::AnyKeyPressed|QAbstractItemView::CurrentChanged</set>
+                 </property>
+                 <property name="sortingEnabled">
+                  <bool>false</bool>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QListWidget" name="mun_list_selected">
+                 <property name="contextMenuPolicy">
+                  <enum>Qt::CustomContextMenu</enum>
+                 </property>
+                 <property name="frameShape">
+                  <enum>QFrame::StyledPanel</enum>
+                 </property>
+                 <property name="frameShadow">
+                  <enum>QFrame::Sunken</enum>
+                 </property>
+                 <property name="sortingEnabled">
+                  <bool>false</bool>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+            </layout>
+           </widget>
           </item>
           <item>
            <widget class="QCheckBox" name="Option_other_tables">
@@ -596,31 +956,49 @@ p, li { white-space: pre-wrap; }
         <item>
          <layout class="QVBoxLayout" name="verticalLayout">
           <item>
-           <widget class="QGroupBox" name="Box_input_edif">
-            <property name="title">
-             <string>Archivo vectorial generado en el módulo Tratamiento de datos (.shp)</string>
+           <widget class="QGroupBox" name="groupBox_clasif_option_3">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
             </property>
-            <layout class="QHBoxLayout" name="horizontalLayout_3">
+            <property name="title">
+             <string/>
+            </property>
+            <layout class="QHBoxLayout" name="horizontalLayout_48">
+             <property name="sizeConstraint">
+              <enum>QLayout::SetFixedSize</enum>
+             </property>
              <item>
-              <widget class="QLineEdit" name="dir_input_edif"/>
-             </item>
-             <item>
-              <widget class="QPushButton" name="button_input_edif">
-               <property name="cursor">
-                <cursorShape>PointingHandCursor</cursorShape>
+              <widget class="QRadioButton" name="option_multiple_mun_p2">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
                </property>
                <property name="text">
-                <string/>
+                <string>VARIOS MUNICIPIOS</string>
                </property>
-               <property name="icon">
-                <iconset>
-                 <normaloff>folder_icon.jpg</normaloff>folder_icon.jpg</iconset>
+               <property name="checked">
+                <bool>true</bool>
                </property>
-               <property name="iconSize">
-                <size>
-                 <width>20</width>
-                 <height>20</height>
-                </size>
+              </widget>
+             </item>
+             <item>
+              <widget class="QRadioButton" name="option_single_mun_p2">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="text">
+                <string>ÚNICO MUNICIPIO</string>
+               </property>
+               <property name="checked">
+                <bool>false</bool>
                </property>
               </widget>
              </item>
@@ -628,62 +1006,186 @@ p, li { white-space: pre-wrap; }
            </widget>
           </item>
           <item>
-           <spacer name="horizontalSpacer_4">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
+           <widget class="QWidget" name="Widget_multiple_mun_p2" native="true">
+            <property name="enabled">
+             <bool>true</bool>
             </property>
-            <property name="sizeHint" stdset="0">
+            <property name="minimumSize">
              <size>
-              <width>40</width>
-              <height>20</height>
+              <width>0</width>
+              <height>0</height>
              </size>
             </property>
-           </spacer>
-          </item>
-          <item>
-           <widget class="QGroupBox" name="groupBox_output2">
-            <property name="title">
-             <string>Nombre del archivo de salida (.shp)</string>
+            <property name="cursor">
+             <cursorShape>SizeHorCursor</cursorShape>
             </property>
-            <layout class="QHBoxLayout" name="horizontalLayout_6">
+            <property name="autoFillBackground">
+             <bool>false</bool>
+            </property>
+            <layout class="QHBoxLayout" name="horizontalLayout_40">
+             <property name="leftMargin">
+              <number>0</number>
+             </property>
+             <property name="topMargin">
+              <number>0</number>
+             </property>
+             <property name="rightMargin">
+              <number>0</number>
+             </property>
+             <property name="bottomMargin">
+              <number>0</number>
+             </property>
              <item>
-              <widget class="QLineEdit" name="dir_output_clsasification"/>
+              <widget class="QGroupBox" name="Group_SHP_R_3">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="title">
+                <string>Introduzca el directorio con los arcuhivos procesados de cada municipio</string>
+               </property>
+               <layout class="QHBoxLayout" name="horizontalLayout_46">
+                <item>
+                 <widget class="QLineEdit" name="dir_root_multi_p2"/>
+                </item>
+                <item>
+                 <widget class="QPushButton" name="button_root_multi_p2">
+                  <property name="cursor">
+                   <cursorShape>PointingHandCursor</cursorShape>
+                  </property>
+                  <property name="text">
+                   <string/>
+                  </property>
+                  <property name="iconSize">
+                   <size>
+                    <width>20</width>
+                    <height>20</height>
+                   </size>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </widget>
              </item>
              <item>
-              <widget class="QPushButton" name="button_output_clsasification">
-               <property name="cursor">
-                <cursorShape>PointingHandCursor</cursorShape>
+              <widget class="QGroupBox" name="Group_suffix_multi_p2">
+               <property name="focusPolicy">
+                <enum>Qt::NoFocus</enum>
                </property>
-               <property name="text">
-                <string/>
+               <property name="title">
+                <string>Introduzca un nombre para el fichero resultante de la clasificación para cada municipio</string>
                </property>
-               <property name="icon">
-                <iconset>
-                 <normaloff>folder_icon.jpg</normaloff>folder_icon.jpg</iconset>
+               <property name="flat">
+                <bool>true</bool>
                </property>
-               <property name="iconSize">
-                <size>
-                 <width>20</width>
-                 <height>20</height>
-                </size>
-               </property>
+               <layout class="QHBoxLayout" name="horizontalLayout_47">
+                <item>
+                 <widget class="QLineEdit" name="string_suffix_multi_p2"/>
+                </item>
+               </layout>
               </widget>
              </item>
             </layout>
            </widget>
           </item>
           <item>
-           <spacer name="horizontalSpacer_5">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
+           <widget class="QWidget" name="Widget_single_mun_p2" native="true">
+            <property name="minimumSize">
              <size>
-              <width>40</width>
-              <height>20</height>
+              <width>0</width>
+              <height>0</height>
              </size>
             </property>
-           </spacer>
+            <property name="cursor">
+             <cursorShape>SizeFDiagCursor</cursorShape>
+            </property>
+            <layout class="QHBoxLayout" name="horizontalLayout_7">
+             <property name="leftMargin">
+              <number>0</number>
+             </property>
+             <property name="topMargin">
+              <number>0</number>
+             </property>
+             <property name="rightMargin">
+              <number>0</number>
+             </property>
+             <property name="bottomMargin">
+              <number>0</number>
+             </property>
+             <item>
+              <widget class="QGroupBox" name="Group_root_unique_p2">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="title">
+                <string>Introduzca el fichero procesado del municipio de estudio</string>
+               </property>
+               <layout class="QHBoxLayout" name="horizontalLayout_44">
+                <item>
+                 <widget class="QLineEdit" name="dir_edif_unique_p2"/>
+                </item>
+                <item>
+                 <widget class="QPushButton" name="button_edif_unique_p2">
+                  <property name="cursor">
+                   <cursorShape>PointingHandCursor</cursorShape>
+                  </property>
+                  <property name="text">
+                   <string/>
+                  </property>
+                  <property name="iconSize">
+                   <size>
+                    <width>20</width>
+                    <height>20</height>
+                   </size>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </widget>
+             </item>
+             <item>
+              <widget class="QGroupBox" name="Group_suffix_unique_p2">
+               <property name="font">
+                <font>
+                 <pointsize>10</pointsize>
+                </font>
+               </property>
+               <property name="title">
+                <string>Introduzca la ruta para el fichero resultante de la clasificación</string>
+               </property>
+               <property name="flat">
+                <bool>true</bool>
+               </property>
+               <layout class="QHBoxLayout" name="horizontalLayout_45">
+                <item>
+                 <widget class="QLineEdit" name="dir_clasif_result_unique_p2"/>
+                </item>
+                <item>
+                 <widget class="QPushButton" name="button_clasif_result_unique_p2">
+                  <property name="cursor">
+                   <cursorShape>PointingHandCursor</cursorShape>
+                  </property>
+                  <property name="text">
+                   <string/>
+                  </property>
+                  <property name="iconSize">
+                   <size>
+                    <width>20</width>
+                    <height>20</height>
+                   </size>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </widget>
+             </item>
+            </layout>
+           </widget>
           </item>
           <item>
            <widget class="QGroupBox" name="groupBox_clasif_option">
@@ -718,6 +1220,13 @@ p, li { white-space: pre-wrap; }
               <widget class="QRadioButton" name="option_advanced_clasif">
                <property name="text">
                 <string>Clasificación avanzada</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QCheckBox" name="checkbox_zonas_verdes">
+               <property name="text">
+                <string>Aplicar correción de zonas verdes urbanas</string>
                </property>
               </widget>
              </item>
@@ -810,7 +1319,7 @@ p, li { white-space: pre-wrap; }
                     <rect>
                      <x>0</x>
                      <y>0</y>
-                     <width>739</width>
+                     <width>570</width>
                      <height>204</height>
                     </rect>
                    </property>
@@ -1043,7 +1552,7 @@ p, li { white-space: pre-wrap; }
                     <rect>
                      <x>0</x>
                      <y>0</y>
-                     <width>739</width>
+                     <width>570</width>
                      <height>534</height>
                     </rect>
                    </property>
@@ -6879,6 +7388,168 @@ p, li { white-space: pre-wrap; }
         </item>
        </layout>
       </widget>
+      <widget class="QWidget" name="Box_info">
+       <attribute name="title">
+        <string>A cerca de</string>
+       </attribute>
+       <layout class="QHBoxLayout" name="horizontalLayout_39">
+        <item>
+         <layout class="QGridLayout" name="gridLayout">
+          <item row="0" column="0">
+           <widget class="QFrame" name="frame_6">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>800</width>
+              <height>500</height>
+             </size>
+            </property>
+            <property name="frameShape">
+             <enum>QFrame::NoFrame</enum>
+            </property>
+            <property name="frameShadow">
+             <enum>QFrame::Plain</enum>
+            </property>
+            <layout class="QVBoxLayout" name="verticalLayout_28">
+             <item>
+              <widget class="QTextBrowser" name="textBrowser">
+               <property name="autoFillBackground">
+                <bool>true</bool>
+               </property>
+               <property name="frameShape">
+                <enum>QFrame::NoFrame</enum>
+               </property>
+               <property name="frameShadow">
+                <enum>QFrame::Plain</enum>
+               </property>
+               <property name="html">
+                <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:20px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; background-color:#ffffff;&quot;&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2,sans-serif'; font-size:12pt;&quot;&gt;Clasificador Catastral (&lt;/span&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2,sans-serif'; font-size:12pt; font-style:italic;&quot;&gt;Cadastral Classifier, &lt;/span&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2,sans-serif'; font-size:12pt;&quot;&gt;CC) se ha desarrollado bajo la versión 3.16 de QGIS, que incluye una instalación de &lt;/span&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2,sans-serif'; font-size:12pt; font-style:italic;&quot;&gt;Python&lt;/span&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2,sans-serif'; font-size:12pt;&quot;&gt; 3.7, con la que se programaron los algoritmos y &lt;/span&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2,sans-serif'; font-size:12pt; font-style:italic;&quot;&gt;QT Designer&lt;/span&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2,sans-serif'; font-size:12pt;&quot;&gt;, con el que se diseñó de la interfaz.&lt;/span&gt;&lt;/p&gt;
+&lt;h3 style=&quot; margin-top:0px; margin-bottom:20px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; line-height:110%; background-color:#ffffff;&quot;&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2,sans-serif'; font-size:12pt; font-weight:600;&quot;&gt;Enlaces de interés:&lt;/span&gt;&lt;/h3&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2,sans-serif'; font-size:12pt;&quot;&gt;La información de entrada necesaria debe ser adquirida por medio del &lt;/span&gt;&lt;a href=&quot;https://www.sedecatastro.gob.es/&quot;&gt;&lt;span style=&quot; font-size:12pt; font-weight:600; text-decoration: underline; color:#0000ff;&quot;&gt;Canal oficial de la Dirección General del Catastro (DGC)&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2,sans-serif'; font-size:12pt;&quot;&gt;Para más ayuda sobre la adquisición de los datos, así como para obtener información más detallada de la herramienta, puede consultar y/o descargar el&lt;/span&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2,sans-serif'; font-size:12pt; font-weight:600;&quot;&gt; &lt;/span&gt;&lt;a href=&quot;https://github.com/TransUrban-UAH/Cadastral_Classifier/blob/main/manual_de_usuario.pdf&quot;&gt;&lt;span style=&quot; font-size:12pt; font-weight:600; text-decoration: underline; color:#0000ff;&quot;&gt;Manual de usuario&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2,sans-serif'; font-size:12pt;&quot;&gt;Para consultar el código fuente de la herramienta puede acudir al &lt;/span&gt;&lt;a href=&quot;https://github.com/TransUrban-UAH/Cadastral_Classifier&quot;&gt;&lt;span style=&quot; font-size:12pt; font-weight:600; text-decoration: underline; color:#0000ff;&quot;&gt;Repositorio de GitHub&lt;/span&gt;&lt;/a&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+               </property>
+               <property name="openExternalLinks">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QFrame" name="frame_7">
+            <property name="frameShape">
+             <enum>QFrame::NoFrame</enum>
+            </property>
+            <property name="frameShadow">
+             <enum>QFrame::Plain</enum>
+            </property>
+            <layout class="QHBoxLayout" name="horizontalLayout">
+             <item>
+              <widget class="QLabel" name="label_logo_min_innov">
+               <property name="maximumSize">
+                <size>
+                 <width>16777215</width>
+                 <height>16777215</height>
+                </size>
+               </property>
+               <property name="text">
+                <string/>
+               </property>
+               <property name="scaledContents">
+                <bool>false</bool>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignCenter</set>
+               </property>
+               <property name="openExternalLinks">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="label_logo_AEI">
+               <property name="maximumSize">
+                <size>
+                 <width>16777215</width>
+                 <height>16777215</height>
+                </size>
+               </property>
+               <property name="text">
+                <string/>
+               </property>
+               <property name="scaledContents">
+                <bool>false</bool>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignCenter</set>
+               </property>
+               <property name="openExternalLinks">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="label_logo_PRTR">
+               <property name="maximumSize">
+                <size>
+                 <width>16777215</width>
+                 <height>16777215</height>
+                </size>
+               </property>
+               <property name="text">
+                <string/>
+               </property>
+               <property name="scaledContents">
+                <bool>false</bool>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignCenter</set>
+               </property>
+               <property name="openExternalLinks">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="label_logo_EU_NG">
+               <property name="maximumSize">
+                <size>
+                 <width>16777215</width>
+                 <height>16777215</height>
+                </size>
+               </property>
+               <property name="text">
+                <string/>
+               </property>
+               <property name="scaledContents">
+                <bool>false</bool>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignCenter</set>
+               </property>
+               <property name="openExternalLinks">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </widget>
      </widget>
     </item>
    </layout>
@@ -6887,354 +7558,146 @@ p, li { white-space: pre-wrap; }
  <resources/>
  <connections>
   <connection>
-   <sender>option_advanced_clasif</sender>
-   <signal>clicked(bool)</signal>
-   <receiver>Box_intermediate_clasif</receiver>
-   <slot>setHidden(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>1160</x>
-     <y>305</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>416</x>
-     <y>1040</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>option_intermediate_clasif</sender>
-   <signal>clicked(bool)</signal>
-   <receiver>Box_basic_clasif</receiver>
-   <slot>setHidden(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>549</x>
-     <y>305</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>191</x>
-     <y>437</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>option_intermediate_clasif</sender>
-   <signal>clicked(bool)</signal>
-   <receiver>Box_intermediate_clasif</receiver>
-   <slot>setVisible(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>549</x>
-     <y>305</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>416</x>
-     <y>1040</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>Option_include_rural</sender>
-   <signal>clicked(bool)</signal>
-   <receiver>frame</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>359</x>
-     <y>153</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>309</x>
-     <y>239</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>option_advanced_clasif</sender>
-   <signal>clicked(bool)</signal>
-   <receiver>Box_basic_clasif</receiver>
-   <slot>setHidden(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>1160</x>
-     <y>305</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>167</x>
-     <y>437</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>option_basic_clasif</sender>
-   <signal>clicked(bool)</signal>
-   <receiver>Box_advanced_clasif</receiver>
-   <slot>setHidden(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>176</x>
-     <y>305</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>422</x>
-     <y>1430</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>option_advanced_clasif</sender>
-   <signal>clicked(bool)</signal>
-   <receiver>Box_advanced_clasif</receiver>
-   <slot>setVisible(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>1160</x>
-     <y>305</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>422</x>
-     <y>1430</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>option_basic_clasif</sender>
-   <signal>clicked(bool)</signal>
-   <receiver>Box_basic_clasif</receiver>
-   <slot>setVisible(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>150</x>
-     <y>305</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>128</x>
-     <y>351</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>option_basic_clasif</sender>
-   <signal>clicked(bool)</signal>
-   <receiver>Box_intermediate_clasif</receiver>
-   <slot>setHidden(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>176</x>
-     <y>305</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>416</x>
-     <y>1040</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>option_intermediate_clasif</sender>
-   <signal>clicked(bool)</signal>
-   <receiver>Box_advanced_clasif</receiver>
-   <slot>setHidden(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>549</x>
-     <y>305</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>422</x>
-     <y>1430</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>Option_include_rural</sender>
-   <signal>clicked(bool)</signal>
-   <receiver>Group_CAT_R</receiver>
-   <slot>setVisible(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>313</x>
-     <y>153</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>257</x>
-     <y>229</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>pushButton_3</sender>
-   <signal>clicked(bool)</signal>
-   <receiver>help_panel_2</receiver>
-   <slot>setVisible(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>1335</x>
-     <y>1505</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>1421</x>
-     <y>740</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>option_basic_clasif</sender>
-   <signal>clicked(bool)</signal>
-   <receiver>tab_info_basic_categories</receiver>
-   <slot>setVisible(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>137</x>
-     <y>305</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>1660</x>
-     <y>778</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>option_intermediate_clasif</sender>
-   <signal>clicked(bool)</signal>
-   <receiver>tab_info_intermediate_categories</receiver>
-   <slot>setVisible(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>549</x>
-     <y>305</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>1660</x>
-     <y>1134</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>option_basic_clasif</sender>
-   <signal>clicked(bool)</signal>
-   <receiver>tab_info_intermediate_categories</receiver>
-   <slot>setHidden(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>184</x>
-     <y>305</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>1660</x>
-     <y>1134</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>option_intermediate_clasif</sender>
-   <signal>clicked(bool)</signal>
-   <receiver>tab_info_basic_categories</receiver>
-   <slot>setHidden(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>549</x>
-     <y>305</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>1660</x>
-     <y>778</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>slider_threshold_not_built</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>value_threshold_not_built</receiver>
-   <slot>setNum(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>425</x>
-     <y>797</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>309</x>
-     <y>797</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>Checkbox_threshold_not_built</sender>
-   <signal>clicked(bool)</signal>
-   <receiver>frame_threshold_not_built</receiver>
-   <slot>setVisible(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>259</x>
-     <y>778</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>435</x>
-     <y>773</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>Checkbox_resi_uni_mix</sender>
-   <signal>clicked(bool)</signal>
+   <sender>Checkbox_resi_unif</sender>
+   <signal>clicked()</signal>
    <receiver>frame_threshold_uni_mx</receiver>
-   <slot>setVisible(bool)</slot>
+   <slot>hide()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>259</x>
-     <y>868</y>
+     <x>191</x>
+     <y>653</y>
     </hint>
     <hint type="destinationlabel">
      <x>435</x>
-     <y>838</y>
+     <y>678</y>
     </hint>
    </hints>
   </connection>
   <connection>
-   <sender>Checkbox_resi_plu_mix</sender>
+   <sender>pushButton</sender>
    <signal>clicked(bool)</signal>
-   <receiver>frame_threshold_plu_mx</receiver>
+   <receiver>help_panel_1</receiver>
    <slot>setVisible(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>259</x>
-     <y>942</y>
+     <x>644</x>
+     <y>809</y>
     </hint>
     <hint type="destinationlabel">
-     <x>435</x>
-     <y>907</y>
+     <x>995</x>
+     <y>767</y>
     </hint>
    </hints>
   </connection>
   <connection>
-   <sender>slider_threshold_uni</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>value_threshold_uni</receiver>
-   <slot>setNum(int)</slot>
+   <sender>option_basic_clasif</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>Box_intermediate_clasif</receiver>
+   <slot>setHidden(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>425</x>
-     <y>862</y>
+     <x>143</x>
+     <y>280</y>
     </hint>
     <hint type="destinationlabel">
-     <x>309</x>
-     <y>862</y>
+     <x>123</x>
+     <y>573</y>
     </hint>
    </hints>
   </connection>
   <connection>
-   <sender>slider_threshold_plu</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>value_threshold_plu</receiver>
-   <slot>setNum(int)</slot>
+   <sender>option_intermediate_clasif</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>tab_info_basic_categories</receiver>
+   <slot>setHidden(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>425</x>
-     <y>931</y>
+     <x>324</x>
+     <y>280</y>
     </hint>
     <hint type="destinationlabel">
-     <x>309</x>
-     <y>931</y>
+     <x>969</x>
+     <y>922</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>option_intermediate_clasif</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>tab_info_basic_categories</receiver>
+   <slot>setHidden(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>324</x>
+     <y>280</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>969</x>
+     <y>922</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>Option_other_tables</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>Group_table_selection</receiver>
+   <slot>setVisible(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>348</x>
+     <y>529</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>352</x>
+     <y>685</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>option_advanced_clasif</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>Box_basic_clasif</receiver>
+   <slot>setHidden(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>481</x>
+     <y>280</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>120</x>
+     <y>403</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>option_advanced_clasif</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>Box_intermediate_clasif</receiver>
+   <slot>setHidden(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>481</x>
+     <y>280</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>123</x>
+     <y>573</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>Checkbox_resi_plu</sender>
+   <signal>clicked()</signal>
+   <receiver>Checkbox_resi_plu_mix</receiver>
+   <slot>click()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>191</x>
+     <y>722</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>207</x>
+     <y>748</y>
     </hint>
    </hints>
   </connection>
@@ -7246,11 +7709,27 @@ p, li { white-space: pre-wrap; }
    <hints>
     <hint type="sourcelabel">
      <x>425</x>
-     <y>1005</y>
+     <y>811</y>
     </hint>
     <hint type="destinationlabel">
      <x>309</x>
-     <y>1005</y>
+     <y>811</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>option_basic_clasif</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>Box_advanced_clasif</receiver>
+   <slot>setHidden(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>143</x>
+     <y>280</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>126</x>
+     <y>734</y>
     </hint>
    </hints>
   </connection>
@@ -7261,92 +7740,12 @@ p, li { white-space: pre-wrap; }
    <slot>setVisible(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>259</x>
-     <y>1016</y>
+     <x>251</x>
+     <y>822</y>
     </hint>
     <hint type="destinationlabel">
      <x>435</x>
-     <y>981</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>Checkbox_resi_unif</sender>
-   <signal>clicked(bool)</signal>
-   <receiver>Checkbox_resi_uni_mix</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>259</x>
-     <y>847</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>259</x>
-     <y>868</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>Checkbox_resi_unif</sender>
-   <signal>clicked()</signal>
-   <receiver>frame_threshold_uni_mx</receiver>
-   <slot>hide()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>259</x>
-     <y>847</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>435</x>
-     <y>838</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>Checkbox_resi_plu</sender>
-   <signal>clicked(bool)</signal>
-   <receiver>Checkbox_resi_plu_mix</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>259</x>
-     <y>916</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>259</x>
-     <y>942</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>Checkbox_resi_plu</sender>
-   <signal>clicked()</signal>
-   <receiver>frame_threshold_plu_mx</receiver>
-   <slot>hide()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>259</x>
-     <y>916</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>435</x>
-     <y>907</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>Checkbox_Indus_2</sender>
-   <signal>clicked(bool)</signal>
-   <receiver>Checkbox_Indus_mix</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>259</x>
-     <y>990</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>259</x>
-     <y>1016</y>
+     <y>821</y>
     </hint>
    </hints>
   </connection>
@@ -7357,108 +7756,28 @@ p, li { white-space: pre-wrap; }
    <slot>hide()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>259</x>
-     <y>990</y>
+     <x>191</x>
+     <y>796</y>
     </hint>
     <hint type="destinationlabel">
      <x>435</x>
-     <y>981</y>
+     <y>821</y>
     </hint>
    </hints>
   </connection>
   <connection>
-   <sender>Option_include_rural</sender>
+   <sender>pushButton_3</sender>
    <signal>clicked(bool)</signal>
-   <receiver>Group_SHP_R</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>504</x>
-     <y>153</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>812</x>
-     <y>229</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>Option_include_rural</sender>
-   <signal>clicked(bool)</signal>
-   <receiver>Group_SHP_R</receiver>
+   <receiver>help_panel_2</receiver>
    <slot>setVisible(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>640</x>
-     <y>153</y>
+     <x>644</x>
+     <y>809</y>
     </hint>
     <hint type="destinationlabel">
-     <x>812</x>
-     <y>229</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>Checkbox_threshold_not_built_2</sender>
-   <signal>clicked(bool)</signal>
-   <receiver>frame_threshold_not_built_2</receiver>
-   <slot>setVisible(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>893</x>
-     <y>1399</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>1069</x>
-     <y>1394</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>slider_threshold_not_built_2</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>value_threshold_not_built_2</receiver>
-   <slot>setNum(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>1059</x>
-     <y>1384</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>943</x>
-     <y>1384</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>pushButton</sender>
-   <signal>clicked(bool)</signal>
-   <receiver>help_panel_1</receiver>
-   <slot>setVisible(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>1335</x>
-     <y>1505</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>1360</x>
-     <y>718</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>option_intermediate_clasif</sender>
-   <signal>clicked(bool)</signal>
-   <receiver>tab_info_basic_categories</receiver>
-   <slot>setHidden(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>549</x>
-     <y>305</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>1660</x>
-     <y>778</y>
+     <x>995</x>
+     <y>127</y>
     </hint>
    </hints>
   </connection>
@@ -7469,44 +7788,12 @@ p, li { white-space: pre-wrap; }
    <slot>setHidden(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1076</x>
-     <y>304</y>
+     <x>481</x>
+     <y>280</y>
     </hint>
     <hint type="destinationlabel">
-     <x>1660</x>
-     <y>1134</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>option_advanced_clasif</sender>
-   <signal>clicked(bool)</signal>
-   <receiver>tab_info_basic_categories</receiver>
-   <slot>setHidden(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>1160</x>
-     <y>305</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>1660</x>
-     <y>778</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>Option_other_tables</sender>
-   <signal>clicked(bool)</signal>
-   <receiver>Group_table_selection</receiver>
-   <slot>setVisible(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>339</x>
-     <y>383</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>346</x>
-     <y>421</y>
+     <x>969</x>
+     <y>1278</y>
     </hint>
    </hints>
   </connection>
@@ -7517,28 +7804,124 @@ p, li { white-space: pre-wrap; }
    <slot>click()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>147</x>
-     <y>836</y>
+     <x>191</x>
+     <y>653</y>
     </hint>
     <hint type="destinationlabel">
-     <x>149</x>
-     <y>858</y>
+     <x>213</x>
+     <y>674</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>Checkbox_threshold_not_built</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>frame_threshold_not_built</receiver>
+   <slot>setVisible(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>259</x>
+     <y>618</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>435</x>
+     <y>613</y>
     </hint>
    </hints>
   </connection>
   <connection>
    <sender>Checkbox_resi_plu</sender>
-   <signal>clicked()</signal>
+   <signal>clicked(bool)</signal>
    <receiver>Checkbox_resi_plu_mix</receiver>
-   <slot>click()</slot>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>191</x>
+     <y>722</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>259</x>
+     <y>748</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>option_basic_clasif</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>Box_basic_clasif</receiver>
+   <slot>setVisible(bool)</slot>
    <hints>
     <hint type="sourcelabel">
      <x>143</x>
-     <y>910</y>
+     <y>280</y>
     </hint>
     <hint type="destinationlabel">
+     <x>120</x>
+     <y>403</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>Checkbox_resi_uni_mix</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>frame_threshold_uni_mx</receiver>
+   <slot>setVisible(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>251</x>
+     <y>674</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>435</x>
+     <y>678</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>Checkbox_resi_unif</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>Checkbox_resi_uni_mix</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>191</x>
+     <y>653</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>251</x>
+     <y>674</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>option_intermediate_clasif</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>Box_basic_clasif</receiver>
+   <slot>setHidden(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>324</x>
+     <y>280</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>120</x>
+     <y>403</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>option_basic_clasif</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>tab_info_intermediate_categories</receiver>
+   <slot>setHidden(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
      <x>143</x>
-     <y>928</y>
+     <y>280</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>969</x>
+     <y>1278</y>
     </hint>
    </hints>
   </connection>
@@ -7549,12 +7932,540 @@ p, li { white-space: pre-wrap; }
    <slot>click()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>164</x>
-     <y>980</y>
+     <x>191</x>
+     <y>796</y>
     </hint>
     <hint type="destinationlabel">
-     <x>155</x>
-     <y>1008</y>
+     <x>219</x>
+     <y>822</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>option_advanced_clasif</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>Box_advanced_clasif</receiver>
+   <slot>setVisible(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>481</x>
+     <y>280</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>126</x>
+     <y>734</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>slider_threshold_not_built_2</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>value_threshold_not_built_2</receiver>
+   <slot>setNum(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>467</x>
+     <y>708</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>351</x>
+     <y>731</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>slider_threshold_plu</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>value_threshold_plu</receiver>
+   <slot>setNum(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>425</x>
+     <y>737</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>309</x>
+     <y>737</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>option_advanced_clasif</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>tab_info_basic_categories</receiver>
+   <slot>setHidden(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>481</x>
+     <y>280</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>969</x>
+     <y>922</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>option_basic_clasif</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>tab_info_basic_categories</receiver>
+   <slot>setVisible(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>143</x>
+     <y>280</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>969</x>
+     <y>922</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>Checkbox_resi_plu</sender>
+   <signal>clicked()</signal>
+   <receiver>frame_threshold_plu_mx</receiver>
+   <slot>hide()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>191</x>
+     <y>722</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>435</x>
+     <y>747</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>option_intermediate_clasif</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>Box_advanced_clasif</receiver>
+   <slot>setHidden(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>324</x>
+     <y>280</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>126</x>
+     <y>734</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>Checkbox_Indus_2</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>Checkbox_Indus_mix</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>191</x>
+     <y>796</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>251</x>
+     <y>822</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>slider_threshold_not_built</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>value_threshold_not_built</receiver>
+   <slot>setNum(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>425</x>
+     <y>603</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>309</x>
+     <y>603</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>slider_threshold_uni</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>value_threshold_uni</receiver>
+   <slot>setNum(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>425</x>
+     <y>668</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>309</x>
+     <y>668</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>Checkbox_threshold_not_built_2</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>frame_threshold_not_built_2</receiver>
+   <slot>setVisible(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>396</x>
+     <y>751</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>411</x>
+     <y>698</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>Checkbox_resi_plu_mix</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>frame_threshold_plu_mx</receiver>
+   <slot>setVisible(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>259</x>
+     <y>748</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>435</x>
+     <y>747</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>option_intermediate_clasif</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>tab_info_intermediate_categories</receiver>
+   <slot>setVisible(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>324</x>
+     <y>280</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>969</x>
+     <y>1278</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>option_intermediate_clasif</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>Box_intermediate_clasif</receiver>
+   <slot>setVisible(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>324</x>
+     <y>280</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>123</x>
+     <y>573</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>option_multiple_mun_p1</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>widget_opcion_U_multi</receiver>
+   <slot>setVisible(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>129</x>
+     <y>92</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>624</x>
+     <y>116</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>option_multiple_mun_p1</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>widget_opcion_U_unique</receiver>
+   <slot>setHidden(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>161</x>
+     <y>92</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>623</x>
+     <y>183</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>option_single_mun_p1</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>widget_opcion_U_multi</receiver>
+   <slot>setHidden(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>285</x>
+     <y>91</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>623</x>
+     <y>119</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>option_single_mun_p1</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>widget_opcion_U_unique</receiver>
+   <slot>setVisible(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>266</x>
+     <y>94</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>625</x>
+     <y>191</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>option_multiple_mun_p1</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>frame_seleccion_mun</receiver>
+   <slot>setVisible(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>68</x>
+     <y>88</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>79</x>
+     <y>451</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>option_single_mun_p1</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>frame_seleccion_mun</receiver>
+   <slot>setHidden(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>435</x>
+     <y>97</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>258</x>
+     <y>451</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>option_multiple_mun_p1</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>frame_3</receiver>
+   <slot>setHidden(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>70</x>
+     <y>89</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>118</x>
+     <y>295</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>Option_include_rural</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>Group_SHP_R_unique</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>643</x>
+     <y>97</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>642</x>
+     <y>285</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>Option_include_rural</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>Group_SHP_R_multi</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>581</x>
+     <y>97</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>642</x>
+     <y>334</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>Option_include_rural</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>Group_CAT_R_unique</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>643</x>
+     <y>97</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>300</x>
+     <y>285</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>option_single_mun_p1</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>frame_3</receiver>
+   <slot>setVisible(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>428</x>
+     <y>97</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>380</x>
+     <y>295</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>option_multiple_mun_p1</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>frame_5</receiver>
+   <slot>setVisible(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>81</x>
+     <y>91</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>85</x>
+     <y>325</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>option_single_mun_p1</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>frame_5</receiver>
+   <slot>setHidden(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>437</x>
+     <y>97</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>239</x>
+     <y>325</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>Option_include_rural</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>Group_CAT_R_multi</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>545</x>
+     <y>97</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>130</x>
+     <y>315</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>option_multiple_mun_p2</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>Widget_single_mun_p2</receiver>
+   <slot>setHidden(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>131</x>
+     <y>90</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>337</x>
+     <y>181</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>option_multiple_mun_p2</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>Widget_multiple_mun_p2</receiver>
+   <slot>setVisible(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>227</x>
+     <y>89</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>339</x>
+     <y>122</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>option_single_mun_p2</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>Widget_multiple_mun_p2</receiver>
+   <slot>setHidden(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>398</x>
+     <y>87</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>335</x>
+     <y>116</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>option_single_mun_p2</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>Widget_single_mun_p2</receiver>
+   <slot>setVisible(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>422</x>
+     <y>93</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>335</x>
+     <y>180</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>Option_include_rural</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>frame_R_multi</receiver>
+   <slot>setVisible(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>459</x>
+     <y>85</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>340</x>
+     <y>246</y>
     </hint>
    </hints>
   </connection>

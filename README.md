@@ -19,12 +19,14 @@ To use this tool it is needed to download it, preferably from the official chann
 * `cadastral_classifier_dialog_base.ui`: this is the file that contains the user interface
 * `clasif`: folder that contains CSV files that define each of the classification properties
 * `diagrams`: folder that contains the images of the diagrams related to the main proceses of the tool
+* `icons`: folder that contains all the custom icons used by the plugin
 * `utils`: folder that contains the different modules that the main function requires. This contains the following files:
   - `cadastral_structure.py`: this script contain the structured dictionaries to extract information from CAT files to table-type format (CSV)
   - `shp_utils.py`: script that contains different methods to process Shapefile files
   - `table_type_generator.py`: script that use the cadastral structure to generate the table-types
   - `use_definer.py`: script that stores the different methods of defining the use of a parcel
   - `palette_generator.py`: script that generate a palette to be used in the map visualization of the results
+  - `get_OSM_green_zones.py`: script that make a request to OSM endpoints to retrieve park geometries, so that green zone parcels can be classified
 
 ---
 
@@ -33,7 +35,7 @@ To use this tool it is needed to download it, preferably from the official chann
   <h1 align="center" style="margin-top: 0px;">Clasificador Catastral</h1>
 </p>
 
-# Complemento de QGIS para la clasificación parcelaria de municipios españoles
+# Plugin de QGIS para la clasificación parcelaria de municipios españoles
 
 ## Resumen
 Clasificador Catastral (CC) es un complemento para la clasificación del parcelario de cualquier municipio español (excluyendo Navarra y País Vasco) utilizando la información de la Dirección General del Catastro. Ha sido desarrollado bajo la versión 3.16 de QGIS, que incluye la versión 3.7 de Python y un módulo de QT Designer, y soporta la versión 3.0 o superior. El objetivo principal es ofrecer, a diferentes perfiles de usuarios, la posibilidad de realizar clasificaciones de los municipios español a nivel de parcela, mediante 3 tipos de clasificaciones que presentan distintos niveles de complejidad y profundidad en sus analisis. Este desarrollo ha sido realizado en el marco del proyecto SIM4PLAN financiado por la convocatoria Proyectos I+D+i Pruebas de Concepto 2021 del Ministerio de Ciencia e Innovación del Gobierno de España y  NextGenerationEU de la Unión Europea, con referencia PDC2021-121568-C21, así como gracias a la ayuda “Estímulo a la Excelencia para Profesores Universitarios Permanentes” con referencia EPU-INV/2020/009 de la UAH y la Comunidad de Madrid, concedida al Dr. Francisco Aguilera Benavente. Ambas fuentes de financiación han permitido que la herramienta Clasificador catastral 1.0  sea puesta a disposición de los usuarios de forma gratuita.
@@ -49,9 +51,12 @@ Nikolai Shurupov, Ramón Molinero Parejo, Francisco Aguilera, Victor Rodríguez 
 * `cadastral_classifier_dialog_base.ui`: archivo que contiene la interfaz de usuario (GUI) de la herramienta
 * `clasif`: carpeta que contiene los diferentes archivos CSV que definen las propiedades de cada tipo de clasificación
 * `diagrams`: carpeta que contiene las imágenes de los diagramas de cada uno de los procesos principales de la herramienta
+* `icons`: carpeta que contiene todos los iconos utilizados dentro de la herramienta
 * `utils`: carpeta que contiene los diferentes módulos que el script principal utiliza. Esta contiene los siguientes archivos:
   - `cadastral_structure.py`:script que contiene los diccionarios con las estructuras de las diferentes tablas tipo utilizadas por la DGC
   - `shp_utils.py`: script que contiene diferentes métodos para gestionar los archivos Shapefile
   - `table_type_generator.py`: script que se encarga de utilizar la la estructura de tablas tipos catastrales para generarlas en formato CSV
   - `use_definer.py`: script que define los distintos métodos de definir la clase (uso) de una parcela en función del tipo de clasificación
   - `palette_generator.py`: script que genera una paleta de color para ser utilizada a la hora de mostrar los resultados en el mapa
+  - `get_OSM_green_zones.py`: script realiza una petición a los servidores de OSM para obtener los parque y así clasificar el parcelario de zonas verdes
+  

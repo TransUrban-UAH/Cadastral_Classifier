@@ -26,8 +26,10 @@
 
 # Imports for qgis core functions
 from qgis.PyQt.QtCore import QSettings, QTranslator, QCoreApplication, Qt, QVariant
-from qgis.PyQt.QtGui import QIcon
-from qgis.PyQt.QtWidgets import QAction, QFileDialog, QTableWidgetItem, QHeaderView, QMessageBox
+
+from qgis.PyQt.QtGui import QIcon, QPixmap
+from qgis.PyQt.QtWidgets import (QAction, QFileDialog, QTableWidgetItem,
+                                QHeaderView, QMessageBox, QListWidgetItem, QMenu)
 
 # Initialize  from file resources.py
 from .resources import *
@@ -35,21 +37,28 @@ from .resources import *
 from .cadastral_classifier_dialog import cadastral_classifierDialog
 
 # Import qgis utils
-from qgis.core import QgsVectorLayer, QgsField, QgsProject, QgsCategorizedSymbolRenderer
+from qgis.core import (QgsVectorLayer, QgsField, QgsProject, 
+                      QgsCategorizedSymbolRenderer, QgsCoordinateReferenceSystem,
+                      QgsCoordinateTransform, QgsSpatialIndex, QgsFeatureRequest)
 from qgis.utils import iface
 
 # Global imports for processing
 import os.path
-from os.path import dirname, basename
-from pandas import read_csv, merge, isna, DataFrame
+from os import chdir
+from os.path import dirname, basename, join, isfile
+from pandas import read_csv, merge, DataFrame, isna
 from time import time
 from copy import deepcopy
+from glob import glob
+from zipfile import ZipFile
+import processing
 
 # Local imports for processing
 from .utils.table_type_generator import table_type_generator
-from .utils.shp_utils import unzip_shp, merge_qgis, shp_copy
+from .utils.shp_utils import unzip_shp, merge_qgis, shp_copy, unzip_files
 from .utils.palette_generator import palette_generator, random_color
 from .utils.use_definer import use_function_definer
+from .utils.get_OSM_green_zones import get_green_zones
 
 #------------------------------------------------------------------------------
 
@@ -83,31 +92,51 @@ class cadastral_classifier:
         # Declare instance attributes
         self.actions = []
         self.menu = self.tr(u'&cadastral_classifier')
+        
+        self.toolbar = self.iface.addToolBar(u'Cadastral Classifier')
+        self.toolbar.setObjectName(u'Cadastral Classifier')
 
         # Initialize the interface
         self.dlg = cadastral_classifierDialog()
         
         # First starter checker
         self.first_start = False
-        
+            
         ### Create the connections with the bottons and their functions
         ## Buttons related to input and output files routes/names
-        # First process
-        self.dlg.button_cat_urb.clicked.connect(self.input_urban_cat)
-        self.dlg.button_cat_rust.clicked.connect(self.input_rural_cat)
-        self.dlg.button_shp_urb.clicked.connect(self.input_urban_shp)
-        self.dlg.button_shp_rust.clicked.connect(self.input_rural_shp)
-        self.dlg.button_output_result_edif.clicked.connect(self.output_setup_data)
+
+        self.dlg.button_cat_urb_multi.clicked.connect(self.input_cat_urb_multi)
+        self.dlg.button_shp_urb_multi.clicked.connect(self.input_shp_urb_multi)
+        self.dlg.button_cat_urb_unique.clicked.connect(self.input_cat_urb_unique)
+        self.dlg.button_shp_urb_unique.clicked.connect(self.input_shp_urb_unique)
         
-        # Second process
-        self.dlg.button_input_edif.clicked.connect(self.input_edif_shp)
-        self.dlg.button_output_clsasification.clicked.connect(self.output_classification)
+        self.dlg.button_cat_rust_multi.clicked.connect(self.input_cat_rust_multi)
+        self.dlg.button_shp_rust_multi.clicked.connect(self.input_shp_rust_multi)
+        self.dlg.button_cat_rust_unique.clicked.connect(self.input_cat_rust_unique)
+        self.dlg.button_shp_rust_unique.clicked.connect(self.input_shp_rust_unique)
         
+        self.dlg.button_output_result_edif.clicked.connect(self.output_result_p1)
+        self.dlg.button_edif_unique_p2.clicked.connect(self.input_edif_unique_p2)
+
+        self.dlg.button_clasif_result_unique_p2.clicked.connect(self.output_clasif_result_unique_p2)
+        self.dlg.button_root_multi_p2.clicked.connect(self.input_dir_multi_p2)
+        
+        self.dlg.filtro_mun.textChanged.connect(self.filter_items)
+        self.dlg.filtro_mun.setPlaceholderText('Filtrar municipios (separar con una coma para varios)...')
+        
+        self.dlg.filtro_mun.textChanged.connect(self.filter_items)
+
+        self.dlg.mun_list.itemClicked.connect(self.update_items)
+        self.dlg.button_selec_todos_mun.clicked.connect(self.select_all_mun)
+        self.dlg.button_deselec_todos_mun.clicked.connect(self.deselect_all_mun)
+        self.dlg.Option_include_rural.clicked.connect(self.update_mun_list)
+                
         #----------------------------------------------------------------------
         # Create the connections with the buttons that runs the main functions
         self.dlg.button_create_result_shp.clicked.connect(self.setup_data) 
         self.dlg.button_classifier.clicked.connect(self.clasif)
         
+
         # Create the connections with the checkable items
         self.dlg.button_check_basic_clasif.clicked.connect(self.check_basic)
         self.dlg.button_uncheck_bsaic_clasif.clicked.connect(self.uncheck_basic) 
@@ -140,29 +169,53 @@ class cadastral_classifier:
         self.dlg.help_panel_2.setHidden(True)
         self.dlg.Box_intermediate_clasif.setHidden(True)   
         self.dlg.Box_advanced_clasif.setHidden(True)        
-        self.dlg.Group_CAT_R.setHidden(True)
-        self.dlg.Group_SHP_R.setHidden(True)
+        self.dlg.widget_opcion_U_unique.setHidden(True)
+        #self.dlg.Frame_single_mun_p2.setHidden(True)
+        self.dlg.Widget_single_mun_p2.setHidden(True)
         self.dlg.Group_table_selection.setHidden(True)
         self.dlg.tab_info_intermediate_categories.setHidden(True)
         self.dlg.frame_threshold_not_built.setHidden(True)
         self.dlg.frame_threshold_not_built_2.setHidden(True)
+        self.dlg.frame_3.setHidden(True)
+        self.dlg.frame_R_multi.setHidden(True)
 
         # Setting the routes to the icon files
-        folder_icon = dirname(__file__) + '/folder_icon.jpg'
-        arrow_left_icon = dirname(__file__) + '/arrow_left_icon.png'
-        arrow_right_icon = dirname(__file__) + '/arrow_right_icon.png'
+        folder_icon = dirname(__file__) + '/icons/folder_icon.jpg'
+        arrow_left_icon = dirname(__file__) + '/icons/arrow_left_icon.png'
+        arrow_right_icon = dirname(__file__) + '/icons/arrow_right_icon.png'
              
         # Set the icons for each button that has a custom one
-        self.dlg.button_cat_urb.setIcon(QIcon(folder_icon))
-        self.dlg.button_cat_rust.setIcon(QIcon(folder_icon))
-        self.dlg.button_shp_urb.setIcon(QIcon(folder_icon))
-        self.dlg.button_shp_rust.setIcon(QIcon(folder_icon))
+        self.dlg.button_cat_urb_multi.setIcon(QIcon(folder_icon))
+        self.dlg.button_shp_urb_multi.setIcon(QIcon(folder_icon))
+        self.dlg.button_cat_urb_unique.setIcon(QIcon(folder_icon))
+        self.dlg.button_shp_urb_unique.setIcon(QIcon(folder_icon))
+        
+        self.dlg.button_cat_rust_multi.setIcon(QIcon(folder_icon))
+        self.dlg.button_shp_rust_multi.setIcon(QIcon(folder_icon))
+        self.dlg.button_cat_rust_unique.setIcon(QIcon(folder_icon))
+        self.dlg.button_shp_rust_unique.setIcon(QIcon(folder_icon))
+        
         self.dlg.button_output_result_edif.setIcon(QIcon(folder_icon))
+        self.dlg.button_edif_unique_p2.setIcon(QIcon(folder_icon))
+
+        self.dlg.button_clasif_result_unique_p2.setIcon(QIcon(folder_icon))
+        self.dlg.button_root_multi_p2.setIcon(QIcon(folder_icon))
+        
         self.dlg.button_add_categories.setIcon(QIcon(arrow_right_icon))
         self.dlg.button_delete_categories.setIcon(QIcon(arrow_left_icon))
-        self.dlg.button_input_edif.setIcon(QIcon(folder_icon))
-        self.dlg.button_output_clsasification.setIcon(QIcon(folder_icon))
         
+        # Setting the routes to the funding logos
+        logo_EU_NG = dirname(__file__) + '/icons/logo_EU_NG.jpg'
+        logo_AEI = dirname(__file__) + '/icons/logo_AEI.jpg'
+        logo_PRTR = dirname(__file__) + '/icons/logo_PRTR.png'
+        logo_min_innov = dirname(__file__) + '/icons/logo_ministerio_innovacion.png'
+
+        # Set the logos of the interface
+        self.dlg.label_logo_EU_NG.setPixmap(QPixmap(logo_EU_NG))
+        self.dlg.label_logo_AEI.setPixmap(QPixmap(logo_AEI))
+        self.dlg.label_logo_PRTR.setPixmap(QPixmap(logo_PRTR))
+        self.dlg.label_logo_min_innov.setPixmap(QPixmap(logo_min_innov))
+
         # Set the connections to the sliders
         self.dlg.slider_threshold_not_built.valueChanged[int].connect(self.update_double_value)
         self.dlg.slider_threshold_not_built_2.valueChanged[int].connect(self.update_double_value_2)
@@ -176,7 +229,7 @@ class cadastral_classifier:
         # Check if plugin was started the first time in current QGIS session
         # Must be set in initGui() to survive plugin reloads
         self.first_start = None
-        
+    
     #--------------------------------------------------------------------------
     
     # noinspection PyMethodMayBeStatic
@@ -282,12 +335,12 @@ class cadastral_classifier:
             text=self.tr(u'cadastral_classifier'),
             callback=self.run,
             parent=self.iface.mainWindow())
-
+    
         # will be set False in run()
         self.first_start = True
-    
+        
     #--------------------------------------------------------------------------
-
+    
     def unload(self):
         """Removes the plugin menu item and icon from QGIS GUI."""
         
@@ -296,53 +349,311 @@ class cadastral_classifier:
                 self.tr(u'&cadastral_classifier'),
                 action)
             self.iface.removeToolBarIcon(action)
-            
+        
+        del self.toolbar
+        
     #--------------------------------------------------------------------------
     
-    ''' All this functions aim to manage the input and output file paths/names'''
+    def select_all_mun(self):
+        ''' Allows to select all visible elements of the municipalities list '''
+        
+        for i in range(self.dlg.mun_list.count()):
+            item = self.dlg.mun_list.item(i)
+            if not item.isHidden():
+                item.setCheckState(Qt.Checked)
+        self.update_items()
     
-    def input_urban_cat(self):
+    #--------------------------------------------------------------------------
+
+    def deselect_all_mun(self):
+        ''' Allows to deselect all visible elements of the municipalities
+        list '''
+        
+        for i in range(self.dlg.mun_list.count()):
+            item = self.dlg.mun_list.item(i)
+            if not item.isHidden():
+                item.setCheckState(Qt.Unchecked)
+        self.update_items()
+    
+    #--------------------------------------------------------------------------
+
+    def filter_items(self, filter_txt):
+        ''' Allows to filter items of the municipalities list in a more agile 
+        way, letting to filter multiple ones by separating them with a comma'''
+        
+        filter_text_split = filter_txt.split(",") # split all the filtering text
+        filtered_mun = []
+        for text in filter_text_split:
+            for i in range(self.dlg.mun_list.count()):
+                item = self.dlg.mun_list.item(i)
+                
+                # update the visible items basing on coincidences of each splited
+                # item separately
+                if text.lower() not in item.text().lower() and item.text().lower() not in filtered_mun:
+                    self.dlg.mun_list.setRowHidden(i, True)
+                else:
+                    self.dlg.mun_list.setRowHidden(i, False)
+                    filtered_mun.append(item.text().lower())
+                    
+    #--------------------------------------------------------------------------
+    
+    def update_items(self):
+        ''' Updates the list of the selected municipalities liiking for what
+        items in the selection has been checked'''
+        self.dlg.mun_list_selected.clear() #clears the list
+        for i in range(self.dlg.mun_list.count()): # titerate over the mun list
+            item = self.dlg.mun_list.item(i)
+            if item.checkState() == Qt.Checked: # if they are checked
+                self.dlg.mun_list_selected.addItem(item.text()) # add item to second list
+    
+    #--------------------------------------------------------------------------
+    
+    def get_selected_mun(self):
+        ''' Gets the municipalities that has been selected '''
+        
+        selection = []
+        for i in range(self.dlg.mun_list_selected.count()): # iterate over the items
+            item = self.dlg.mun_list_selected.item(i)
+            selection.append(item.text()) # add them to a list
+        selection.sort()
+        return selection
+    
+    #--------------------------------------------------------------------------
+    
+    def update_mun_list(self):
+        ''' Updates the list of municipalities that a classification can be
+        performed. Ir requieres the pair of paths CAT-SHP to be introduced. The
+        pair of the urban parcels or, if the it has been selected, the rural ones
+        aswell. It is executed anytime user selects any of the paths or checks/
+        unchecks the rural option'''
+        
+        # clear the current mun list object
+        self.dlg.mun_list.clear()
+        
+        # define a dictionary to save the internals paths of the zip filess 
+        # with a given structure
+        d_info = {"Name": None,
+                  
+                  "SHP_path_U": None,
+                  "SHP_path_R": None,
+
+                  "CAT_path_U": None,
+                  "CAT_path_R": None}
+        
+        # get each path
+        text_cat_urb_multi = self.dlg.dir_cat_urb_multi.text()
+        text_shp_urb_multi = self.dlg.dir_shp_urb_multi.text()
+        text_cat_rust_multi = self.dlg.dir_cat_rust_multi.text()
+        text_shp_rust_multi = self.dlg.dir_shp_rust_multi.text()
+        
+        # check if all path conditions are me to show the list of municipalitiess
+        if self.dlg.Option_include_rural.isChecked() == False and text_cat_urb_multi\
+            and text_shp_urb_multi:
+            
+            self.dlg.frame_seleccion_mun.setEnabled(True)
+            enable_filtering = True
+        
+        elif self.dlg.Option_include_rural.isChecked() == True and text_cat_urb_multi\
+            and text_shp_urb_multi and text_cat_rust_multi and text_shp_rust_multi:
+                
+            self.dlg.frame_seleccion_mun.setEnabled(True)
+            enable_filtering = True
+
+        else:
+            self.dlg.frame_seleccion_mun.setEnabled(False)
+            enable_filtering = False
+
+        # if all the conditions are met
+        if enable_filtering == True:
+            
+            # read the zip file of the urban CAT file
+            zip_obj_cat_urb = ZipFile(text_cat_urb_multi, 'r')
+            
+            # get a list of the paths that it contains
+            files_list_cat_urb = zip_obj_cat_urb.namelist() # list with the files in it
+            
+            # defines adictionary that will store for each municipality code (key)
+            # its relevant infomration
+            d_codes = {}
+            
+            # iterate over all the files inside the zip
+            for file in files_list_cat_urb:
+                
+                # copy the structured dictionaty
+                d_info_copy = deepcopy(d_info)
+                d_info_copy["CAT_path_U"] = file # ad the internal path of the file
+                
+                # get the code of the municipality
+                cat_urb_code = file.split("/")[1][:5]
+                
+                # if it is not an empty string (possible routes to itself)
+                if cat_urb_code != '':
+                    
+                    # assign the route
+                    d_codes[cat_urb_code] = d_info_copy
+            
+            # rea the zip file of the urban SHP file
+            zip_obj_shp_urb = ZipFile(text_shp_urb_multi, 'r')
+            files_list_shp_urb = zip_obj_shp_urb.namelist() # list with the files in it
+            
+            # iterate over all the files that it contains
+            for file in files_list_shp_urb:
+                
+                # get the splits of the file path
+                split = file.split("/")
+                                
+                # if it is not a reference to itself
+                if len(split) > 2:
+                    
+                    # get different splits to deconstruct the structured name
+                    split_names = split[1] 
+                    split_raw_files = split[2] 
+                
+                    split_names_code = split_names[:5]
+                    split_names_mun = split_names[14:]
+                                        
+                    split_file_comp = split_raw_files.split("_")
+                    component = split_file_comp[3][:-4] # get the component (parcel, block, etc)
+                    
+                    # save the route to the parcel file
+                    if component.lower() == 'parcela':
+                                        
+                        d_codes[split_names_code]["SHP_path_U"] = file # save internal path
+                        
+                        # name is saved here because CAT only use municipality codes
+                        d_codes[split_names_code]["Name"] = split_names_mun            
+            
+            # if the rural option has been selected perform the same
+            # operations but with rural files
+            if self.dlg.Option_include_rural.isChecked() == True:
+                
+                zip_obj_cat_rust = ZipFile(text_cat_rust_multi, 'r')
+                files_list_cat_rust = zip_obj_cat_rust.namelist() 
+                
+                for file in files_list_cat_rust:
+
+                    cat_rust_code = file.split("/")[1][:5]
+                    
+                    if cat_rust_code != '':
+
+                        d_codes[cat_rust_code]["CAT_path_R"] = file
+
+                zip_obj_shp_rust = ZipFile(text_shp_rust_multi, 'r')
+                files_list_shp_rust = zip_obj_shp_rust.namelist()
+                
+                for file in files_list_shp_rust:
+                    
+                    split = file.split("/")
+                    
+                    if len(split)>2:
+                        split_names = split[1]
+                        split_raw_files = split[2]
+                    
+                        split_names_code = split_names[:5]
+                        
+                        split_file_comp = split_raw_files.split("_")
+                        component = split_file_comp[3][:-4]
+                        
+                        if component.lower() == 'parcela':
+                            d_codes[split_names_code]["SHP_path_R"] = file
+            # once all the data has been sorted add the items to the list
+            # one by one using the dictionary keys and the municipality name
+            for mun_key in d_codes:
+                                
+                mun_item = QListWidgetItem("[" + str(mun_key) + "] " + d_codes[mun_key]["Name"]) 
+                mun_item.setFlags(Qt.ItemIsUserCheckable | Qt.ItemIsEnabled)
+                mun_item.setCheckState(Qt.Unchecked)
+    
+                self.dlg.mun_list.addItem(mun_item)
+            
+            # save the variable
+            self.d_codes = d_codes
+                
+    #--------------------------------------------------------------------------
+    ''' All these functions aim to manage the input and output file paths/names'''
+    
+    def input_cat_urb_multi(self):
         
         # get the name from the dialog generated to select it 
         filename, _filter = QFileDialog.getOpenFileName(
             
             # set the string to display on dialog and the files that can be 
             # selected (* indicates all, since it can be a .CAT file or .gzip)
-            self.dlg, "Select input file ","", '*')
+            self.dlg, "Seleccionar comprimido con ficheros CAT urbanos de los municipios","", '*')
         
         # store the name to the string variable
-        self.dlg.dir_cat_urb.setText(filename)
+        self.dlg.dir_cat_urb_multi.setText(filename)
+        self.update_mun_list()
         
-    def input_rural_cat(self):
+    #--------------------------------------------------------------------------
+    def input_shp_urb_multi(self):
         filename, _filter = QFileDialog.getOpenFileName(
-            self.dlg, "Select input file ","", '*')
-        self.dlg.dir_cat_rust.setText(filename)
-    
-    def input_urban_shp(self):
-        filename, _filter = QFileDialog.getOpenFileName(
-            self.dlg, "Select input file ","", '*')
-        self.dlg.dir_shp_urb.setText(filename)
+            self.dlg, "Seleccionar comprimido con los acrhivos vectoriales(SHP) urbanos de los municipios","", '*')
+        self.dlg.dir_shp_urb_multi.setText(filename)
+        self.update_mun_list()
         
-    def input_rural_shp(self):
+    #--------------------------------------------------------------------------    
+    def input_cat_rust_multi(self):
         filename, _filter = QFileDialog.getOpenFileName(
-            self.dlg, "Select input file ","", '*')
-        self.dlg.dir_shp_rust.setText(filename)
+            self.dlg, "Seleccionar comprimido con ficheros CAT rústicos de los municipios","", '*')
+        self.dlg.dir_cat_rust_multi.setText(filename)
+        self.update_mun_list()
+
+    #--------------------------------------------------------------------------        
+    def input_shp_rust_multi(self):
+        filename, _filter = QFileDialog.getOpenFileName(
+            self.dlg, "Seleccionar comprimido con los acrhivos vectoriales(SHP) rústicos de los municipios","", '*')
+        self.dlg.dir_shp_rust_multi.setText(filename)
+        self.update_mun_list()
+
+    #--------------------------------------------------------------------------    
+    def input_cat_urb_unique(self):
+        filename, _filter = QFileDialog.getOpenFileName(
+            self.dlg, "Seleccionar el archivo CAT (comprimido o descomprimido) urbano del municipio","", '*')
+        self.dlg.dir_cat_urb_unique.setText(filename)
         
-    def output_setup_data(self):
+    #--------------------------------------------------------------------------    
+    def input_shp_urb_unique(self):
+        filename, _filter = QFileDialog.getOpenFileName(
+            self.dlg, "Seleccionar el archivo vectorial (SHP comprimido o descomprimido) urbano del municipio","", '*')
+        self.dlg.dir_shp_urb_unique.setText(filename)
+        
+    #--------------------------------------------------------------------------    
+    def input_cat_rust_unique(self):
+        filename, _filter = QFileDialog.getOpenFileName(
+            self.dlg, "Seleccionar el archivo CAT (comprimido o descomprimido) rústico del municipio","", '*')
+        self.dlg.dir_cat_rust_unique.setText(filename)
+        
+    #--------------------------------------------------------------------------    
+    def input_shp_rust_unique(self):  
+        filename, _filter = QFileDialog.getOpenFileName(
+            self.dlg, "Seleccionar el archivo vectorial (SHP comprimido o descomprimido) rústico del municipio","", '*')
+        self.dlg.dir_shp_rust_unique.setText(filename)
+        
+    #--------------------------------------------------------------------------
+    def output_result_p1(self):  
+        filename = QFileDialog.getExistingDirectory(
+            self.dlg, "Seleccionar el directorio en el que se guardarán todos los ficheros de salida","")
+        self.dlg.dir_output_result_p1.setText(filename)
+        
+    #--------------------------------------------------------------------------
+    def input_edif_unique_p2(self):  
+        filename, _filter = QFileDialog.getOpenFileName(
+            self.dlg, "Seleccionar fichero resultante del proceso de tratamiento de datos","", '*')
+        self.dlg.dir_edif_unique_p2.setText(filename)
+        
+    #--------------------------------------------------------------------------    
+    def output_clasif_result_unique_p2(self):
         filename, _filter = QFileDialog.getSaveFileName(
-            self.dlg, "Select output file ","", '*.shp')
-        self.dlg.dir_result.setText(filename)
-    
-    def input_edif_shp(self):
-        filename, _filter = QFileDialog.getOpenFileName(
-            self.dlg, "Select input file ", "", '*.shp')
-        self.dlg.dir_input_edif.setText(filename)
-    
-    def output_classification(self):
-        filename, _filter = QFileDialog.getSaveFileName(
-            self.dlg, "Select output file ","", '*.shp')
-        self.dlg.dir_output_clsasification.setText(filename)
+            self.dlg, "Seleccionar ruta y nombre del fichero de clasificación resultante ","", '*.shp')
+        self.dlg.dir_clasif_result_unique_p2.setText(filename)  
         
+    #--------------------------------------------------------------------------
+    def input_dir_multi_p2(self):  
+        filename = QFileDialog.getExistingDirectory(
+            self.dlg, "Seleccionar el directorio contenedor de los ficheros del proceso de de tratamiento de datos para todos los municipios","")
+        self.dlg.dir_root_multi_p2.setText(filename)
+
     #--------------------------------------------------------------------------
     
     def check_basic (self):
@@ -487,7 +798,6 @@ class cadastral_classifier:
             self.dlg.value_threshold_not_built_2.setText(str(int(value)) + " %")
             
     #--------------------------------------------------------------------------
-    
     
     def update_uni_mx_value(self, value):
         ''' Function that ensure correct visualization of slider value of the 
@@ -943,7 +1253,7 @@ class cadastral_classifier:
             self.set_column_widths()
                                
     #--------------------------------------------------------------------------
-
+    
     def setup_data(self):
         ''' Main function of the first process. Using the CAT and SHP files 
         from an input municipality, it performs the analysis of the developed
@@ -976,432 +1286,997 @@ class cadastral_classifier:
         
         # save time before starting the processing
         t_start = time()
-
-        # get the paths of each file
-        urban_CAT_file_path = self.dlg.dir_cat_urb.text()
-        urban_SHP_file_path = self.dlg.dir_shp_urb.text()
-
-        # if users wants the rural parcel to be included, get the paths
-        if self.dlg.Option_include_rural.isChecked():
-            rural_SHP_file_path = self.dlg.dir_shp_rust.text()
-            rural_CAT_file_path = self.dlg.dir_cat_rust.text()
-        
-        else:
-            rural_SHP_file_path = None
-            rural_CAT_file_path = None
-            
-        # get the path of the result file to be saved later
-        result_file_path = self.dlg.dir_result.text()
-        
-        # generates a new path to save the mid-process files (the unzipped CAT
-        # files and the table-type files)
-        output_csv = dirname(result_file_path) + "\\tablas_tipo"
-        
+                
         # set the progress value of the progress bar to 0
         progress = 0
+        self.dlg.ProgressBar_Edif.setValue(progress)
         
-        # create a list to store all the type-tables that user wants to generate
-        list_of_interest = []        
-        
-        # the tyble-type-14 will be the only one that is checked by default and 
-        # can't be unchecked since it is necessary for all the later process,
-        # all other are optional to generate
-        if self.dlg.checkBox_type_01.isChecked():
-            list_of_interest.append(1)
+        # NEEDS TO BE REVISED!
+        # performs diferent operations based of what did the user select.
+        # if he selected just the single municipality option execute the
+        # preprocessing alorithms as on previous versions of the plugin. 
+        # get the paths and generate a file
+        if self.dlg.option_single_mun_p1.isChecked() == True:
             
-        if self.dlg.checkBox_type_11.isChecked():
-            list_of_interest.append(11)
+            dest_filepath = self.dlg.dir_output_result_p1.text()
+                                    
+            # get the paths of each file
+            urban_CAT_file_path = self.dlg.dir_cat_urb_unique.text()
+            urban_SHP_file_path = self.dlg.dir_shp_urb_unique.text()
+
+            # if users wants the rural parcel to be included, get the paths
+            if self.dlg.Option_include_rural.isChecked():
+                rural_SHP_file_path = self.dlg.dir_shp_rust_unique.text()
+                rural_CAT_file_path = self.dlg.dir_cat_rust_unique.text()
             
-        if self.dlg.checkBox_type_13.isChecked():
-            list_of_interest.append(13)
-            
-        if self.dlg.checkBox_type_14.isChecked():
-            list_of_interest.append(14)
-            
-        if self.dlg.checkBox_type_15.isChecked():
-            list_of_interest.append(15)
-            
-        if self.dlg.checkBox_type_16.isChecked():
-            list_of_interest.append(16)
-            
-        if self.dlg.checkBox_type_17.isChecked():
-            list_of_interest.append(17)
-            
-        if self.dlg.checkBox_type_90.isChecked():
-            list_of_interest.append(90)
-            
-        #----------------------------------------------------------------------
-        
-        # if a route of urban CAT has been selected
-        if urban_CAT_file_path:
-            
-            # generate the file(s) and table-type(s) using a function included
-            # in utils folder
-            urb_path = table_type_generator(urban_CAT_file_path, list_of_interest, output_csv)            
-            table_type_14_path = (urb_path + "//" + "Tipo_14.csv")
-            
-            progress += 1
-            self.dlg.ProgressBar_Edif.setValue(progress)
-        
-        #----------------------------------------------------------------------
-        
-        # if user also selected the rural file option
-        if rural_CAT_file_path:
-            
-            # generate the file(s) in the same way as previously
-            rural_path = table_type_generator(rural_CAT_file_path, list_of_interest, output_csv)
-                        
-            # itera sobre las tablas tipo que se ha querido generar y las une una a una
-            # iterate over all the table-types selected
-            for table_type in list_of_interest:
+            else:
+                rural_SHP_file_path = None
+                rural_CAT_file_path = None
                 
-                # read each table-type file (.csv, urban and rural)
-                df_type_urban = read_csv(urb_path + '//Tipo_' + str(table_type)\
-                                          + '.csv', dtype = str)
-    
-                df_type_rural = read_csv(rural_path + '//Tipo_' + str(table_type)\
-                                           + '.csv', dtype = str) 
+            # get the path of the result file to be saved later
+            result_file_path = join(dest_filepath, "procesado_SHP.shp")
+            
+            # generates a new path to save the mid-process files (the unzipped CAT
+            # files and the table-type files)
+            output_csv = dirname(result_file_path) + "\\tablas_tipo"
+            
+            # set the progress value of the progress bar to 0
+            
+            # create a list to store all the type-tables that user wants to generate
+            list_of_interest = []        
+            
+            # the tyble-type-14 will be the only one that is checked by default and 
+            # can't be unchecked since it is necessary for all the later process,
+            # all other are optional to generate
+            if self.dlg.checkBox_type_01.isChecked():
+                list_of_interest.append(1)
                 
-                # due to a possible differences between the column types of the 
-                # data that each table-type has (rural an urban), it is needed
-                # to perform an unification of the formats. Iterate over the 
-                # urban one and checks the data types. If they differ try to 
-                # change the types in one direction, and in the other one if 
-                # it fails
+            if self.dlg.checkBox_type_11.isChecked():
+                list_of_interest.append(11)
                 
-                for column in df_type_urban.columns:
-                    if df_type_urban[column].dtype != df_type_rural[column].dtype:
-                        
-                        try:
-                            df_type_urban = df_type_urban.astype(
-                                {column: df_type_rural[column].dtype})
+            if self.dlg.checkBox_type_13.isChecked():
+                list_of_interest.append(13)
+                
+            if self.dlg.checkBox_type_14.isChecked():
+                list_of_interest.append(14)
+                
+            if self.dlg.checkBox_type_15.isChecked():
+                list_of_interest.append(15)
+                
+            if self.dlg.checkBox_type_16.isChecked():
+                list_of_interest.append(16)
+                
+            if self.dlg.checkBox_type_17.isChecked():
+                list_of_interest.append(17)
+                
+            if self.dlg.checkBox_type_90.isChecked():
+                list_of_interest.append(90)
+                
+            #------------------------------------------------------------------
+            
+            # if a route of urban CAT has been selected
+            if urban_CAT_file_path:
+                
+                # generate the file(s) and table-type(s) using a function included
+                # in utils folder
+                urb_path = table_type_generator(urban_CAT_file_path, list_of_interest, output_csv)            
+                table_type_14_path = (urb_path + "//" + "Tipo_14.csv")
+                
+                progress += 1
+                self.dlg.ProgressBar_Edif.setValue(progress)
+            
+            #------------------------------------------------------------------
+            
+            # if user also selected the rural file option
+            if rural_CAT_file_path:
+                
+                # generate the file(s) in the same way as previously
+                rural_path = table_type_generator(rural_CAT_file_path, list_of_interest, output_csv)
                             
-                        except:
-                            df_type_rural = df_type_rural.astype(
-                                {column: df_type_urban[column].dtype})
-    
-                # use pandas method merge function to perform the union of both
-                # CAT files (urban and rural)
-                df_type_merge = merge(df_type_urban, df_type_rural, how = "outer")
-    
-                # Save the file as .csv format
-                df_type_merge.to_csv(output_csv + "//" + 'Tipo_' + str(table_type) + ".csv")
-                
-                # add the table-type-14 path to the variable used on next
-                # processes
-                if table_type == 14:
-                    table_type_14_path = (output_csv + "//" + 'Tipo_' + str(table_type) + ".csv")
+                # itera sobre las tablas tipo que se ha querido generar y las une una a una
+                # iterate over all the table-types selected
+                for table_type in list_of_interest:
                     
+                    # read each table-type file (.csv, urban and rural)
+                    df_type_urban = read_csv(urb_path + '//Tipo_' + str(table_type)\
+                                              + '.csv', dtype = str)
+        
+                    df_type_rural = read_csv(rural_path + '//Tipo_' + str(table_type)\
+                                               + '.csv', dtype = str) 
+                    
+                    # due to a possible differences between the column types of the 
+                    # data that each table-type has (rural an urban), it is needed
+                    # to perform an unification of the formats. Iterate over the 
+                    # urban one and checks the data types. If they differ try to 
+                    # change the types in one direction, and in the other one if 
+                    # it fails
+                    
+                    for column in df_type_urban.columns:
+                        if df_type_urban[column].dtype != df_type_rural[column].dtype:
+                            
+                            try:
+                                df_type_urban = df_type_urban.astype(
+                                    {column: df_type_rural[column].dtype})
+                                
+                            except:
+                                df_type_rural = df_type_rural.astype(
+                                    {column: df_type_urban[column].dtype})
+        
+                    # use pandas method merge function to perform the union of both
+                    # CAT files (urban and rural)
+                    df_type_merge = merge(df_type_urban, df_type_rural, how = "outer")
+        
+                    # Save the file as .csv format
+                    df_type_merge.to_csv(output_csv + "//" + 'Tipo_' + str(table_type) + ".csv")
+                    
+                    # add the table-type-14 path to the variable used on next
+                    # processes
+                    if table_type == 14:
+                        table_type_14_path = (output_csv + "//" + 'Tipo_' + str(table_type) + ".csv")
+                        
+                # update progress
+                progress += 1
+                self.dlg.ProgressBar_Edif.setValue(progress)
+            
+            #------------------------------------------------------------------
+            
+            # if the input SHP file is compressed in zip format, unzip it and 
+            # store the row of the new .shp file
+            if urban_SHP_file_path[-4:] == ".zip":
+                wd_urb = unzip_shp(urban_SHP_file_path)
+                
+            else:
+                wd_urb = urban_SHP_file_path
+            
+            #------------------------------------------------------------------
+            
+            # if user also included rural parcels to the analysis
+            if rural_SHP_file_path:
+                
+                # follow same process as for urban parcels
+                if rural_SHP_file_path[-4:] == ".zip": 
+                    wd_rus = unzip_shp(rural_SHP_file_path)
+                    
+                else:
+                    wd_rus = rural_SHP_file_path
+                    
+                # use qgis merge function (util folder) to perform the union of 
+                # both SHP files (urban and rural), that generates a new file
+                wd_shp = merge_qgis(wd_rus, wd_urb, result_file_path)
+                
+                # list of the fileds that are interesting to extraxt from the .shp
+                fields_of_interest = ["REFCAT", "AREA", "COORX", "COORY", "TIPO"]
+
+            else:
+                # copy the .shp of urban parcels
+                wd_shp = shp_copy(wd_urb, result_file_path)
+                fields_of_interest = ["REFCAT", "AREA", "COORX", "COORY"]
+            
+            #------------------------------------------------------------------
+            
             # update progress
             progress += 1
             self.dlg.ProgressBar_Edif.setValue(progress)
-        
-        #----------------------------------------------------------------------
-        
-        # if the input SHP file is compressed in zip format, unzip it and 
-        # store the row of the new .shp file
-        if urban_SHP_file_path[-4:] == ".zip":
-            wd_urb = unzip_shp(urban_SHP_file_path)
             
-        else:
-            wd_urb = urban_SHP_file_path
-        
-        #----------------------------------------------------------------------
-        
-        # if user also included rural parcels to the analysis
-        if rural_SHP_file_path:
+            # open the shp as QGIS layer, get its provider and start the editing
+            layer = QgsVectorLayer(wd_shp, "", "ogr")
+            layer_provider = layer.dataProvider()
+            layer.startEditing()
             
-            # follow same process as for urban parcels
-            if rural_SHP_file_path[-4:] == ".zip": 
-                wd_rus = unzip_shp(rural_SHP_file_path)
+            #------------------------------------------------------------------
+            
+            # if the rural parcels were included, it is needed to remove the parcels
+            # with type "X"
+            if rural_SHP_file_path:
+                            
+                listOfIds = [feat.id() for feat in layer.getFeatures() if feat['TIPO'] == 'X']     
+                layer.deleteFeatures(listOfIds)
                 
-            else:
-                wd_rus = rural_SHP_file_path
-                
-            # use qgis merge function (util folder) to perform the union of 
-            # both SHP files (urban and rural), that generates a new file
-            wd_shp = merge_qgis(wd_rus, wd_urb, result_file_path)
+            #------------------------------------------------------------------
             
-            # list of the fileds that are interesting to extraxt from the .shp
-            fields_of_interest = ["REFCAT", "AREA", "COORX", "COORY", "TIPO"]
+            # get the fields names of the layer
+            fields_name = layer.fields().names()
+            
+            # list to store the names of the fields to remove
+            remove_indexers = []
 
-        else:
-            # copy the .shp of urban parcels
-            wd_shp = shp_copy(wd_urb, result_file_path)
-            fields_of_interest = ["REFCAT", "AREA", "COORX", "COORY"]
-        
-        #----------------------------------------------------------------------
-        
-        # update progress
-        progress += 1
-        self.dlg.ProgressBar_Edif.setValue(progress)
-        
-        # open the shp as QGIS layer, get its provider and start the editing
-        layer = QgsVectorLayer(wd_shp, "", "ogr")
-        layer_provider = layer.dataProvider()
-        layer.startEditing()
-        
-        #----------------------------------------------------------------------
-        
-        # if the rural parcels were included, it is needed to remove the parcels
-        # with type "X"
-        if rural_SHP_file_path:
-                        
-            listOfIds = [feat.id() for feat in layer.getFeatures() if feat['TIPO'] == 'X']     
-            layer.deleteFeatures(listOfIds)
-            
-        #----------------------------------------------------------------------
-        
-        # get the fields names of the layer
-        fields_name = layer.fields().names()
-        
-        # list to store the names of the fields to remove
-        remove_indexers = []
-
-        # iterate over all the fields 
-        for field in fields_name:
-            
-            # if it is not in the list of fields of interest
-            if field not in fields_of_interest:
+            # iterate over all the fields 
+            for field in fields_name:
                 
-                # appendt it to remove list
-                remove_indexers.append(fields_name.index(field))
-        
-        # remove the unnecesary fields and update the layer
-        layer_provider.deleteAttributes(remove_indexers)
-        layer.updateFields()
-        
-        #----------------------------------------------------------------------
-        
-        # get the new fields
-        fields_name = layer.fields().names()
-        
-        # get the index (numerical position) of the area attribute, and cadastral
-        # reference
-        area_index = fields_name.index("AREA")
-        
-        # get all the features (rows) of the layer
-        features = layer.getFeatures()
-        
-        #create a dictionary to save all unique cadastral references
-        unique_ref_cat = dict()
-            
-        # iterate over all features
-        for f in features:
-            
-            # store the id of the feature (index column of each feature)
-            f_id = f.id()
-            
-            # store its cadastral reference number
-            f_refcat = f["REFCAT"]
-                
-            # to each unique cadastral reference in the dictionary add the id
-            # of the parcel that has it
-            if f_refcat not in unique_ref_cat.keys():
-                unique_ref_cat[f_refcat] = [f_id]
-            
-            # if the key already exist just add the id 
-            else:
-                unique_ref_cat[f_refcat].append(f_id)
-        
-        # iterate over all the cadastral references keys
-        for key in unique_ref_cat.keys():
-            
-            # store the ids that have it
-            ls_parcels = unique_ref_cat[key]
-            
-            # for the ones that has multiple ids (multipart geometry)
-            if len(ls_parcels) > 1:
-                
-                area_fix = 0
-                
-                # summarize the area of all the ids
-                for parcel in ls_parcels:
-                    parcel_area = layer.getFeature(parcel).attribute(area_index)
-                    area_fix += parcel_area
+                # if it is not in the list of fields of interest
+                if field not in fields_of_interest:
                     
-                # change the area of the multipart geometries. Now they have the
-                # area of the whole geometries of the multipart entity, so 
-                # the following use asignments take in account them as a single
-                # entity
-                for parcel in ls_parcels:
+                    # appendt it to remove list
+                    remove_indexers.append(fields_name.index(field))
+            
+            # remove the unnecesary fields and update the layer
+            layer_provider.deleteAttributes(remove_indexers)
+            layer.updateFields()
+            
+            #------------------------------------------------------------------
+            
+            # get the new fields
+            fields_name = layer.fields().names()
+            
+            # get the index (numerical position) of the area attribute, and cadastral
+            # reference
+            area_index = fields_name.index("AREA")
+            
+            # get all the features (rows) of the layer
+            features = layer.getFeatures()
+            
+            #create a dictionary to save all unique cadastral references
+            unique_ref_cat = dict()
+                
+            # iterate over all features
+            for f in features:
+                
+                # store the id of the feature (index column of each feature)
+                f_id = f.id()
+                
+                # store its cadastral reference number
+                f_refcat = f["REFCAT"]
+                    
+                # to each unique cadastral reference in the dictionary add the id
+                # of the parcel that has it
+                if f_refcat not in unique_ref_cat.keys():
+                    unique_ref_cat[f_refcat] = [f_id]
+                
+                # if the key already exist just add the id 
+                else:
+                    unique_ref_cat[f_refcat].append(f_id)
+            
+            # iterate over all the cadastral references keys
+            for key in unique_ref_cat.keys():
+                
+                # store the ids that have it
+                ls_parcels = unique_ref_cat[key]
+                
+                # for the ones that has multiple ids (multipart geometry)
+                if len(ls_parcels) > 1:
+                    
+                    area_fix = 0
+                    
+                    # summarize the area of all the ids
+                    for parcel in ls_parcels:
+                        parcel_area = layer.getFeature(parcel).attribute(area_index)
+                        area_fix += parcel_area
+                        
+                    # change the area of the multipart geometries. Now they have the
+                    # area of the whole geometries of the multipart entity, so 
+                    # the following use asignments take in account them as a single
+                    # entity
+                    for parcel in ls_parcels:
+                        # generate a tuple with the index of field and it's new value
+                        attr_value = {area_index:area_fix}
+                        layer_provider.changeAttributeValues({parcel:attr_value})
+                
+            #------------------------------------------------------------------
+            
+            # update progress
+            progress += 1
+            self.dlg.ProgressBar_Edif.setValue(progress)
+            
+            # read the table-type-14 csv as pandas dataframe. All data is read as string
+            df_type_14 = read_csv(table_type_14_path, dtype = str, encoding='latin-1')
+            
+            # delete the fifth element of the use typology codification, since it 
+            # dont give any relevant information for the classification
+            df_type_14["105_tip"] = df_type_14["105_tip"].apply(lambda x: str(x)[0:4])
+            
+            # remove any row that has code '0000' since its a 'non edified category
+            # and just introduces disturbances in future processes
+            if "0000" in list(set(df_type_14["105_tip"])):
+                rows_to_remove = list(df_type_14[df_type_14["105_tip"] == "0000"].index)
+                df_type_14 = df_type_14.drop(rows_to_remove)
+                
+            #----------------------------------------------------------
+            ls_floor_values = df_type_14["65_pt"].unique()
+            ls_excluded_floors = []
+            
+            for item in ls_floor_values:
+                try:
+                    int(item)
+                except:
+                    ls_excluded_floors.append(item)
+            
+            # convierte los datos de plantas en numeros enteros. Para los que son de la
+            # lista de plantas exlcluidas, las convierte en un valor de -99
+            
+            df_type_14["65_pt"] = df_type_14["65_pt"].apply(lambda x: int(x) if x not in ls_excluded_floors and isna(x) == False else None)
+            
+            #----------------------------------------------------------
+            ls_year_values = df_type_14["79_aec"].unique()
+            ls_excluded_years = []
+            
+            for item in ls_year_values:
+                try:
+                    int(item)
+                except:
+                    ls_excluded_years.append(item)
+
+            # convierte los datos de años en numeros enteros. Para los que son de la
+            # lista de plantas exlcluidas, las deja sin dato
+            
+            df_type_14["79_aec"] = df_type_14["79_aec"].apply(lambda x: int(x) if x not in ls_excluded_years and isna(x) == False else None)
+
+            # list with all the cadastral reference numbers present in the 
+            # table-type-14 dataframe
+            ref_CAT_type_14 = list(df_type_14["31_pc"])
+        
+            # merge both (table-type-14 and SHP) cadastral reference number lists 
+            # and get the set (unique) values
+            ref_CAT_type_14.extend(list(unique_ref_cat.keys()))
+            ref_CAT = set(ref_CAT_type_14)
+                    
+            # create a dictionary that will contain as keys each of the unique 
+            # cadastral reference numbers, and set the value to 0
+            d_base = dict.fromkeys(ref_CAT, 0)
+            
+            # create a list with the fields to be added to the resulting shp
+            list_uses = ["A_TOT_EDIF", "SUP_ED_0","SUP_ED_1", "ANTIGUEDAD",
+                         "N_PLANTAS", "NUM_INM_R",]
+            
+            # add to the previous list all the possible codification of categorical
+            # use present in the dataframe
+            list_uses.extend(list(set(df_type_14["105_tip"])))
+            
+            # add all the list element to the layer as a new field with integet type
+            for use in list_uses:
+                layer_provider.addAttributes([QgsField(use, QVariant.Int)])
+             
+            # update the fields and layer provider
+            layer.updateFields()
+            layer_provider = layer.dataProvider()
+            
+            # create a second dictionary with all the new fields as keys 
+            d_evaluation = dict.fromkeys(list_uses)
+            
+            # for each key of the second one, add as its value a copy of the first
+            # dictionary
+            for key in d_evaluation.keys():
+                d_evaluation[key] = deepcopy(d_base)
+            
+            #------------------------------------------------------------------
+            
+            # update progress
+            progress += 1
+            self.dlg.ProgressBar_Edif.setValue(progress)
+            
+            # get the max number of iterations performable by the main processes
+            # (used to update the progress bar values)
+            max_iter = len(df_type_14) + layer.featureCount()
+            progress_cap = progress # save the current progress bar value
+            
+            # iterate over all the table-type-14 rows (cadastral registers)
+            for index, row in df_type_14.iterrows():
+                
+                cad_ref = row["31_pc"] # cadastral reference number
+                tp_parc = row["105_tip"] # edification typology
+                area = float(row["84_stl"]) # area of the edification
+                floor = int(row["65_pt"]) # floor of the edification
+                building_date = int(row["79_aec"]) # year of construcion building
+                                        
+                # iterate over all the uses (new fields that were added)
+                for use in list_uses:
+                    
+                    # if the use is the floor number, update the value of parcel
+                    # only iif it is greater from the one save. So, this variable 
+                    # will start from 0 an will always save the highest floor
+                    if use == "N_PLANTAS":
+                        if floor > d_evaluation[use][cad_ref]:
+                            d_evaluation[use][cad_ref] = floor
+                            
+                    # if the use is the year when the construction was built, 
+                    # set it to 0(no data) if there is no value or update it 
+                    # with the most old one if the year value is, at least, 
+                    # superior to 1000
+                    if use == "ANTIGUEDAD":
+                        if (d_evaluation[use][cad_ref] == 0 and building_date > 1000):
+                            d_evaluation[use][cad_ref] = building_date
+                            
+                        elif building_date < d_evaluation[use][cad_ref]:
+                            d_evaluation[use][cad_ref] = building_date
+
+                    # the number of residential buildings is evaluated one by on if
+                    # it is any of the codes below. Each edification of that typology
+                    # adds 1 to the variable value
+                    if use == "NUM_INM_R":
+                        if tp_parc in ["0111", "0112"]:
+                            d_evaluation[use][cad_ref] += 1
+                        elif tp_parc in ["0121", "0122", "0131"]:
+                            d_evaluation[use][cad_ref] = 1
+                    
+                    # the parcel surface edified is evaluated using the 0 and 1 floor
+                    # adding the edification area to each variable. There are cases
+                    # that multifamiliar edification doesnt have 0 floor edification
+                    # so the first one needs to be used
+                    elif use == "SUP_ED_0":
+                        if floor == 0:
+                            d_evaluation[use][cad_ref] += area
+                            
+                    elif use == "SUP_ED_1":
+                        if floor == 1:
+                            d_evaluation[use][cad_ref] += area
+                    
+                    # for the rest of the uses (codes of edification uses) add it up
+                    # to each code, adding it to the dictionary
+                    elif tp_parc == use:
+                        d_evaluation[use][cad_ref] += area
+                
+                # update the progress bar value, using the previous value and the 
+                # currect index and maximum number of iterations
+                self.dlg.ProgressBar_Edif.setValue(progress_cap + (100 - progress_cap) *\
+                                                   (index/max_iter))
+            
+            # save the new progress value
+            progress_cap = progress
+
+            #------------------------------------------------------------------
+            
+            # get the new updated features, and layer field names        
+            features = layer.getFeatures()
+            fields_name = layer.fields().names()
+            
+            # save the index value of the total edification field
+            tot_built_index = fields_name.index("A_TOT_EDIF")
+
+            # iterate over all features
+            for f in features:
+                
+                # get feature id
+                f_id = f.id()
+            
+                # declare variable to store the total edification area present in 
+                # the parcel
+                total_built_area = 0
+                
+                # iterate over all uses
+                for use in list_uses:
+                    
+                    # get the dictionary use value for the cadfet the current feature
+                    value = d_evaluation[use][f["REFCAT"]]
+                    
+                    # get the index of the use field
+                    use_index = fields_name.index(use)
+                    
                     # generate a tuple with the index of field and it's new value
-                    attr_value = {area_index:area_fix}
-                    layer_provider.changeAttributeValues({parcel:attr_value})
-            
-        #----------------------------------------------------------------------
-        
-        # update progress
-        progress += 1
-        self.dlg.ProgressBar_Edif.setValue(progress)
-        
-        # read the table-type-14 csv as pandas dataframe. All data is read as string
-        df_type_14 = read_csv(table_type_14_path, dtype = str, encoding='latin-1')
-        
-        # delete the fifth element of the use typology codification, since it 
-        # dont give any relevant information for the classification
-        df_type_14["105_tip"] = df_type_14["105_tip"].apply(lambda x: str(x)[0:4])
-        
-        # remove any row that has code '0000' since its a 'non edified category
-        # and just introduces disturbances in future processes
-        if "0000" in list(set(df_type_14["105_tip"])):
-            rows_to_remove = list(df_type_14[df_type_14["105_tip"] == "0000"].index)
-            df_type_14 = df_type_14.drop(rows_to_remove)
-        
-        # list with all the cadastral reference numbers present in the 
-        # table-type-14 dataframe
-        ref_CAT_type_14 = list(df_type_14["31_pc"])
-    
-        # merge both (table-type-14 and SHP) cadastral reference number lists 
-        # and get the set (unique) values
-        ref_CAT_type_14.extend(list(unique_ref_cat.keys()))
-        ref_CAT = set(ref_CAT_type_14)
-                
-        # create a dictionary that will contain as keys each of the unique 
-        # cadastral reference numbers, and set the value to 0
-        d_base = dict.fromkeys(ref_CAT, 0)
-        
-        # create a list with the fields to be added to the resulting shp
-        list_uses = ["A_TOT_EDIF", "SUP_ED_0", "SUP_ED_1", "NUM_INM_R"]
-        
-        # add to the previous list all the possible codification of categorical
-        # use present in the dataframe
-        list_uses.extend(list(set(df_type_14["105_tip"])))
-        
-        # add all the list element to the layer as a new field with integet type
-        for use in list_uses:
-            layer_provider.addAttributes([QgsField(use, QVariant.Int)])
-         
-        # update the fields and layer provider
-        layer.updateFields()
-        layer_provider = layer.dataProvider()
-        
-        # create a second dictionary with all the new fields as keys 
-        d_evaluation = dict.fromkeys(list_uses)
-        
-        # for each key of the second one, add as its value a copy of the first
-        # dictionary
-        for key in d_evaluation.keys():
-            d_evaluation[key] = deepcopy(d_base)
-        
-        #----------------------------------------------------------------------
-        
-        # update progress
-        progress += 1
-        self.dlg.ProgressBar_Edif.setValue(progress)
-        
-        # get the max number of iterations performable by the main processes
-        # (used to update the progress bar values)
-        max_iter = len(df_type_14) + layer.featureCount()
-        progress_cap = progress # save the current progress bar value
-        
-        # iterate over all the table-type-14 rows (cadastral registers)
-        for index, row in df_type_14.iterrows():
-            
-            cad_ref = row["31_pc"] # cadastral reference number
-            tp_parc = row["105_tip"] # edification typology
-            area = float(row["84_stl"]) # area of the edification
-            floor = row["65_pt"] # floor of the edification
-            
-            # iterate over all the uses (new fields that were added)
-            for use in list_uses:
-
-                # the number of residential buildings is evaluated one by on if
-                # it is any of the codes below. Each edification of that typology
-                # adds 1 to the variable value
-                if use == "NUM_INM_R":
-                    if tp_parc in ["0111", "0112", "0121", "0122", "0131"]:
-                        d_evaluation[use][cad_ref] += 1
-                
-                # the parcel surface edified is evaluated using the 0 and 1 floor
-                # adding the edification area to each variable. There are cases
-                # that multifamiliar edification doesnt have 0 floor edification
-                # so the first one needs to be used
-                elif use == "SUP_ED_0":
-                    if floor == 0:
-                        d_evaluation[use][cad_ref] += area
-                        
-                elif use == "SUP_ED_1":
-                    if floor == 1:
-                        d_evaluation[use][cad_ref] += area
-                
-                # for the rest of the uses (codes of edification uses) add it up
-                # to each code, adding it to the dictionary
-                elif tp_parc == use:
-                    d_evaluation[use][cad_ref] += area
-            
-            # update the progress bar value, using the previous value and the 
-            # currect index and maximum number of iterations
-            self.dlg.ProgressBar_Edif.setValue(progress_cap + (100 - progress_cap) *\
-                                               (index/max_iter))
-        
-        # save the new progress value
-        progress_cap = progress
-
-        #----------------------------------------------------------------------
-        
-        # get the new updated features, and layer field names        
-        features = layer.getFeatures()
-        fields_name = layer.fields().names()
-        
-        # save the index value of the total edification field
-        tot_built_index = fields_name.index("A_TOT_EDIF")
-
-        # iterate over all features
-        for f in features:
-            
-            # get feature id
-            f_id = f.id()
-        
-            # declare variable to store the total edification area present in 
-            # the parcel
-            total_built_area = 0
-            
-            # iterate over all uses
-            for use in list_uses:
-                
-                # get the dictionary use value for the cadfet the current feature
-                value = d_evaluation[use][f["REFCAT"]]
-                
-                # get the index of the use field
-                use_index = fields_name.index(use)
-                
-                # generate a tuple with the index of field and it's new value
-                attr_value = {use_index:value}
-                
-                # update the value with the layer_provider and the index of the
-                # feature
-                layer_provider.changeAttributeValues({f_id:attr_value})
-
-                # add up the different codified uses to the total edified 
-                # area variable (excluding the fields that are related to 
-                # different analysis)
-                if use not in ["A_TOT_EDIF", "SUP_ED_0", "SUP_ED_1",
-                               "MAX_PLANTA", "NUM_INM_R"]:
+                    attr_value = {use_index:value}
                     
-                    total_built_area += value
-                
-            # same process as previously, create a tuple and update value, in 
-            # this case to the total edif area (using its index)
-            attr_value = {tot_built_index:total_built_area}
-            layer_provider.changeAttributeValues({f_id:attr_value})
-            
-            # update the progress bar
-            self.dlg.ProgressBar_Edif.setValue(progress_cap + (100 - progress_cap) *\
-                                               ((len(df_type_14) + index)/max_iter))
-                
-        # commit the changed made to the features
-        layer.commitChanges()
+                    # update the value with the layer_provider and the index of the
+                    # feature
+                    layer_provider.changeAttributeValues({f_id:attr_value})
 
-        #----------------------------------------------------------------------
+                    # add up the different codified uses to the total edified 
+                    # area variable (excluding the fields that are related to 
+                    # different analysis)
+                    if use not in ["A_TOT_EDIF", "SUP_ED_0", "SUP_ED_1", "ANTIGUEDAD",
+                                   "N_PLANTAS", "NUM_INM_R"]:
+                        
+                        total_built_area += value
+                    
+                # same process as previously, create a tuple and update value, in 
+                # this case to the total edif area (using its index)
+                attr_value = {tot_built_index:total_built_area}
+                layer_provider.changeAttributeValues({f_id:attr_value})
+                
+                # update the progress bar
+                self.dlg.ProgressBar_Edif.setValue(progress_cap + (100 - progress_cap) *\
+                                                   ((len(df_type_14) + index)/max_iter))
+                    
+            # commit the changed made to the features
+            layer.commitChanges()
+
+            #------------------------------------------------------------------
+            
+            # set the progress bar to 100
+            self.dlg.ProgressBar_Edif.setValue(100)
+            
+            # update the input required for the next process (clasification)
+            self.dlg.dir_edif_unique_p2.setText(result_file_path)
+            
+        #---------------------------------------------------------------------- 
         
-        # set the progress bar to 100
+        # NEEDS TO BE REVISED TO SHORTEN THE CODE SINCE MANY OPERATIONS ARE THE
+        # SAME
+        
+        # if the selection option is tho classify multiple municipalities
+        # get the structure data of the tables selection and d_codes variable
+        elif self.dlg.option_multiple_mun_p1.isChecked() == True:
+            
+            dest_filepath = self.dlg.dir_output_result_p1.text()
+            
+            text_cat_urb_multi = self.dlg.dir_cat_urb_multi.text()
+            text_shp_urb_multi = self.dlg.dir_shp_urb_multi.text()
+            text_cat_rust_multi = self.dlg.dir_cat_rust_multi.text()
+            text_shp_rust_multi = self.dlg.dir_shp_rust_multi.text()
+            
+            # get the dictionary that stores all the information for each
+            # municipality
+            d_codes = self.d_codes
+            
+            selected_muns_codes = self.get_selected_mun() # get the selected muns
+            progress_each_mun = 100/len(selected_muns_codes) # state the progress bar evolution caps
+            
+            i = 0 # store numerically the initialization
+            for selected in selected_muns_codes:
+                      
+                # state the cap that has to be reache once all the operations
+                # in the mun are performed
+                progress_cap = progress_each_mun + i * progress_each_mun
+                
+                selected_code = selected[1:6] # get the code of the mun
+                selected_name = selected_code + selected[7:] # get the name
+                selected_name = selected_name.replace(" ", "_") # remove spaces to avoid later issues
+                
+                # get the internal paths of each of the components
+                path_P_U = d_codes[selected_code]['SHP_path_U']
+                path_P_R = d_codes[selected_code]['SHP_path_R']
+                path_CAT_U = d_codes[selected_code]['CAT_path_U']
+                path_CAT_R = d_codes[selected_code]['CAT_path_R']
+                
+                # create a path to store all the municipality files
+                mun_path = join(dest_filepath, selected_name)
+                
+                # path to save the table tipe generations
+                output_csv = mun_path + "\\tablas_tipo"
+                
+                # unzip urban parcels file and save the path of the results
+                P_U = unzip_files(text_shp_urb_multi, join(mun_path, "SHP_URBANO"), path_P_U, 
+                                  "parcelario")
+                
+                # unzip urban CAT file and save the path of the results
+                CAT_U = unzip_files(text_cat_urb_multi, output_csv, path_CAT_U, 
+                                  "cat")
+                # if the rural option has been selected unzip in the same way 
+                # the files
+                if self.dlg.Option_include_rural.isChecked() == True:
+
+                    
+                    P_R = unzip_files(text_shp_rust_multi, join(mun_path, "SHP_RUSTICO"), path_P_R, 
+                                      "parcelario")
+                    
+                    CAT_R = unzip_files(text_cat_rust_multi, output_csv, path_CAT_R, 
+                                      "cat")
+    
+                if text_cat_urb_multi and text_shp_urb_multi:
+                                
+                    # create a list to store all the type-tables that user wants to generate
+                    list_of_interest = []        
+                    
+                    # the tyble-type-14 will be the only one that is checked by default and 
+                    # can't be unchecked since it is necessary for all the later process,
+                    # all other are optional to generate
+                    if self.dlg.checkBox_type_01.isChecked():
+                        list_of_interest.append(1)
+                        
+                    if self.dlg.checkBox_type_11.isChecked():
+                        list_of_interest.append(11)
+                        
+                    if self.dlg.checkBox_type_13.isChecked():
+                        list_of_interest.append(13)
+                        
+                    if self.dlg.checkBox_type_14.isChecked():
+                        list_of_interest.append(14)
+                        
+                    if self.dlg.checkBox_type_15.isChecked():
+                        list_of_interest.append(15)
+                        
+                    if self.dlg.checkBox_type_16.isChecked():
+                        list_of_interest.append(16)
+                        
+                    if self.dlg.checkBox_type_17.isChecked():
+                        list_of_interest.append(17)
+                        
+                    if self.dlg.checkBox_type_90.isChecked():
+                        list_of_interest.append(90)
+                        
+                    #----------------------------------------------------------
+                    
+                    # if a route of urban CAT has been selected
+                    if text_cat_urb_multi:
+                        
+                        # generate the file(s) and table-type(s) using a function included
+                        # in utils folder
+                        urb_path = table_type_generator(CAT_U, list_of_interest, output_csv)            
+                        table_type_14_path = (urb_path + "//" + "Tipo_14.csv")
+                    
+                    #----------------------------------------------------------
+                    
+                    # if user also selected the rural file option
+                    if text_cat_rust_multi and self.dlg.Option_include_rural.isChecked() == True:
+                        
+                        # generate the file(s) in the same way as previously
+                        rural_path = table_type_generator(CAT_R, list_of_interest, output_csv)
+                                    
+                        # itera sobre las tablas tipo que se ha querido generar y las une una a una
+                        # iterate over all the table-types selected
+                        for table_type in list_of_interest:
+                            
+                            # read each table-type file (.csv, urban and rural)
+                            df_type_urban = read_csv(urb_path + '//Tipo_' + str(table_type)\
+                                                      + '.csv', dtype = str)
+                
+                            df_type_rural = read_csv(rural_path + '//Tipo_' + str(table_type)\
+                                                       + '.csv', dtype = str) 
+                            
+                            # due to a possible differences between the column types of the 
+                            # data that each table-type has (rural an urban), it is needed
+                            # to perform an unification of the formats. Iterate over the 
+                            # urban one and checks the data types. If they differ try to 
+                            # change the types in one direction, and in the other one if 
+                            # it fails
+                            
+                            for column in df_type_urban.columns:
+                                if df_type_urban[column].dtype != df_type_rural[column].dtype:
+                                    
+                                    try:
+                                        df_type_urban = df_type_urban.astype(
+                                            {column: df_type_rural[column].dtype})
+                                        
+                                    except:
+                                        df_type_rural = df_type_rural.astype(
+                                            {column: df_type_urban[column].dtype})
+                
+                            # use pandas method merge function to perform the union of both
+                            # CAT files (urban and rural)
+                            df_type_merge = merge(df_type_urban, df_type_rural, how = "outer")
+                
+                            # Save the file as .csv format
+                            df_type_merge.to_csv(output_csv + "//" + 'Tipo_' + str(table_type) + ".csv")
+                            
+                            # add the table-type-14 path to the variable used on next
+                            # processes
+                            if table_type == 14:
+                                table_type_14_path = (output_csv + "//" + 'Tipo_' + str(table_type) + ".csv")
+                                
+                    # update progress
+                    progress = 0.005 * progress_each_mun + i * progress_each_mun
+                    self.dlg.ProgressBar_Edif.setValue(progress)
+                    
+                    #----------------------------------------------------------
+                    
+                    # if user also included rural parcels to the analysis
+                    if text_shp_rust_multi and self.dlg.Option_include_rural.isChecked() == True:
+                            
+                        # use qgis merge function (util folder) to perform the union of 
+                        # both SHP files (urban and rural), that generates a new file
+                        wd_shp = merge_qgis(P_R, P_U, join(mun_path, "procesado_" + basename(mun_path) + ".shp"))
+                        
+                        # list of the fileds that are interesting to extraxt from the .shp
+                        fields_of_interest = ["REFCAT", "AREA", "COORX", "COORY", "TIPO"]
+            
+                    else:
+                        # copy the .shp of urban parcels
+                        wd_shp = shp_copy(P_U, join(mun_path, "procesado_" + basename(mun_path) + ".shp"))
+                        fields_of_interest = ["REFCAT", "AREA", "COORX", "COORY"]
+                    
+                    #----------------------------------------------------------
+                    
+                    # update progress
+                    progress = 0.01 * progress_each_mun + i * progress_each_mun
+                    self.dlg.ProgressBar_Edif.setValue(progress)
+                                                        
+                    # open the shp as QGIS layer, get its provider and start the editing
+                    layer = QgsVectorLayer(wd_shp, "", "ogr")
+                    layer_provider = layer.dataProvider()
+                    layer.startEditing()
+                    
+                    #----------------------------------------------------------
+                    
+                    # if the rural parcels were included, it is needed to remove the parcels
+                    # with type "X"
+                    if text_shp_rust_multi:
+                                    
+                        listOfIds = [feat.id() for feat in layer.getFeatures() if feat['TIPO'] == 'X']     
+                        layer.deleteFeatures(listOfIds)
+                        
+                    #----------------------------------------------------------
+                    
+                    # get the fields names of the layer
+                    fields_name = layer.fields().names()
+                                                        
+                    # list to store the names of the fields to remove
+                    remove_indexers = []
+            
+                    # iterate over all the fields 
+                    for field in fields_name:
+                        
+                        # if it is not in the list of fields of interest
+                        if field not in fields_of_interest:
+                            
+                            # appendt it to remove list
+                            remove_indexers.append(fields_name.index(field))
+                    
+                    # remove the unnecesary fields and update the layer
+                    layer_provider.deleteAttributes(remove_indexers)
+                    layer.updateFields()
+                    
+                    #----------------------------------------------------------
+                    
+                    # get the new fields
+                    fields_name = layer.fields().names()
+                    
+                    # get the index (numerical position) of the area attribute, and cadastral
+                    # reference
+                    area_index = fields_name.index("AREA")
+                    
+                    # get all the features (rows) of the layer
+                    features = layer.getFeatures()
+                    
+                    #create a dictionary to save all unique cadastral references
+                    unique_ref_cat = dict()
+                        
+                    # iterate over all features
+                    for f in features:
+                        
+                        # store the id of the feature (index column of each feature)
+                        f_id = f.id()
+                        
+                        # store its cadastral reference number
+                        f_refcat = f["REFCAT"]
+                            
+                        # to each unique cadastral reference in the dictionary add the id
+                        # of the parcel that has it
+                        if f_refcat not in unique_ref_cat.keys():
+                            unique_ref_cat[f_refcat] = [f_id]
+                        
+                        # if the key already exist just add the id 
+                        else:
+                            unique_ref_cat[f_refcat].append(f_id)
+                    
+                    # iterate over all the cadastral references keys
+                    for key in unique_ref_cat.keys():
+                        
+                        # store the ids that have it
+                        ls_parcels = unique_ref_cat[key]
+                        
+                        # for the ones that has multiple ids (multipart geometry)
+                        if len(ls_parcels) > 1:
+                            
+                            area_fix = 0
+                            
+                            # summarize the area of all the ids
+                            for parcel in ls_parcels:
+                                parcel_area = layer.getFeature(parcel).attribute(area_index)
+                                area_fix += parcel_area
+                                
+                            # change the area of the multipart geometries. Now they have the
+                            # area of the whole geometries of the multipart entity, so 
+                            # the following use asignments take in account them as a single
+                            # entity
+                            for parcel in ls_parcels:
+                                # generate a tuple with the index of field and it's new value
+                                attr_value = {area_index:area_fix}
+                                layer_provider.changeAttributeValues({parcel:attr_value})
+                        
+                    #----------------------------------------------------------
+                    
+                    # update progress
+                    progress = 0.015 * progress_each_mun + i * progress_each_mun
+                    self.dlg.ProgressBar_Edif.setValue(progress)
+                    
+                    # read the table-type-14 csv as pandas dataframe. All data is read as string
+                    df_type_14 = read_csv(table_type_14_path, dtype = str, encoding='latin-1')
+                    
+                    # delete the fifth element of the use typology codification, since it 
+                    # dont give any relevant information for the classification
+                    df_type_14["105_tip"] = df_type_14["105_tip"].apply(lambda x: str(x)[0:4])
+                    
+                    # remove any row that has code '0000' since its a 'non edified category
+                    # and just introduces disturbances in future processes
+                    if "0000" in list(set(df_type_14["105_tip"])):
+                        rows_to_remove = list(df_type_14[df_type_14["105_tip"] == "0000"].index)
+                        df_type_14 = df_type_14.drop(rows_to_remove)
+                        
+                    #----------------------------------------------------------
+                    ls_floor_values = df_type_14["65_pt"].unique()
+                    ls_excluded_floors = []
+                    
+                    for item in ls_floor_values:
+                        try:
+                            int(item)
+                        except:
+                            ls_excluded_floors.append(item)
+                    
+                    # convierte los datos de plantas en numeros enteros. Para los que son de la
+                    # lista de plantas exlcluidas, las convierte en un valor de -99
+                    
+                    df_type_14["65_pt"] = df_type_14["65_pt"].apply(lambda x: int(x) if x not in ls_excluded_floors and isna(x) == False else -99)
+                    
+                    #----------------------------------------------------------
+                    ls_year_values = df_type_14["79_aec"].unique()
+                    ls_excluded_years = []
+                    
+                    for item in ls_year_values:
+                        try:
+                            int(item)
+                        except:
+                            ls_excluded_years.append(item)
+
+                    # convierte los datos de años en numeros enteros. Para los que son de la
+                    # lista de plantas exlcluidas, las deja sin dato
+                    
+                    df_type_14["79_aec"] = df_type_14["79_aec"].apply(lambda x: int(x) if x not in ls_excluded_years and isna(x) == False else None)
+                    
+                    # list with all the cadastral reference numbers present in the 
+                    # table-type-14 dataframe
+                    ref_CAT_type_14 = list(df_type_14["31_pc"])
+                
+                    # merge both (table-type-14 and SHP) cadastral reference number lists 
+                    # and get the set (unique) values
+                    ref_CAT_type_14.extend(list(unique_ref_cat.keys()))
+                    ref_CAT = set(ref_CAT_type_14)
+                            
+                    # create a dictionary that will contain as keys each of the unique 
+                    # cadastral reference numbers, and set the value to 0
+                    d_base = dict.fromkeys(ref_CAT, 0)
+                    
+                    # create a list with the fields to be added to the resulting shp
+                    list_uses = ["A_TOT_EDIF", "SUP_ED_0","SUP_ED_1", "ANTIGUEDAD",
+                                 "N_PLANTAS", "NUM_INM_R",]
+                    
+                    # add to the previous list all the possible codification of categorical
+                    # use present in the dataframe
+                    list_uses.extend(list(set(df_type_14["105_tip"])))
+                    
+                    # add all the list element to the layer as a new field with integet type
+                    for use in list_uses:
+                        layer_provider.addAttributes([QgsField(use, QVariant.Int)])
+                     
+                    # update the fields and layer provider
+                    layer.updateFields()
+                    layer_provider = layer.dataProvider()
+                    
+                    # create a second dictionary with all the new fields as keys 
+                    d_evaluation = dict.fromkeys(list_uses)
+                    
+                    # for each key of the second one, add as its value a copy of the first
+                    # dictionary
+                    for key in d_evaluation.keys():
+                        d_evaluation[key] = deepcopy(d_base)
+                    
+                    #----------------------------------------------------------------------
+                    
+                    # update progress
+                    progress = 0.02 * progress_each_mun + i * progress_each_mun
+                    self.dlg.ProgressBar_Edif.setValue(progress)
+                    
+                    # get the max number of iterations performable by the main processes
+                    # (used to update the progress bar values)
+                    max_iter_p1 = len(df_type_14)
+                    progress_cap_p1 = 0.29 * progress_cap
+                    current_progress = progress
+                    
+                    # iterate over all the table-type-14 rows (cadastral registers)
+                    for index, row in df_type_14.iterrows():
+                        
+                        cad_ref = row["31_pc"] # cadastral reference number
+                        tp_parc = row["105_tip"] # edification typology
+                        area = float(row["84_stl"]) # area of the edification
+                        floor = int(row["65_pt"]) # floor of the edification
+                        building_date = int(row["79_aec"]) # year of construcion building
+                                                
+                        # iterate over all the uses (new fields that were added)
+                        for use in list_uses:
+                            
+                            # si el uso es el de numero de plantas se actualiza el valor de 
+                            # la parcela solo si es mayor que el que ya tiene. Es decir, el valor
+                            # de la planta maxima empezará en 0 y siempre guardará el valor del
+                            # piso es es mayor que el que tenia antes
+                            if use == "N_PLANTAS":
+                                #print('floor: ', floor)
+                                #print('d_evaluation[use][cad_ref]: ', d_evaluation[use][cad_ref])
+                                if floor > d_evaluation[use][cad_ref]:
+                                    d_evaluation[use][cad_ref] = floor
+                                    
+                            # si el uso es el de numero de plantas se actualiza el valor de 
+                            # la parcela solo si es mayor que el que ya tiene. Es decir, el valor
+                            # de la planta maxima empezará en 0 y siempre guardará el valor del
+                            # piso es es mayor que el que tenia antes
+                            if use == "ANTIGUEDAD":
+                                if (d_evaluation[use][cad_ref] == 0 and building_date > 1000):
+                                    d_evaluation[use][cad_ref] = building_date
+                                    
+                                elif building_date < d_evaluation[use][cad_ref]:
+                                    d_evaluation[use][cad_ref] = building_date
+                            
+                            # the number of residential buildings is evaluated one by on if
+                            # it is any of the codes below. Each edification of that typology
+                            # adds 1 to the variable value
+                            if use == "NUM_INM_R":
+                                if tp_parc in ["0111", "0112"]:
+                                    d_evaluation[use][cad_ref] += 1
+                                elif tp_parc in ["0121", "0122", "0131"]:
+                                    d_evaluation[use][cad_ref] = 1
+                            
+                            # the parcel surface edified is evaluated using the 0 and 1 floor
+                            # adding the edification area to each variable. There are cases
+                            # that multifamiliar edification doesnt have 0 floor edification
+                            # so the first one needs to be used
+                            elif use == "SUP_ED_0":
+                                if floor == 0:
+                                    d_evaluation[use][cad_ref] += area
+                                    
+                            elif use == "SUP_ED_1":
+                                if floor == 1:
+                                    d_evaluation[use][cad_ref] += area
+                            
+                            # for the rest of the uses (codes of edification uses) add it up
+                            # to each code, adding it to the dictionary
+                            elif tp_parc == use:
+                                d_evaluation[use][cad_ref] += area
+                        
+                        # update the progress bar value, using the previous value and the 
+                        # currect index and maximum number of iterations
+                        progress = current_progress + progress_cap_p1 * (index/max_iter_p1)
+                        self.dlg.ProgressBar_Edif.setValue(progress)
+                    
+                    #----------------------------------------------------------------------
+                    
+                    # get the new updated features, and layer field names        
+                    features = layer.getFeatures()
+                    fields_name = layer.fields().names()
+                    
+                    # save the index value of the total edification field
+                    tot_built_index = fields_name.index("A_TOT_EDIF")
+                    
+                    progress_cap_p2 =  0.69 * progress_cap
+                    current_progress = progress
+    
+                    max_iter_p2 = layer.featureCount()
+    
+                    # iterate over all features
+                    for f in features:
+                        
+                        # get feature id
+                        f_id = f.id()
+                    
+                        # declare variable to store the total edification area present in 
+                        # the parcel
+                        total_built_area = 0
+                        
+                        # iterate over all uses
+                        for use in list_uses:
+                            
+                            # get the dictionary use value for the cadfet the current feature
+                            value = d_evaluation[use][f["REFCAT"]]
+                            
+                            # get the index of the use field
+                            use_index = fields_name.index(use)
+                            
+                            # generate a tuple with the index of field and it's new value
+                            attr_value = {use_index:value}
+                            
+                            # update the value with the layer_provider and the index of the
+                            # feature
+                            layer_provider.changeAttributeValues({f_id:attr_value})
+            
+                            # add up the different codified uses to the total edified 
+                            # area variable (excluding the fields that are related to 
+                            # different analysis)
+                            if use not in ["A_TOT_EDIF", "SUP_ED_0", "SUP_ED_1",
+                                           "N_PLANTAS", "NUM_INM_R", "ANTIGUEDAD"]:
+                                
+                                total_built_area += value
+                            
+                        # same process as previously, create a tuple and update value, in 
+                        # this case to the total edif area (using its index)
+                        attr_value = {tot_built_index:total_built_area}
+                        layer_provider.changeAttributeValues({f_id:attr_value})
+                        
+                        # update the progress bar
+                        progress = current_progress + progress_cap_p2 * (f_id/max_iter_p2)
+                        self.dlg.ProgressBar_Edif.setValue(progress)
+                            
+                    # commit the changed made to the features
+                    layer.commitChanges()
+            
+                    del layer
+                    
+                    i += 1
+
         self.dlg.ProgressBar_Edif.setValue(100)
-        
-        # update the input required for the next process (clasification)
-        self.dlg.dir_input_edif.setText(result_file_path)
-        
-        del layer
 
         # save time after running all the processing
         t_finish = time()
@@ -1457,534 +2332,712 @@ class cadastral_classifier:
         # save time before starting the processing
         t_start = time()
         
-        # get the input/output paths
-        filepath_edif_SHP_input = self.dlg.dir_input_edif.text()
-        filepath_clasif_SHP_output = self.dlg.dir_output_clsasification.text()
+        # structure the data input and outputs based on the option selecte 
+        # by the user
+        if self.dlg.option_single_mun_p2.isChecked() == True:
+            
+            # get the result file path
+            dir_clasif_result = self.dlg.dir_clasif_result_unique_p2.text()
+            output_filename_p2 = basename(dir_clasif_result) # get the name of the file
+            
+            # create a list to appen it, simulating as if it was a multiple option
+            ls_mun = []
+            ls_mun.append(basename(self.dlg.dir_edif_unique_p2.text()))
+            
+            root_path = dirname(self.dlg.dir_edif_unique_p2.text())
+                                    
+        elif self.dlg.option_multiple_mun_p2.isChecked() == True:
+            
+            # get the result file path
+            output_filename_p2 = self.dlg.string_suffix_multi_p2.text()
+            
+            root_path = self.dlg.dir_root_multi_p2.text()
+            
+            chdir(root_path)
+            
+            # create a list with all the folder contained in the directory provided
+            ls_mun = glob('*')
         
-        # based on the user selection of the option of classification, open the 
-        # csv files of the basic csv file as a dataframe
-        if self.dlg.option_basic_clasif.isChecked():
-            df_clasif_parameters_CSV = read_csv(dirname(__file__) +\
-                                 "\\clasif\\clasificacion_basica.csv")
-                
-        # if it was selected open the intermediate csv as dataframe
-        elif self.dlg.option_intermediate_clasif.isChecked():
-            df_clasif_parameters_CSV = read_csv(dirname(__file__) +\
-                                 "\\clasif\\clasificacion_intermedia.csv")
+        # if no name has been declared assign one
+        if not output_filename_p2:
+            output_filename_p2 = "clasificacion.shp"
+            
+        elif output_filename_p2[-4:] != ".shp":
+            output_filename_p2 = output_filename_p2 + ".shp"
         
-        # for the advanced option get the dataframe from the table present in 
-        # the tab 
-        elif self.dlg.option_advanced_clasif.isChecked():
-            
-            # create a new dataframe
-            df_clasif_parameters_CSV = DataFrame()
-            
-            # count the number of rows and columns of the table
-            n_rows = self.dlg.table_advanced_option.rowCount()        
-            n_cols = self.dlg.table_advanced_option.columnCount()
-            
-            # declare a variable to use as index in the dataframe
-            identifier = 0
-            
-            # iterate over the rows and columns
-            for r in range (0, n_rows):
-                for c in range (0, n_cols):
-                    
-                    # get the column name
-                    col_name = self.dlg.table_advanced_option.horizontalHeaderItem(c).text()
-                    
-                    # get the text saved in the cell
-                    item = self.dlg.table_advanced_option.item(r,c)
-                    
-                    # if there is any value, save the cell value to the item
-                    # with the same position in the dataframe
-                    if item:                
-                        df_clasif_parameters_CSV.loc[int(identifier), col_name] = item.text()
-                        
-                    else:
-                        df_clasif_parameters_CSV.loc[int(identifier), col_name] = ""
-                
-                # updata index value
-                identifier += 1
-                        
-        #----------------------------------------------------------------------
         
-        # get a list with the classes (clasification uses) of the dataframe
-        ls_keys = list(df_clasif_parameters_CSV["Clase"])
+        # set the progress value of the progress bar to 0
+        progress = 0
+        self.dlg.ProgressBar_Edif.setValue(progress)
         
-        # get a list with the categories (string format) that each class has 
-        categories = list(df_clasif_parameters_CSV["Categorias"])
+        # get the caps for each mun execution
+        progress_each_mun = 100/len(ls_mun)
         
-        # create a list to store the lists of each category code
-        ls_cateogories = []
+        z = 0
         
-        # iterate over each cateogry cluster
-        for category in categories:
+        # iterate over all municipalities that the selected directory has
+        for mun in ls_mun:
             
-            # split the string using the comma
-            categories_list = list(category.split(","))
+            progress_cap = progress_each_mun + z * progress_each_mun
             
-            # add the list with the codes to the list with all categories by class
-            ls_cateogories.append(categories_list)
-    
-        # get the labels and colors of each lass
-        labels = list(df_clasif_parameters_CSV["Etiqueta"])
-        colors = list(df_clasif_parameters_CSV["Color"])
-         
-        # create dictionaries with the classes 
-        d_evaluate = dict.fromkeys(ls_keys)
-        d_palettes = dict.fromkeys(ls_keys)
-        d_labels = dict.fromkeys(ls_keys)
-        
-        # index to use on list values extraction
-        i = 0
-        
-        # iterate over one of the dictionaries
-        for key in d_evaluate.keys():
-            
-            # fill the evaluation dictionary with the list of categories codes
-            d_evaluate[key] = ls_cateogories[i]  
-            
-            # fill the class dictionary with its labels 
-            d_labels[key] = labels[i]
-            
-            # if a color is present, fill it 
-            if colors[i]:
-                d_palettes[key] = colors[i]
-            
-            # in other case generate a random one
-            else:
-                d_palettes[key] = random_color()
-            
-            i+=1
-        
-        # add a colo and label to a static uses that always will be present
-        d_palettes["SIN_EDIF"] = '#D5D8DC'
-        d_palettes["OTROS"] = '#999999'
-        
-        d_labels["SIN_EDIF"] = 'Sin edificar'
-        d_labels["OTROS"] = 'Otros' 
-            
-        # in the intermediate clase add label and color to the mixed values
-        if self.dlg.option_intermediate_clasif.isChecked():
-            
-            d_palettes["RES_UNI_MX"] = '#D98880'
-            d_palettes["RES_PLU_MX"] = '#F1948A'
-            d_palettes["IND_MX"] = '#BB8FCE'
-            
-            d_labels["RES_UNI_MX"] = 'Residencial unifamiliar mixto'
-            d_labels["RES_PLU_MX"] = 'Residencial plurifamiliar mixto'
-            d_labels["IND_MX"] = 'Industrial mixto'
-        
-        # for the advanced option, for tha cases where mixed use posibility is
-        # given , generate a label and random color for that class
-        elif self.dlg.option_advanced_clasif.isChecked():
-            
-            for index, row in df_clasif_parameters_CSV.iterrows():
-                try:
-                    if float(row["%"]) > 0:
-                        
-                        new_class = row["Clase"] + "_MX"
-                        
-                        d_labels[new_class] = row["Etiqueta"] + " mixto"
-                        d_palettes[new_class] = random_color()
-                except:
-                    pass
-               
-        #----------------------------------------------------------------------
-        
-        # generate a list to store the selected classes to classify
-        ls_selected = []
-        
-        # dictionary to store the mixed values
-        d_mixed = dict()
-        
-        # declaring a list variable to store differente variables to pass to 
-        # later flexible function
-        variables = []
-        
-        # if basic option was selected, add the classes if they are checked
-        # set the threshold of non_edified parcel to 0 (only is the parcel has 0
-        # are aedified will be considered as non edified), and select the option
-        # basic on the use definir function
-        if self.dlg.option_basic_clasif.isChecked():
-            
-            if self.dlg.Checkbox_Resi.isChecked() == True:
-                ls_selected.append("RES")
-            if self.dlg.Checkbox_Indus.isChecked() == True:
-                ls_selected.append("IND")
-            if self.dlg.Checkbox_Equip.isChecked() == True:
-                ls_selected.append("EQUIP")
-            if self.dlg.Checkbox_Com_Ofi.isChecked() == True:
-                ls_selected.append("COM_OFI")
-            if self.dlg.Checkbox_Ed_Sing.isChecked() == True:
-                ls_selected.append("ED_SING")
-            if self.dlg.Checkbox_Oc_Res.isChecked() == True:
-                ls_selected.append("OC_RES")
-            if self.dlg.Checkbox_Ed_Sing.isChecked() == True:
-                ls_selected.append("ED_SING")
-                
-            value_threshold_not_built = 0
-            
-            use_definer = use_function_definer(selection = "basic")
-                
-        #----------------------------------------------------------------------
-        
-        # if intermediate option was selected, add the checked classes, set threshold 
-        # to user defined or 0 if it was not and append variable values to the
-        # list that later will be passes to use definer function. In this case,
-        # mixed uses are present, and their definition is based on percentages.
-        elif self.dlg.option_intermediate_clasif.isChecked():
-                                
-            if self.dlg.Checkbox_resi_unif.isChecked() == True:
-                ls_selected.append("RES_UNI")
-            if self.dlg.Checkbox_resi_plu.isChecked() == True:
-                ls_selected.append("RES_PLU")
-            if self.dlg.Checkbox_Indus_2.isChecked() == True:
-                ls_selected.append("IND")
-            if self.dlg.Checkbox_ofi.isChecked() == True:
-                ls_selected.append("OFI")                
-            if self.dlg.Checkbox_equip_edu.isChecked() == True:
-                ls_selected.append("EQUIP_EDU")
-            if self.dlg.Checkbox_equip_sanit.isChecked() == True:
-                ls_selected.append("EQUIP_SANI")
-            if self.dlg.Checkbox_equip_otros.isChecked() == True:
-                ls_selected.append("EQUIP_OTR")
-            if self.dlg.Checkbox_comercio.isChecked() == True:
-                ls_selected.append("COM")
-            if self.dlg.Checkbox_hos_resta.isChecked() == True:
-                ls_selected.append("HOS_REST")
-            if self.dlg.Checkbox_ocio_esp.isChecked() == True:
-                ls_selected.append("OCIO_ESP")
-            if self.dlg.Checkbox_edif_sing.isChecked() == True:
-                ls_selected.append("ED_SING")
-                
-            #------------------------------------------------------------------   
-            # Mixed uses. Get the slider values to define them and create a cluster
-            # of codes that will also be counted as pure use, independently of 
-            # the percentages
-            
-            # list with specific codes that will be used as cluster to define
-            # pure residential use as a combination with this ones
-            conglomerate_include = ["0221", "0213", "0511", "0521", "0512", "0522"]
-            
-            # create a list with the codes of the unifamily residentials 
-            # alongside the conglomerates to work as a pure cluster
-            congregated_list_resi_uni = deepcopy(d_evaluate["RES_UNI"])
-            congregated_list_resi_uni.extend(conglomerate_include)
-            
-            # create a list with the codes of the multifamily residentials 
-            # alongside the conglomerates to work as a pure cluster
-            congregated_list_resi_plu = deepcopy(d_evaluate["RES_PLU"])
-            congregated_list_resi_plu.extend(conglomerate_include)
-            
-            if self.dlg.Checkbox_resi_uni_mix.isChecked() == True and\
-                self.dlg.Checkbox_resi_uni_mix.isEnabled() == True:
-                    
-                d_mixed["RES_UNI"] = self.dlg.slider_threshold_uni.value()
-                
-            #------------------------------------------------------------------     
-            if self.dlg.Checkbox_resi_plu_mix.isChecked() == True and\
-                self.dlg.Checkbox_resi_plu_mix.isEnabled() == True:
-                    
-                d_mixed["RES_PLU"] = self.dlg.slider_threshold_plu.value()
-                
-            #------------------------------------------------------------------    
-            if self.dlg.Checkbox_Indus_mix.isChecked() == True and\
-                self.dlg.Checkbox_Indus_mix.isEnabled() == True:
-                    
-                d_mixed["IND"] = self.dlg.slider_threshold_ind.value()
-            
-            #------------------------------------------------------------------
-            
-            if self.dlg.Checkbox_threshold_not_built.isChecked() == True:
-                value_threshold_not_built = float(self.dlg.slider_threshold_not_built.value() / 100)
-                
-            else:
-                value_threshold_not_built = 0
-            
-            #------------------------------------------------------------------
-            
-            use_definer = use_function_definer(selection = "intermediate")
-            
-            variables.append(d_mixed)
-            variables.append(congregated_list_resi_uni)
-            variables.append(congregated_list_resi_plu)
-            
-        #----------------------------------------------------------------------
-        
-        # if advanced option was selected extract the information of the tab 
-        # table 
-        elif self.dlg.option_advanced_clasif.isChecked():
-            
-            # get the rows (number of classes)
-            n_rows = self.dlg.table_advanced_option.rowCount()        
-            
-            for r in range (0, n_rows):
-                
-                # get the item related to the check/uncheck state
-                item = self.dlg.table_advanced_option.item(r, 0)
-                     
-                # if it was checked
-                if item.checkState() == 2:
-                    
-                    # get the class name
-                    class_item = self.dlg.table_advanced_option.item(r, 1).text()
-                    
-                    # append it to the list of selected ones to perform the analysis
-                    ls_selected.append(class_item)
-                    
-                    # get the purity required for that class
-                    try:
-                        purity =  float(self.dlg.table_advanced_option.item(r, 4).text())
-                        
-                    except:
-                        purity = 0
-                    
-                    # if the purity is greater thatn 0, means user wants to 
-                    # include a mixed class additional to 'pure' one
-                    if purity > 0:
-                        
-                        d_mixed[class_item] = purity
+            # generate a filepath of the mun to contain the results
+            out_dir = join(root_path, mun)
+                                    
+            # get the input/output paths            
+            if self.dlg.option_single_mun_p2.isChecked() == True:
+                filepath_edif_SHP_input = self.dlg.dir_edif_unique_p2.text()
+                filepath_clasif_SHP_output = dir_clasif_result
 
-            # same as on inremediate, get the non edified minimum value
-            if self.dlg.Checkbox_threshold_not_built_2.isChecked() == True:
-                value_threshold_not_built = float(self.dlg.slider_threshold_not_built_2.value() / 100)
+            elif self.dlg.option_multiple_mun_p2.isChecked() == True:
+                filepath_edif_SHP_input = join(out_dir, "procesado_" + mun + ".shp")
+                filepath_clasif_SHP_output = join(out_dir, output_filename_p2)
                 
-            else:
-                value_threshold_not_built = 0
-            
-            # select the advanced method con the user definer function
-            use_definer = use_function_definer(selection = "advanced")
-            
-            variables.append(d_mixed)
-        
-        #----------------------------------------------------------------------
-        
-        # copy the edfication shapefile (the one first process generates)
-        ruta_dbf = shp_copy(filepath_edif_SHP_input, filepath_clasif_SHP_output)
-        
-        # get the raw name of the coppied file, to give it to QGIS layer 
-        new_file_name = basename(ruta_dbf)[:-4]
-        
-        # read the copy as a QGIS layer
-        layer = QgsVectorLayer(ruta_dbf, new_file_name, "ogr")
-        layer_provider = layer.dataProvider()
-        
-        #----------------------------------------------------------------------
-    
-        # save the fields names of the layer
-        columns_1 = layer.fields().names()
-        
-        # get the index of the last field 
-        index_last_field = columns_1.index("NUM_INM_R")
+            # if the directory has the file of the previous process continue 
+            # with the rest of operations
+            if isfile(filepath_edif_SHP_input) == True:
 
-        # get the use list by selecting the ones from the last one that is not
-        # a codification one
-        list_uses = columns_1[index_last_field + 1:len(columns_1)]
-        
-        # get a list with the keys of the selected classes
-        list_equiv = list(d_evaluate.keys())
-          
-        #----------------------------------------------------------------------
-        
-        # add new the columns of use and the proportion of edified area to the
-        # classification (result) shpaefile
-        layer_provider.addAttributes([QgsField("USO", QVariant.String)])
-        layer_provider.addAttributes([QgsField("PROP_AE_AT", QVariant.Double)])
-
-        # add the classification uses fields to the new shapefile
-        for use in list_equiv:
-            layer_provider.addAttributes([QgsField(use, QVariant.Int)])
-        
-        # update fields and layer provider
-        layer.updateFields()
-        layer_provider = layer.dataProvider()
-            
-        self.dlg.ProgressBar_Clasif.setValue(1)
-        
-        # get maximum iteration number for the progress bar
-        max_iter = layer.featureCount()
-
-        # get all the features        
-        features = layer.getFeatures()
-        
-        # get the new column name names
-        columns_2 = layer.fields().names()
-        
-        # append the list of the columns to the variables to pass to the use 
-        # definer function
-        variables.append(columns_2)
-        
-        # save the index of the fields of use and proportion
-        use_column_index = columns_2.index("USO")
-        prop_column_index = columns_2.index("PROP_AE_AT")
-        
-        # start the editing of the layer
-        layer.startEditing()
-
-        # iterate over all features
-        for f in features:
-            
-            # get the id
-            f_id = f.id()
-            
-            # get the feature(parcel) total area
-            total_parcel_Area = f["AREA"]
-            
-            # get its surface built area
-            built_area = max(f["SUP_ED_0"], f["SUP_ED_1"])
-            
-            # get the total built area
-            built_area_2 = f["A_TOT_EDIF"]
-                       
-            #------------------------------------------------------------------
-            
-            # the proportion value depends on if the floor 0 or 1 are relevat 
-            # to dermine it. If it is not (cause floor codification could not 
-            # be transformed to int) total edified area will be used
-            if total_parcel_Area > 0:
-                proportion = (built_area/total_parcel_Area)
-                proportion_2 = (built_area_2/total_parcel_Area)
-                
-            else:
-                proportion = 0
-                proportion_2 = 0
-         
-            if proportion > 0:
-                proportion_value = proportion
-                
-            else:
-                proportion_value = proportion_2
-                
-            #------------------------------------------------------------------
-            
-            # create a variable to store the use of the parcel
-            use = None
-            
-            # if the proportion of edified area is equal or lesser to the 
-            # threshold given, its use will be 'non_edified'
-            if (proportion_value <= value_threshold_not_built):
-                use = "SIN_EDIF" 
-                    
-            # create a dictionary to store the percentages for each class
-            d_feature_values = dict.fromkeys(list_equiv, 0)
-            
-            # if it doesn't have already an use ('non_edified')
-            if not use:
-            
-                # iterate over the possible classes that are declared
-                for use2 in list_equiv:
-                    
-                    # create a variable for that use
-                    use_area = 0 
-                    
-                    # get the codes that belong to that class
-                    equiv = d_evaluate[use2] 
-                    
-                    # itera over all the codes of that class
-                    for e in equiv:
+                # based on the user selection of the option of classification, open the 
+                # csv files of the basic csv file as a dataframe
+                if self.dlg.option_basic_clasif.isChecked():
+                    df_clasif_parameters_CSV = read_csv(dirname(__file__) +\
+                                         "\\clasif\\clasificacion_basica.csv")
                         
-                        # if the use is present in the list of possible uses
-                        # that are present in the shapefile
-                        if e in list_uses:
+                # if it was selected open the intermediate csv as dataframe
+                elif self.dlg.option_intermediate_clasif.isChecked():
+                    df_clasif_parameters_CSV = read_csv(dirname(__file__) +\
+                                         "\\clasif\\clasificacion_intermedia.csv")
+                
+                # for the advanced option get the dataframe from the table present in 
+                # the tab 
+                elif self.dlg.option_advanced_clasif.isChecked():
+                    
+                    # create a new dataframe
+                    df_clasif_parameters_CSV = DataFrame()
+                    
+                    # count the number of rows and columns of the table
+                    n_rows = self.dlg.table_advanced_option.rowCount()        
+                    n_cols = self.dlg.table_advanced_option.columnCount()
+                    
+                    # declare a variable to use as index in the dataframe
+                    identifier = 0
+                    
+                    # iterate over the rows and columns
+                    for r in range (0, n_rows):
+                        for c in range (0, n_cols):
                             
-                            # add up the built are of that use of that feature
-                            use_area += f[e]
+                            # get the column name
+                            col_name = self.dlg.table_advanced_option.horizontalHeaderItem(c).text()
+                            
+                            # get the text saved in the cell
+                            item = self.dlg.table_advanced_option.item(r,c)
+                            
+                            # if there is any value, save the cell value to the item
+                            # with the same position in the dataframe
+                            if item:                
+                                df_clasif_parameters_CSV.loc[int(identifier), col_name] = item.text()
+                                
+                            else:
+                                df_clasif_parameters_CSV.loc[int(identifier), col_name] = ""
+                        
+                        # updata index value
+                        identifier += 1
+                                
+                #----------------------------------------------------------------------
+                
+                # get a list with the classes (clasification uses) of the dataframe
+                ls_keys = list(df_clasif_parameters_CSV["Clase"])
+                
+                # get a list with the categories (string format) that each class has 
+                categories = list(df_clasif_parameters_CSV["Categorias"])
+                
+                # create a list to store the lists of each category code
+                ls_cateogories = []
+                
+                # iterate over each cateogry cluster
+                for category in categories:
                     
-                    # the built proportion of that use is calculated
-                    if use_area > 0:
-                        value = (use_area/f["A_TOT_EDIF"])*100
+                    # split the string using the comma
+                    categories_list = list(category.split(","))
+                    
+                    # add the list with the codes to the list with all categories by class
+                    ls_cateogories.append(categories_list)
+            
+                # get the labels and colors of each lass
+                labels = list(df_clasif_parameters_CSV["Etiqueta"])
+                colors = list(df_clasif_parameters_CSV["Color"])
+                 
+                # create dictionaries with the classes 
+                d_evaluate = dict.fromkeys(ls_keys)
+                d_palettes = dict.fromkeys(ls_keys)
+                d_labels = dict.fromkeys(ls_keys)
+                
+                # index to use on list values extraction
+                i = 0
+                
+                # iterate over one of the dictionaries
+                for key in d_evaluate.keys():
+                    
+                    # fill the evaluation dictionary with the list of categories codes
+                    d_evaluate[key] = ls_cateogories[i]  
+                    
+                    # fill the class dictionary with its labels 
+                    d_labels[key] = labels[i]
+                    
+                    # if a color is present, fill it 
+                    if colors[i]:
+                        d_palettes[key] = colors[i]
+                    
+                    # in other case generate a random one
+                    else:
+                        d_palettes[key] = random_color()
+                    
+                    i+=1
+                
+                # add a colo and label to a static uses that always will be present
+                d_palettes["SIN_EDIF"] = '#D5D8DC'
+                d_palettes["OTROS"] = '#999999'
+                d_palettes["ZON_VER"] = '#72CF72'
+                
+                d_labels["SIN_EDIF"] = 'Sin edificar'
+                d_labels["OTROS"] = 'Otros' 
+                d_labels["ZON_VER"] = 'Zonas verdes'
+                    
+                # in the intermediate clase add label and color to the mixed values
+                if self.dlg.option_intermediate_clasif.isChecked():
+                    
+                    d_palettes["RES_UNI_MX"] = '#D98880'
+                    d_palettes["RES_PLU_MX"] = '#F1948A'
+                    d_palettes["IND_MX"] = '#BB8FCE'
+                    
+                    d_labels["RES_UNI_MX"] = 'Residencial unifamiliar mixto'
+                    d_labels["RES_PLU_MX"] = 'Residencial plurifamiliar mixto'
+                    d_labels["IND_MX"] = 'Industrial mixto'
+                
+                # for the advanced option, for tha cases where mixed use posibility is
+                # given , generate a label and random color for that class
+                elif self.dlg.option_advanced_clasif.isChecked():
+                    
+                    for index, row in df_clasif_parameters_CSV.iterrows():
+                        try:
+                            if float(row["%"]) > 0:
+                                
+                                new_class = row["Clase"] + "_MX"
+                                
+                                d_labels[new_class] = row["Etiqueta"] + " mixto"
+                                d_palettes[new_class] = random_color()
+                        except:
+                            pass
+                       
+                #----------------------------------------------------------------------
+                
+                # generate a list to store the selected classes to classify
+                ls_selected = []
+                
+                # dictionary to store the mixed values
+                d_mixed = dict()
+                
+                # declaring a list variable to store differente variables to pass to 
+                # later flexible function
+                variables = []
+                
+                # if basic option was selected, add the classes if they are checked
+                # set the threshold of non_edified parcel to 0 (only is the parcel has 0
+                # are aedified will be considered as non edified), and select the option
+                # basic on the use definir function
+                if self.dlg.option_basic_clasif.isChecked():
+                    
+                    if self.dlg.Checkbox_Resi.isChecked() == True:
+                        ls_selected.append("RES")
+                    if self.dlg.Checkbox_Indus.isChecked() == True:
+                        ls_selected.append("IND")
+                    if self.dlg.Checkbox_Equip.isChecked() == True:
+                        ls_selected.append("EQUIP")
+                    if self.dlg.Checkbox_Com_Ofi.isChecked() == True:
+                        ls_selected.append("COM_OFI")
+                    if self.dlg.Checkbox_Ed_Sing.isChecked() == True:
+                        ls_selected.append("ED_SING")
+                    if self.dlg.Checkbox_Oc_Res.isChecked() == True:
+                        ls_selected.append("OC_RES")
+                    if self.dlg.Checkbox_Ed_Sing.isChecked() == True:
+                        ls_selected.append("ED_SING")
+                        
+                    value_threshold_not_built = 0
+                    
+                    use_definer = use_function_definer(selection = "basic")
+                        
+                #----------------------------------------------------------------------
+                
+                # if intermediate option was selected, add the checked classes, set threshold 
+                # to user defined or 0 if it was not and append variable values to the
+                # list that later will be passes to use definer function. In this case,
+                # mixed uses are present, and their definition is based on percentages.
+                elif self.dlg.option_intermediate_clasif.isChecked():
+                                        
+                    if self.dlg.Checkbox_resi_unif.isChecked() == True:
+                        ls_selected.append("RES_UNI")
+                    if self.dlg.Checkbox_resi_plu.isChecked() == True:
+                        ls_selected.append("RES_PLU")
+                    if self.dlg.Checkbox_Indus_2.isChecked() == True:
+                        ls_selected.append("IND")
+                    if self.dlg.Checkbox_ofi.isChecked() == True:
+                        ls_selected.append("OFI")                
+                    if self.dlg.Checkbox_equip_edu.isChecked() == True:
+                        ls_selected.append("EQUIP_EDU")
+                    if self.dlg.Checkbox_equip_sanit.isChecked() == True:
+                        ls_selected.append("EQUIP_SANI")
+                    if self.dlg.Checkbox_equip_otros.isChecked() == True:
+                        ls_selected.append("EQUIP_OTR")
+                    if self.dlg.Checkbox_comercio.isChecked() == True:
+                        ls_selected.append("COM")
+                    if self.dlg.Checkbox_hos_resta.isChecked() == True:
+                        ls_selected.append("HOS_REST")
+                    if self.dlg.Checkbox_ocio_esp.isChecked() == True:
+                        ls_selected.append("OCIO_ESP")
+                    if self.dlg.Checkbox_edif_sing.isChecked() == True:
+                        ls_selected.append("ED_SING")
+                        
+                    #------------------------------------------------------------------   
+                    # Mixed uses. Get the slider values to define them and create a cluster
+                    # of codes that will also be counted as pure use, independently of 
+                    # the percentages
+                    
+                    # list with specific codes that will be used as cluster to define
+                    # pure residential use as a combination with this ones
+                    conglomerate_include = ["0221", "0213", "0511", "0521", "0512", "0522"]
+                    
+                    # create a list with the codes of the unifamily residentials 
+                    # alongside the conglomerates to work as a pure cluster
+                    congregated_list_resi_uni = deepcopy(d_evaluate["RES_UNI"])
+                    congregated_list_resi_uni.extend(conglomerate_include)
+                    
+                    # create a list with the codes of the multifamily residentials 
+                    # alongside the conglomerates to work as a pure cluster
+                    congregated_list_resi_plu = deepcopy(d_evaluate["RES_PLU"])
+                    congregated_list_resi_plu.extend(conglomerate_include)
+                    
+                    if self.dlg.Checkbox_resi_uni_mix.isChecked() == True and\
+                        self.dlg.Checkbox_resi_uni_mix.isEnabled() == True:
+                            
+                        d_mixed["RES_UNI"] = self.dlg.slider_threshold_uni.value()
+                        
+                    #------------------------------------------------------------------     
+                    if self.dlg.Checkbox_resi_plu_mix.isChecked() == True and\
+                        self.dlg.Checkbox_resi_plu_mix.isEnabled() == True:
+                            
+                        d_mixed["RES_PLU"] = self.dlg.slider_threshold_plu.value()
+                        
+                    #------------------------------------------------------------------    
+                    if self.dlg.Checkbox_Indus_mix.isChecked() == True and\
+                        self.dlg.Checkbox_Indus_mix.isEnabled() == True:
+                            
+                        d_mixed["IND"] = self.dlg.slider_threshold_ind.value()
+                    
+                    #------------------------------------------------------------------
+                    
+                    if self.dlg.Checkbox_threshold_not_built.isChecked() == True:
+                        value_threshold_not_built = float(self.dlg.slider_threshold_not_built.value() / 100)
                         
                     else:
-                        value = 0
+                        value_threshold_not_built = 0
                     
-                    # store the proportion
-                    d_feature_values[use2] = value
+                    #------------------------------------------------------------------
+                    
+                    use_definer = use_function_definer(selection = "intermediate")
+                    
+                    variables.append(d_mixed)
+                    variables.append(congregated_list_resi_uni)
+                    variables.append(congregated_list_resi_plu)
+                    
+                #----------------------------------------------------------------------
+                
+                # if advanced option was selected extract the information of the tab 
+                # table 
+                elif self.dlg.option_advanced_clasif.isChecked():
+                    
+                    # get the rows (number of classes)
+                    n_rows = self.dlg.table_advanced_option.rowCount()        
+                    
+                    for r in range (0, n_rows):
                         
-                # list to store the percentages
-                lv = []
-                
-                # iterate over the uses and append its percentage
-                for use in list_equiv:
-                    lv.append(d_feature_values[use])
-             
-                # copy the list with the percentages and sort it from max to min
-                lv_s = deepcopy(lv)
-                lv_s.sort(reverse = True)
-                
-                # create a list to store the names of the class
-                lv_s_names = []
-             
-                # fill the name list with the name of the max-to-min list, if 
-                # it is grater than 0
-                for i in range (0, len(lv_s)): 
-                    if lv_s[i] > 0:           
-                        lv_s_names.append(list_equiv[lv.index(lv_s[i])])
-                
-                # if there is at least one use that have a percentage greater
-                # than 0
-                if len(lv_s_names) > 0:
-                    
-                    # execute the use definer function to get the use the parcel
-                    use = use_definer(f, d_feature_values, lv_s_names,
-                                      ls_selected, variables)
-                else:
-                    # any other case, put it in 'others'
-                    use = "OTROS"
-            
-            # use the keys of the dictionary used for each feature to store the
-            # percentage values to the feature, using the indexers and layer
-            # provider
-            for key in d_feature_values.keys():
-                
-                use_index = columns_2.index(key)
-                use_percentage_adjudication = {use_index:d_feature_values[key]}
-                layer_provider.changeAttributeValues({f_id:use_percentage_adjudication})
-            
-            # save the use to the feature field
-            use_adjudication = {use_column_index:use}
-            layer_provider.changeAttributeValues({f_id:use_adjudication})
-            
-            # save the proportion value to the feature field
-            proportion_value_adjudication = {prop_column_index:proportion_value}
-            layer_provider.changeAttributeValues({f_id:proportion_value_adjudication})
-            
-            # update progress bar
-            self.dlg.ProgressBar_Clasif.setValue(1 + 99 * (f_id/max_iter))
-
-        # save the changes made by calling the commit changes to layer
-        layer.commitChanges()
-
-        # delete the unnecesary fields (areas of each code)
-        use_list_indexers = [i for i in range(index_last_field + 1, len(columns_1))]
-        layer_provider.deleteAttributes(use_list_indexers)        
-        layer.updateFields()
+                        # get the item related to the check/uncheck state
+                        item = self.dlg.table_advanced_option.item(r, 0)
+                             
+                        # if it was checked
+                        if item.checkState() == 2:
+                            
+                            # get the class name
+                            class_item = self.dlg.table_advanced_option.item(r, 1).text()
+                            
+                            # append it to the list of selected ones to perform the analysis
+                            ls_selected.append(class_item)
+                            
+                            # get the purity required for that class
+                            try:
+                                purity =  float(self.dlg.table_advanced_option.item(r, 4).text())
+                                
+                            except:
+                                purity = 0
+                            
+                            # if the purity is greater thatn 0, means user wants to 
+                            # include a mixed class additional to 'pure' one
+                            if purity > 0:
+                                
+                                d_mixed[class_item] = purity
         
+                    # same as on inremediate, get the non edified minimum value
+                    if self.dlg.Checkbox_threshold_not_built_2.isChecked() == True:
+                        value_threshold_not_built = float(self.dlg.slider_threshold_not_built_2.value() / 100)
+                        
+                    else:
+                        value_threshold_not_built = 0
+                    
+                    # select the advanced method con the user definer function
+                    use_definer = use_function_definer(selection = "advanced")
+                    
+                    variables.append(d_mixed)
+                
+                #----------------------------------------------------------------------
+                
+                # copy the edfication shapefile (the one first process generates)
+                ruta_dbf = shp_copy(filepath_edif_SHP_input, filepath_clasif_SHP_output)
+                
+                # get the raw name of the coppied file, to give it to QGIS layer 
+                new_file_name = basename(ruta_dbf)[:-4]
+                
+                # read the copy as a QGIS layer
+                layer = QgsVectorLayer(ruta_dbf, new_file_name, "ogr")
+                layer_provider = layer.dataProvider()
+                
+                #----------------------------------------------------------------------
+            
+                # save the fields names of the layer
+                columns_1 = layer.fields().names()
+                
+                # get the index of the last field 
+                index_last_field = columns_1.index("NUM_INM_R")
+        
+                # get the use list by selecting the ones from the last one that is not
+                # a codification one
+                list_uses = columns_1[index_last_field + 1:len(columns_1)]
+                
+                # get a list with the keys of the selected classes
+                list_equiv = list(d_evaluate.keys())
+                  
+                #----------------------------------------------------------------------
+                
+                # add new the columns of use and the proportion of edified area to the
+                # classification (result) shpaefile
+                layer_provider.addAttributes([QgsField("USO", QVariant.String)])
+                layer_provider.addAttributes([QgsField("PROP_AE_AT", QVariant.Double)])
+        
+                # add the classification uses fields to the new shapefile
+                for use in list_equiv:
+                    layer_provider.addAttributes([QgsField(use, QVariant.Int)])
+                
+                # update fields and layer provider
+                layer.updateFields()
+                layer_provider = layer.dataProvider()
+                    
+                
+                progress = 0.01 * progress_each_mun + (z * progress_each_mun)
+                self.dlg.ProgressBar_Clasif.setValue(progress)
+                
+                # get maximum iteration number for the progress bar
+                max_iter = layer.featureCount()
+                    
+                progress_cap_p1 = 0.99 * progress_cap
+                current_progress = progress
+        
+                # get all the features        
+                features = layer.getFeatures()
+                
+                # get the new column name names
+                columns_2 = layer.fields().names()
+                
+                # append the list of the columns to the variables to pass to the use 
+                # definer function
+                variables.append(columns_2)
+                
+                # save the index of the fields of use and proportion
+                use_column_index = columns_2.index("USO")
+                prop_column_index = columns_2.index("PROP_AE_AT")
+                
+                # start the editing of the layer
+                layer.startEditing()
+        
+                # iterate over all features
+                for f in features:
+                    
+                    # get the id
+                    f_id = f.id()
+                    
+                    # get the feature(parcel) total area
+                    total_parcel_Area = f["AREA"]
+                    
+                    # get its surface built area
+                    built_area = max(f["SUP_ED_0"], f["SUP_ED_1"])
+                    
+                    # get the total built area
+                    built_area_2 = f["A_TOT_EDIF"]
+                               
+                    #------------------------------------------------------------------
+                    
+                    # the proportion value depends on if the floor 0 or 1 are relevat 
+                    # to dermine it. If it is not (cause floor codification could not 
+                    # be transformed to int) total edified area will be used
+                    if total_parcel_Area > 0:
+                        proportion = (built_area/total_parcel_Area)
+                        proportion_2 = (built_area_2/total_parcel_Area)
+                        
+                    else:
+                        proportion = 0
+                        proportion_2 = 0
+                 
+                    if proportion > 0:
+                        proportion_value = proportion
+                        
+                    else:
+                        proportion_value = proportion_2
+                        
+                    #------------------------------------------------------------------
+                    
+                    # create a variable to store the use of the parcel
+                    use = None
+                    
+                    # if the proportion of edified area is equal or lesser to the 
+                    # threshold given, its use will be 'non_edified'
+                    if (proportion_value <= value_threshold_not_built):
+                        use = "SIN_EDIF" 
+                            
+                    # create a dictionary to store the percentages for each class
+                    d_feature_values = dict.fromkeys(list_equiv, 0)
+                    
+                    # if it doesn't have already an use ('non_edified')
+                    if not use:
+                    
+                        # iterate over the possible classes that are declared
+                        for use2 in list_equiv:
+                            
+                            # create a variable for that use
+                            use_area = 0 
+                            
+                            # get the codes that belong to that class
+                            equiv = d_evaluate[use2] 
+                            
+                            # itera over all the codes of that class
+                            for e in equiv:
+                                
+                                # if the use is present in the list of possible uses
+                                # that are present in the shapefile
+                                if e in list_uses:
+                                    
+                                    # add up the built are of that use of that feature
+                                    use_area += f[e]
+                            
+                            # the built proportion of that use is calculated
+                            if use_area > 0:
+                                value = (use_area/f["A_TOT_EDIF"])*100
+                                
+                            else:
+                                value = 0
+                            
+                            # store the proportion
+                            d_feature_values[use2] = value
+                                
+                        # list to store the percentages
+                        lv = []
+                        
+                        # iterate over the uses and append its percentage
+                        for use in list_equiv:
+                            lv.append(d_feature_values[use])
+                     
+                        # copy the list with the percentages and sort it from max to min
+                        lv_s = deepcopy(lv)
+                        lv_s.sort(reverse = True)
+                        
+                        # create a list to store the names of the class
+                        lv_s_names = []
+                     
+                        # fill the name list with the name of the max-to-min list, if 
+                        # it is grater than 0
+                        for i in range (0, len(lv_s)): 
+                            if lv_s[i] > 0:           
+                                lv_s_names.append(list_equiv[lv.index(lv_s[i])])
+                        
+                        # if there is at least one use that have a percentage greater
+                        # than 0
+                        if len(lv_s_names) > 0:
+                            
+                            # execute the use definer function to get the use the parcel
+                            use = use_definer(f, d_feature_values, lv_s_names,
+                                              ls_selected, variables)
+                        else:
+                            # any other case, put it in 'others'
+                            use = "OTROS"
+                    
+                    # use the keys of the dictionary used for each feature to store the
+                    # percentage values to the feature, using the indexers and layer
+                    # provider
+                    for key in d_feature_values.keys():
+                        
+                        use_index = columns_2.index(key)
+                        use_percentage_adjudication = {use_index:d_feature_values[key]}
+                        layer_provider.changeAttributeValues({f_id:use_percentage_adjudication})
+                    
+                    # save the use to the feature field
+                    use_adjudication = {use_column_index:use}
+                    layer_provider.changeAttributeValues({f_id:use_adjudication})
+                    
+                    # save the proportion value to the feature field
+                    proportion_value_adjudication = {prop_column_index:proportion_value}
+                    layer_provider.changeAttributeValues({f_id:proportion_value_adjudication})
+                        
+                    # update progress bar
+                    progress = current_progress + progress_cap_p1 * (f_id/max_iter)
+    
+                    self.dlg.ProgressBar_Clasif.setValue(progress)
+        
+                # save the changes made by calling the commit changes to layer
+                layer.commitChanges()
+        
+                # delete the unnecesary fields (areas of each code)
+                use_list_indexers = [i for i in range(index_last_field + 1, len(columns_1))]
+                layer_provider.deleteAttributes(use_list_indexers)        
+                layer.updateFields()
+                
+                # lastly, check if green zones have to be included
+                if self.dlg.checkbox_zonas_verdes.isChecked():
+
+                    # Define the CRS of the OSM Overpass query
+                    crs_OSM = QgsCoordinateReferenceSystem('EPSG:4326')
+                                        
+                    # Get the bounding box of the municipality layer in the 
+                    # right CRS
+                    bbox_layer = QgsCoordinateTransform(layer.crs(), crs_OSM, QgsProject.instance()).transformBoundingBox(layer.extent())
+
+                    # get the bbox in an apropriate format
+                    bbox_QUERY = (bbox_layer.yMinimum(), bbox_layer.xMinimum(), bbox_layer.yMaximum(), bbox_layer.xMaximum())
+                    
+                    # get the green using the bbox
+                    green_zones_layer = get_green_zones(bbox_QUERY)
+                    
+                    # reproject it to 25830 since it is in 4326
+                    gz_layer_reproj = processing.run("native:reprojectlayer",
+                                                     {"INPUT": green_zones_layer,
+                                                     "TARGET_CRS": QgsCoordinateReferenceSystem('EPSG:25830'),
+                                                     "OUTPUT": "memory:"})["OUTPUT"]
+                    # start eiting both layers
+                    layer.startEditing()
+                    gz_layer_reproj.startEditing()
+                    
+                    # add ID and AR_OL_ZV (Overlay Green Zone Area) to the
+                    # classification layer
+                    layer.addExpressionField('$id', QgsField('ID', QVariant.Int))
+                    layer_provider.addAttributes([QgsField('AR_OL_ZV', QVariant.Double)])
+                    
+                    # update the fiels
+                    layer.updateFields()
+                                   
+                    # get the patial inex of the green zones layer
+                    green_zones_index = QgsSpatialIndex(gz_layer_reproj.getFeatures())
+                
+                    # get all the features that has been classified as 'non built'
+                    # in the previous operations
+                    feats_sin_edif = []
+                    for feature in layer.getFeatures(QgsFeatureRequest().setFilterExpression('"USO"=\'SIN_EDIF\'')):
+                        feats_sin_edif.append(feature)
+                    
+                    # create a list to store all the features that will change 
+                    # their use to 'green zones'
+                    feats_selected = []
+                    for feature in feats_sin_edif: # iterate over all the 'non edified features'
+                    
+                        # get the IDs of the green zones that intersects with 
+                        # the feature, using spatial indexing to improve performance
+                        intersected_ids = green_zones_index.intersects(feature.geometry().boundingBox())
+                        
+                        # iterate over the IDs of intersecting green zones 
+                        for intersected_id in intersected_ids:
+                            
+                            # get the intersected feature with the green zone layer
+                            intersected_feature = gz_layer_reproj.getFeature(intersected_id)
+                            
+                            # get reat intersection between both geometries,
+                            # and store the pair if they intersect
+                            if intersected_feature.geometry().intersects(feature.geometry()):
+                                feats_selected.append((feature, intersected_feature))
+                    
+                    # create a dictionary to store the intersection areas
+                    d_ZV_IDs = {}
+                    
+                    # iterate over the intersection pairs (layer feature - green zone feature)
+                    for feature, intersected_feature in feats_selected:
+                        
+                        # create a variable to sotre the intersection area
+                        overlayed_area = 0
+                        
+                        # compute the intersetcion
+                        intersection = feature.geometry().intersection(intersected_feature.geometry())
+                        overlayed_area += intersection.area() #store the area
+                        
+                        # add the value to the areas dictionary
+                        if feature.id() in d_ZV_IDs:
+                            d_ZV_IDs[feature.id()] += overlayed_area
+                        else:
+                            d_ZV_IDs[feature.id()] = overlayed_area
+                    
+                    # Get the index of the 'AR_OL_ZV' field
+                    ar_ol_zv_index = layer.fields().indexFromName('AR_OL_ZV')
+                                        
+                    # Loop over the features in the layer and update the 'AR_OL_ZV' attribute
+                    for feature in layer.getFeatures():
+                        feature_id = feature.id()
+                        if feature_id in d_ZV_IDs:
+                            layer.changeAttributeValue(feature_id, ar_ol_zv_index, d_ZV_IDs[feature_id])
+
+                    # add a new field base on the expression
+                    layer.addExpressionField('CASE WHEN "AREA" > 0 THEN "AR_OL_ZV" / "AREA" ELSE 0 END', QgsField('RATIO_ZV_AR', QVariant.Double))
+                
+                    # create a last list to get the parcels which overlayed area
+                    # is superior to a 10% of its own area
+                    feats_selected = []
+                    for feature in layer.getFeatures(QgsFeatureRequest().setFilterExpression('"RATIO_ZV_AR" > 0.10')):
+                        feats_selected.append(feature.id())
+                
+                    for feature_id in feats_selected:
+                        layer.changeAttributeValue(feature_id, layer.fields().lookupField('USO'), 'ZON_VER')
+                    layer.commitChanges() # commit changes to the classification layer
+                    
+                    del gz_layer_reproj, green_zones_layer
+                                    
+                # add the layer to the QGIS map
+                QgsProject.instance().addMapLayer(layer)
+                
+                # get the index of use field
+                fni = layer.fields().indexFromName('USO')
+                
+                # get its unique values
+                unique_values = list(layer.uniqueValues(fni))
+                
+                # generate a palette and label for each use, using the dictionaries
+                categories = palette_generator(layer, unique_values, d_palettes, d_labels)   
+                
+                # create a renderer for each class
+                renderer = QgsCategorizedSymbolRenderer('USO', categories)
+                
+                # assign the created renderer to the layer
+                if renderer is not None:
+                    layer.setRenderer(renderer)
+                
+                # paint the layer
+                layer.triggerRepaint()
+                
+                z += 1
+            else:
+                print("¡No existe el fichero preprocesado del módulo de ", 
+                      "tratamiento de datos!")
         # set progress bar to 100
         self.dlg.ProgressBar_Clasif.setValue(100)
-        
-        # add the layer to the QGIS map
-        QgsProject.instance().addMapLayer(layer)
-        
-        # get the index of use field
-        fni = layer.fields().indexFromName('USO')
-        
-        # get its unique values
-        unique_values = list(layer.uniqueValues(fni))
-        
-        # generate a palette and label for each use, using the dictionaries
-        categories = palette_generator(layer, unique_values, d_palettes, d_labels)   
-        
-        # create a renderer for each class
-        renderer = QgsCategorizedSymbolRenderer('USO', categories)
-        
-        # assign the created renderer to the layer
-        if renderer is not None:
-            layer.setRenderer(renderer)
-        
-        # paint the layer
-        layer.triggerRepaint()
         
         #----------------------------------------------------------------------
         
@@ -2019,6 +3072,6 @@ class cadastral_classifier:
         self.dlg.value_threshold_ind.setText(str(self.dlg.slider_threshold_ind.value()) + " %")
         self.dlg.value_threshold_not_built.setText(str(int(self.dlg.slider_threshold_not_built.value())) + " %")
         self.dlg.value_threshold_not_built_2.setText(str(int(self.dlg.slider_threshold_not_built_2.value())) + " %")
-
+        
         # show the interface
         self.dlg.show()
