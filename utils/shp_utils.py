@@ -11,13 +11,43 @@ Created on Wed Oct 27 13:29:25 2021
 #------------------------------------------------------------------------------
 
 #global imports
-from os.path import dirname, basename
-from os import chdir, getcwd
+import gzip
+from os.path import dirname, basename, join
+from os import chdir, getcwd, makedirs
 from glob import glob
 from os import remove
 from zipfile import ZipFile
 import processing
-from shutil import copyfile
+from shutil import copyfile, rmtree
+
+#------------------------------------------------------------------------------
+
+def gunzip(source_filepath, dest_filepath, block_size = 64):
+    ''' Dcompress the CAT file. Use small blocks to secure correct 
+    decompression.
+
+    :param source_filepath: the filepath of the file to decompress (.zip format)
+    :type text: str
+
+    :param dest_filepath: the result file filepath name 
+    :type text: str
+
+    :param block_size: size of the block to decode
+    :type numeric: int
+    '''
+    
+    # open the file with the gzip open method and generate a new file to store the data
+    with gzip.open(source_filepath, 'rb') as s_file, open(dest_filepath, 'wb') as d_file:
+        
+        # read the file data using the blocks and save it to the created file
+        while True:
+            block = s_file.read(block_size)
+            
+            if not block:
+                break
+            
+            else:
+                d_file.write(block)
 
 #------------------------------------------------------------------------------
 
@@ -63,6 +93,78 @@ def unzip_shp (zip_shp):
     shp_name = glob("*.shp")
     
     return dest_filepath + "/" + shp_name[0]
+
+###############################################################################
+#------------------------------------------------------------------------------..
+
+def unzip_files (zip_shp, dest_filepath, zip_path, comp):
+    ''' Decompress .zip format cadastral data, presented in the spanish cadastral
+    data for public use. extract the lower level zip and then if the component
+    is the parcel SHP perform a second decompression
+
+    :param zip_shp: file path of the zip file
+    :type text: str
+
+    :param dest_filepath: path where the results will be saved
+    :type text: str
+
+    :param zip_path: the internal path of the zip with the file that needs to 
+                     be decompress
+    :type text: str
+
+    :param comp: 'cat' for the alphanumeric data or 'parcelario' for the 
+                 parcel geometries
+    :type text: str
+    
+    :output path of the results 
+    :type text: str
+    '''
+    
+    # if the component is the parcels
+    if comp == "parcelario":
+        
+        # create a temporal path to store mid files
+        temp_path = join(dest_filepath, "temp")
+        
+        # create the final destination and temporal directories
+        makedirs(dest_filepath, exist_ok = True)
+        makedirs(temp_path, exist_ok = True)
+        
+        # open the zip object
+        zip_object = ZipFile(zip_shp, 'r')
+    
+        # extract the internal file to a temporal path
+        temp_result = zip_object.extract(zip_path, temp_path)
+        
+        # extact them again to the final destination path
+        zip_object2 = ZipFile(temp_result, 'r')
+        zip_object2.extractall(dest_filepath)
+        
+        chdir(dest_filepath)
+        
+        shp_name = glob("*.shp")
+        
+        del zip_object2
+        
+        try:
+            rmtree(temp_path)
+        except:
+            print("Está trabajando en un directorio que no permite ser modificado.")
+            
+        return dest_filepath + "/" + shp_name[0]
+        
+    elif comp == "cat":
+        
+        # create the final destination and temporal directories
+        makedirs(dest_filepath, exist_ok = True)
+        
+        # open the zip object
+        zip_object = ZipFile(zip_shp, 'r')
+    
+        # extract the internal file to a temporal path
+        CAT_result = zip_object.extract(zip_path, dest_filepath)
+        
+        return CAT_result
 
 ###############################################################################
 #------------------------------------------------------------------------------
@@ -117,7 +219,7 @@ def shp_copy(shp_filepath, result_filepath):
     # get the name and the directory of the input shp
     wd_root_shp = dirname(shp_filepath)
     name_shp = basename(shp_filepath)
-    
+        
     # get the name and the directory of the wanted copied file
     wd_root_result = dirname(result_filepath)
     name_result = basename(result_filepath)
