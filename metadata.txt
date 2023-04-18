@@ -18,7 +18,9 @@ changelog=
 	2022/2/17 - v1.1: Solved interface bugs: mixed uses frames and buttons issues, list of categories of advanced classification and help panels. Solved use_definer function error
 	2022/2/23 - v1.2: Fixed advanced help panel residential classes description, added usefull external links
 	2022/3/12 - v1.3: Deleted max floor information due to the imprecision of input data, solved classification module input data minor issue, fixed critial error when classifying multipart geometries (different parcels with same cadastral reference)
-    2023/4/13 - v2.0: Adapted to the new cadastral data file structure, that allow to classify multiple municipalities. Added an option to incoporate OSM data to classify green zones parcels. UI modified accoirdingly, fixed some issues and improved performance. Added year of oldest construction and a more precise floor value to each parcel information. Added new tab with useful info and moved the external links there tags=catastro, cadastre, parcel, classification, clasificacion, Spain, España
+    2023/4/13 - v2.0: Adapted to the new cadastral data file structure, that allow to classify multiple municipalities. Added an option to incoporate OSM data to classify green zones parcels. UI modified accoirdingly, fixed some issues and improved performance. Added year of oldest construction and a more precise floor value to each parcel information. Added new tab with useful info and moved the external links there
+    
+tags=catastro, cadastre, parcel, classification, clasificacion, Spain, España
 
 category=Plugins, Vectorial, Database
 icon=icon.jpg
