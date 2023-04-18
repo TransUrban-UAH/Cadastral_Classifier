@@ -1570,7 +1570,7 @@ class cadastral_classifier:
                 rows_to_remove = list(df_type_14[df_type_14["105_tip"] == "0000"].index)
                 df_type_14 = df_type_14.drop(rows_to_remove)
                 
-            #----------------------------------------------------------
+            #------------------------------------------------------------------
             ls_floor_values = df_type_14["65_pt"].unique()
             ls_excluded_floors = []
             
@@ -1580,12 +1580,12 @@ class cadastral_classifier:
                 except:
                     ls_excluded_floors.append(item)
             
-            # convierte los datos de plantas en numeros enteros. Para los que son de la
-            # lista de plantas exlcluidas, las convierte en un valor de -99
+            # transform the floor data into an integer whenever possible. For 
+            # those values that are not set a -99 value
             
-            df_type_14["65_pt"] = df_type_14["65_pt"].apply(lambda x: int(x) if x not in ls_excluded_floors and isna(x) == False else None)
+            df_type_14["65_pt"] = df_type_14["65_pt"].apply(lambda x: int(x) if x not in ls_excluded_floors and isna(x) == False else -99)
             
-            #----------------------------------------------------------
+            #------------------------------------------------------------------
             ls_year_values = df_type_14["79_aec"].unique()
             ls_excluded_years = []
             
@@ -1595,10 +1595,10 @@ class cadastral_classifier:
                 except:
                     ls_excluded_years.append(item)
 
-            # convierte los datos de años en numeros enteros. Para los que son de la
-            # lista de plantas exlcluidas, las deja sin dato
+            # transform building date into integer whenever possible. For those
+            # that are no possible set a value o 0
             
-            df_type_14["79_aec"] = df_type_14["79_aec"].apply(lambda x: int(x) if x not in ls_excluded_years and isna(x) == False else None)
+            df_type_14["79_aec"] = df_type_14["79_aec"].apply(lambda x: int(x) if x not in ls_excluded_years and isna(x) == False else 0)
 
             # list with all the cadastral reference numbers present in the 
             # table-type-14 dataframe
@@ -2079,8 +2079,8 @@ class cadastral_classifier:
                         except:
                             ls_excluded_floors.append(item)
                     
-                    # convierte los datos de plantas en numeros enteros. Para los que son de la
-                    # lista de plantas exlcluidas, las convierte en un valor de -99
+                    # transform the floor data into an integer whenever possible. For 
+                    # those values that are not set a -99 value
                     
                     df_type_14["65_pt"] = df_type_14["65_pt"].apply(lambda x: int(x) if x not in ls_excluded_floors and isna(x) == False else -99)
                     
@@ -2094,10 +2094,10 @@ class cadastral_classifier:
                         except:
                             ls_excluded_years.append(item)
 
-                    # convierte los datos de años en numeros enteros. Para los que son de la
-                    # lista de plantas exlcluidas, las deja sin dato
+                    # transform building date into integer whenever possible. For those
+                    # that are no possible set a value o 0
                     
-                    df_type_14["79_aec"] = df_type_14["79_aec"].apply(lambda x: int(x) if x not in ls_excluded_years and isna(x) == False else None)
+                    df_type_14["79_aec"] = df_type_14["79_aec"].apply(lambda x: int(x) if x not in ls_excluded_years and isna(x) == False else 0)
                     
                     # list with all the cadastral reference numbers present in the 
                     # table-type-14 dataframe
@@ -2160,20 +2160,19 @@ class cadastral_classifier:
                         # iterate over all the uses (new fields that were added)
                         for use in list_uses:
                             
-                            # si el uso es el de numero de plantas se actualiza el valor de 
-                            # la parcela solo si es mayor que el que ya tiene. Es decir, el valor
-                            # de la planta maxima empezará en 0 y siempre guardará el valor del
-                            # piso es es mayor que el que tenia antes
+                            # if the use is the floor number, update the value of parcel
+                            # only iif it is greater from the one save. So, this variable 
+                            # will start from 0 an will always save the highest floor
                             if use == "N_PLANTAS":
                                 #print('floor: ', floor)
                                 #print('d_evaluation[use][cad_ref]: ', d_evaluation[use][cad_ref])
                                 if floor > d_evaluation[use][cad_ref]:
                                     d_evaluation[use][cad_ref] = floor
                                     
-                            # si el uso es el de numero de plantas se actualiza el valor de 
-                            # la parcela solo si es mayor que el que ya tiene. Es decir, el valor
-                            # de la planta maxima empezará en 0 y siempre guardará el valor del
-                            # piso es es mayor que el que tenia antes
+                            # if the use is the year when the construction was built, 
+                            # set it to 0(no data) if there is no value or update it 
+                            # with the most old one if the year value is, at least, 
+                            # superior to 1000
                             if use == "ANTIGUEDAD":
                                 if (d_evaluation[use][cad_ref] == 0 and building_date > 1000):
                                     d_evaluation[use][cad_ref] = building_date
