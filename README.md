@@ -26,6 +26,7 @@ To use this tool it is needed to download it, preferably from the official chann
   - `table_type_generator.py`: script that use the cadastral structure to generate the table-types
   - `use_definer.py`: script that stores the different methods of defining the use of a parcel
   - `palette_generator.py`: script that generate a palette to be used in the map visualization of the results
+  - `input_check.py`: checks if the input file names are correct
   - `get_OSM_green_zones.py`: script that make a request to OSM endpoints to retrieve park geometries, so that green zone parcels can be classified
 
 ---
@@ -58,5 +59,6 @@ Nikolai Shurupov, Ramón Molinero Parejo, Francisco Aguilera, Victor Rodríguez 
   - `table_type_generator.py`: script que se encarga de utilizar la la estructura de tablas tipos catastrales para generarlas en formato CSV
   - `use_definer.py`: script que define los distintos métodos de definir la clase (uso) de una parcela en función del tipo de clasificación
   - `palette_generator.py`: script que genera una paleta de color para ser utilizada a la hora de mostrar los resultados en el mapa
+  - `input_check.py`: script que se encarga de revisar si los archivos de entrada introducidos son los correctos en base a su nombre
   - `get_OSM_green_zones.py`: script realiza una petición a los servidores de OSM para obtener los parque y así clasificar el parcelario de zonas verdes
   
