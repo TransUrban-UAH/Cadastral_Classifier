@@ -37,17 +37,17 @@ LOCALES =
 # translation
 SOURCES = \
 	__init__.py \
-	prueba1.py cadastral_classifier_dialog.py
+	cadastral_classifier.py cadastral_classifier_dialog.py
 
 PLUGINNAME = cadastral_classifier
 
 PY_FILES = \
 	__init__.py \
-	prueba1.py cadastral_classifier_dialog.py
+	cadastral_classifier.py cadastral_classifier_dialog.py
 
 UI_FILES = cadastral_classifier_dialog_base.ui
 
-EXTRAS = metadata.txt icon.png
+EXTRAS = metadata.txt icon.jpg
 
 EXTRA_DIRS =
 
