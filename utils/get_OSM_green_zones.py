@@ -24,7 +24,13 @@ from shapely.geometry import Polygon
 ###############################################################################
 
 def get_green_zones(bbox):
-    ''' bbox format example:
+    ''' Get the green zones that are present in a BoudingBox (bbox). Makes a 
+    query to different OpenStreetMaps Endpoints with 'leisures' as key and 
+    'park' as value. Once obtained generate a QGIS polygon layer to operate.
+    
+    bbox must be introduced in the following format (geographic coordinates in
+    the CRS EPSG:4326):
+        
     minlat = 40.4508446
     maxlat = 40.5290077
     minlon = -3.4276476
@@ -51,7 +57,7 @@ def get_green_zones(bbox):
     (._;>;);
     out body;
     """
-    
+        
     # define the layer variable
     layer = None
     
@@ -146,6 +152,7 @@ def get_green_zones(bbox):
             except:
                 # if any other error occured treat as an endpoint issue
                 print("Endpoint:", endpoint, " is not responding, trying next one...")
+                
     # no layer info after all the endpoint tries return None
     if not layer:
         print("No green zones information could be obtained.")

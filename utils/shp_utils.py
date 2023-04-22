@@ -86,13 +86,17 @@ def unzip_shp (zip_shp):
                 for e in lista_zip:
                     remove(e)
         else:
-            chdir(dest_filepath)
             zipObj.extractall(dest_filepath)
-    
+            chdir(dest_filepath)
+
     # get the name of the shapefile
-    shp_name = glob("*.shp")
+    shp_name = glob("PARCELA.shp")
     
-    return dest_filepath + "/" + shp_name[0]
+    if len(shp_name)>0:
+        return join(dest_filepath, shp_name[0])
+    
+    else:
+        return None
 
 ###############################################################################
 #------------------------------------------------------------------------------..
@@ -151,7 +155,7 @@ def unzip_files (zip_shp, dest_filepath, zip_path, comp):
         except:
             print("Está trabajando en un directorio que no permite ser modificado.")
             
-        return dest_filepath + "/" + shp_name[0]
+        return join(dest_filepath, shp_name[0])
         
     elif comp == "cat":
         
@@ -242,8 +246,8 @@ def shp_copy(shp_filepath, result_filepath):
     for file in file_list:
         
         extension = file[-4:]
-        file_path = wd_root_shp + "/" + file
-        copied_file_path = wd_root_result + "/" + name_result + extension.lower()
+        file_path = join(wd_root_shp, file)
+        copied_file_path = join(wd_root_result, (name_result + extension.lower()))
         copyfile(file_path, copied_file_path)
   
     chdir(cwd) # set original working directory

@@ -8,14 +8,14 @@ Created on Tue Nov 2 11:56:33 2021
           generate differente tables with differente information, used in the
           cadastral classifier QGIS plugin"""
 
-#------------------------------------------------------------------------------#
+#-----------------------------------------------------------------------------#
 
 # global imports
 import gzip
 from os import chdir, makedirs
 from time import time
 from csv import writer
-from os.path import basename, isfile
+from os.path import basename, isfile, join
 
 # local imports
 from .cadastral_structure import catstruct
@@ -95,7 +95,7 @@ def table_type_generator(file_path, list_of_interest, output_csv):
         unziped_name = file_name[:-7] + ".cat"
         
         # creates the directory path for the file
-        wd_each_table = output_csv + "\\" + unziped_name[:-4] + "_CAT"
+        wd_each_table = join(output_csv, (unziped_name[:-4] + "_CAT"))
         
         # create the directory
         try:
@@ -122,7 +122,7 @@ def table_type_generator(file_path, list_of_interest, output_csv):
         
         unziped_name = file_name[:-4]
         
-        wd_each_table = output_csv + "\\" + unziped_name + "_CAT"
+        wd_each_table = join(output_csv, (unziped_name + "_CAT"))
         
         try:
             makedirs(wd_each_table)
@@ -132,6 +132,9 @@ def table_type_generator(file_path, list_of_interest, output_csv):
         chdir(wd_each_table)
         
         unziped_name = file_path
+        
+    else:
+        print("No ha seleccionado un fichero CAT!")
 
     # create a dictionary to store each possible table type
     wf = {}   
@@ -145,7 +148,7 @@ def table_type_generator(file_path, list_of_interest, output_csv):
         if type_ in list_of_interest:
             
             # generate a name
-            output_file_name = wd_each_table + '/Tipo_' + str(type_) + '.csv'        
+            output_file_name = join(wd_each_table, ('Tipo_' + str(type_) + '.csv'))       
             
             # create a file 
             wf[type_] = open(output_file_name, 'w')
@@ -173,7 +176,7 @@ def table_type_generator(file_path, list_of_interest, output_csv):
             type_ = int(line[0:2]) # table type
             
             if type_ in list_of_interest:
-                output_file_name = wd_each_table + '/Tipo_' + str(type_) + '.csv'
+                output_file_name = join(wd_each_table, ('Tipo_' + str(type_) + '.csv'))
                 
                 # for each column(field) get the value using positions declared
                 # in the catstruct dictionaries
@@ -195,18 +198,18 @@ def table_type_generator(file_path, list_of_interest, output_csv):
         # type that user selected, using the cadastral structure info
         for line in rf.readlines():
             row = []
-            tipo = int(line[0:2])
+            type_ = int(line[0:2])
             
-            if tipo in list_of_interest:
-                output_file_name = wd_each_table + '/Tipo_' + str(tipo) + '.csv'
+            if type_ in list_of_interest:
+                output_file_name = join(wd_each_table, ('Tipo_' + str(type_) + '.csv'))
                 
                 # for each column(field) get the value using positions declared
                 # in the catstruct dictionaries
-                for fields in catstruct[tipo]:
+                for fields in catstruct[type_]:
                     valor = line[fields[0]-1 : fields[0]-1 + fields[1]].strip()
                     row.append(valor)
                 
-                writer(wf[tipo]).writerow(row)
+                writer(wf[type_]).writerow(row)
                 
     # close all the files
     for f in wf:
