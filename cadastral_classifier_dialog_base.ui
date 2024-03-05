@@ -79,7 +79,7 @@
        <enum>Qt::StrongFocus</enum>
       </property>
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="Box_setup_data_Module">
        <attribute name="title">
@@ -151,6 +151,13 @@
                </property>
               </widget>
              </item>
+             <item>
+              <widget class="QCheckBox" name="Option_omit_previous">
+               <property name="text">
+                <string>Omitir municipios procesados previamente</string>
+               </property>
+              </widget>
+             </item>
             </layout>
            </widget>
           </item>
@@ -177,7 +184,7 @@
                 </font>
                </property>
                <property name="title">
-                <string>Información alfanumérica urbana (.zip)</string>
+                <string>Información alfanumérica urbana (directorio o .zip)</string>
                </property>
                <property name="flat">
                 <bool>true</bool>
@@ -187,20 +194,40 @@
                  <widget class="QLineEdit" name="dir_cat_urb_multi"/>
                 </item>
                 <item>
-                 <widget class="QPushButton" name="button_cat_urb_multi">
-                  <property name="cursor">
-                   <cursorShape>PointingHandCursor</cursorShape>
-                  </property>
-                  <property name="text">
-                   <string/>
-                  </property>
-                  <property name="iconSize">
-                   <size>
-                    <width>20</width>
-                    <height>20</height>
-                   </size>
-                  </property>
-                 </widget>
+                 <layout class="QVBoxLayout" name="verticalLayout_57">
+                  <item>
+                   <widget class="QPushButton" name="button_cat_urb_multi">
+                    <property name="cursor">
+                     <cursorShape>PointingHandCursor</cursorShape>
+                    </property>
+                    <property name="text">
+                     <string/>
+                    </property>
+                    <property name="iconSize">
+                     <size>
+                      <width>20</width>
+                      <height>20</height>
+                     </size>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QPushButton" name="button_cat_urb_multi_directory">
+                    <property name="cursor">
+                     <cursorShape>PointingHandCursor</cursorShape>
+                    </property>
+                    <property name="text">
+                     <string/>
+                    </property>
+                    <property name="iconSize">
+                     <size>
+                      <width>20</width>
+                      <height>20</height>
+                     </size>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
                 </item>
                </layout>
               </widget>
@@ -214,27 +241,47 @@
                 </sizepolicy>
                </property>
                <property name="title">
-                <string>Parcelario urbano (.zip)</string>
+                <string>Parcelario urbano (directorio o .zip)</string>
                </property>
                <layout class="QHBoxLayout" name="horizontalLayout_14">
                 <item>
                  <widget class="QLineEdit" name="dir_shp_urb_multi"/>
                 </item>
                 <item>
-                 <widget class="QPushButton" name="button_shp_urb_multi">
-                  <property name="cursor">
-                   <cursorShape>PointingHandCursor</cursorShape>
-                  </property>
-                  <property name="text">
-                   <string/>
-                  </property>
-                  <property name="iconSize">
-                   <size>
-                    <width>20</width>
-                    <height>20</height>
-                   </size>
-                  </property>
-                 </widget>
+                 <layout class="QVBoxLayout" name="verticalLayout_58">
+                  <item>
+                   <widget class="QPushButton" name="button_shp_urb_multi">
+                    <property name="cursor">
+                     <cursorShape>PointingHandCursor</cursorShape>
+                    </property>
+                    <property name="text">
+                     <string/>
+                    </property>
+                    <property name="iconSize">
+                     <size>
+                      <width>20</width>
+                      <height>20</height>
+                     </size>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QPushButton" name="button_shp_urb_multi_directory">
+                    <property name="cursor">
+                     <cursorShape>PointingHandCursor</cursorShape>
+                    </property>
+                    <property name="text">
+                     <string/>
+                    </property>
+                    <property name="iconSize">
+                     <size>
+                      <width>20</width>
+                      <height>20</height>
+                     </size>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
                 </item>
                </layout>
               </widget>
@@ -470,7 +517,7 @@
                    <enum>Qt::NoFocus</enum>
                   </property>
                   <property name="title">
-                   <string>Información alfanumérica rústica (.zip)</string>
+                   <string>Información alfanumérica rústica (directorio o .zip)</string>
                   </property>
                   <property name="flat">
                    <bool>true</bool>
@@ -480,20 +527,40 @@
                     <widget class="QLineEdit" name="dir_cat_rust_multi"/>
                    </item>
                    <item>
-                    <widget class="QPushButton" name="button_cat_rust_multi">
-                     <property name="cursor">
-                      <cursorShape>PointingHandCursor</cursorShape>
-                     </property>
-                     <property name="text">
-                      <string/>
-                     </property>
-                     <property name="iconSize">
-                      <size>
-                       <width>20</width>
-                       <height>20</height>
-                      </size>
-                     </property>
-                    </widget>
+                    <layout class="QVBoxLayout" name="verticalLayout_59">
+                     <item>
+                      <widget class="QPushButton" name="button_cat_rust_multi">
+                       <property name="cursor">
+                        <cursorShape>PointingHandCursor</cursorShape>
+                       </property>
+                       <property name="text">
+                        <string/>
+                       </property>
+                       <property name="iconSize">
+                        <size>
+                         <width>20</width>
+                         <height>20</height>
+                        </size>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QPushButton" name="button_cat_rust_multi_directory">
+                       <property name="cursor">
+                        <cursorShape>PointingHandCursor</cursorShape>
+                       </property>
+                       <property name="text">
+                        <string/>
+                       </property>
+                       <property name="iconSize">
+                        <size>
+                         <width>20</width>
+                         <height>20</height>
+                        </size>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
                    </item>
                   </layout>
                  </widget>
@@ -510,27 +577,47 @@
                    </sizepolicy>
                   </property>
                   <property name="title">
-                   <string>Parcelario rústico (.zip)</string>
+                   <string>Parcelario rústico (directorio o .zip)</string>
                   </property>
                   <layout class="QHBoxLayout" name="horizontalLayout_27">
                    <item>
                     <widget class="QLineEdit" name="dir_shp_rust_multi"/>
                    </item>
                    <item>
-                    <widget class="QPushButton" name="button_shp_rust_multi">
-                     <property name="cursor">
-                      <cursorShape>PointingHandCursor</cursorShape>
-                     </property>
-                     <property name="text">
-                      <string/>
-                     </property>
-                     <property name="iconSize">
-                      <size>
-                       <width>20</width>
-                       <height>20</height>
-                      </size>
-                     </property>
-                    </widget>
+                    <layout class="QVBoxLayout" name="verticalLayout_60">
+                     <item>
+                      <widget class="QPushButton" name="button_shp_rust_multi">
+                       <property name="cursor">
+                        <cursorShape>PointingHandCursor</cursorShape>
+                       </property>
+                       <property name="text">
+                        <string/>
+                       </property>
+                       <property name="iconSize">
+                        <size>
+                         <width>20</width>
+                         <height>20</height>
+                        </size>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QPushButton" name="button_shp_rust_multi_directory">
+                       <property name="cursor">
+                        <cursorShape>PointingHandCursor</cursorShape>
+                       </property>
+                       <property name="text">
+                        <string/>
+                       </property>
+                       <property name="iconSize">
+                        <size>
+                         <width>20</width>
+                         <height>20</height>
+                        </size>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
                    </item>
                   </layout>
                  </widget>
@@ -795,13 +882,6 @@
            </spacer>
           </item>
           <item>
-           <widget class="QProgressBar" name="ProgressBar_Edif">
-            <property name="value">
-             <number>24</number>
-            </property>
-           </widget>
-          </item>
-          <item>
            <widget class="QFrame" name="Exetucion_buttons_1">
             <layout class="QHBoxLayout" name="horizontalLayout_21">
              <item>
@@ -869,7 +949,7 @@
            <property name="geometry">
             <rect>
              <x>0</x>
-             <y>-365</y>
+             <y>0</y>
              <width>318</width>
              <height>1118</height>
             </rect>
@@ -6092,13 +6172,6 @@ parcela edificada</string>
            </spacer>
           </item>
           <item>
-           <widget class="QProgressBar" name="ProgressBar_Clasif">
-            <property name="value">
-             <number>24</number>
-            </property>
-           </widget>
-          </item>
-          <item>
            <widget class="QFrame" name="Execution_buttons_2">
             <layout class="QHBoxLayout" name="horizontalLayout_4">
              <item>
@@ -6113,6 +6186,13 @@ parcela edificada</string>
                 </size>
                </property>
               </spacer>
+             </item>
+             <item>
+              <widget class="QCheckBox" name="checkbox_add_result_to_project">
+               <property name="text">
+                <string>Añadir resultados al proyecto actual</string>
+               </property>
+              </widget>
              </item>
              <item>
               <widget class="QPushButton" name="button_classifier">
@@ -6294,7 +6374,7 @@ p, li { white-space: pre-wrap; }
                     <rect>
                      <x>0</x>
                      <y>0</y>
-                     <width>98</width>
+                     <width>91</width>
                      <height>704</height>
                     </rect>
                    </property>
@@ -6569,8 +6649,8 @@ p, li { white-space: pre-wrap; }
                     <rect>
                      <x>0</x>
                      <y>0</y>
-                     <width>98</width>
-                     <height>818</height>
+                     <width>94</width>
+                     <height>834</height>
                     </rect>
                    </property>
                    <layout class="QVBoxLayout" name="verticalLayout_22">
@@ -6716,8 +6796,8 @@ p, li { white-space: pre-wrap; }
                     <rect>
                      <x>0</x>
                      <y>0</y>
-                     <width>98</width>
-                     <height>386</height>
+                     <width>91</width>
+                     <height>402</height>
                     </rect>
                    </property>
                    <layout class="QVBoxLayout" name="verticalLayout_41">
@@ -6987,8 +7067,8 @@ p, li { white-space: pre-wrap; }
                     <rect>
                      <x>0</x>
                      <y>0</y>
-                     <width>98</width>
-                     <height>466</height>
+                     <width>70</width>
+                     <height>546</height>
                     </rect>
                    </property>
                    <layout class="QVBoxLayout" name="verticalLayout_40">
@@ -7091,8 +7171,8 @@ p, li { white-space: pre-wrap; }
                     <rect>
                      <x>0</x>
                      <y>0</y>
-                     <width>98</width>
-                     <height>306</height>
+                     <width>93</width>
+                     <height>338</height>
                     </rect>
                    </property>
                    <layout class="QVBoxLayout" name="verticalLayout_48">
@@ -7136,7 +7216,7 @@ p, li { white-space: pre-wrap; }
                     <rect>
                      <x>0</x>
                      <y>0</y>
-                     <width>98</width>
+                     <width>83</width>
                      <height>194</height>
                     </rect>
                    </property>
@@ -7246,8 +7326,8 @@ p, li { white-space: pre-wrap; }
                     <rect>
                      <x>0</x>
                      <y>0</y>
-                     <width>98</width>
-                     <height>562</height>
+                     <width>91</width>
+                     <height>578</height>
                     </rect>
                    </property>
                    <layout class="QVBoxLayout" name="verticalLayout_51">
@@ -7299,7 +7379,7 @@ p, li { white-space: pre-wrap; }
                     <rect>
                      <x>0</x>
                      <y>0</y>
-                     <width>98</width>
+                     <width>94</width>
                      <height>258</height>
                     </rect>
                    </property>
@@ -7568,8 +7648,8 @@ p, li { white-space: pre-wrap; }
    <slot>hide()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>191</x>
-     <y>653</y>
+     <x>223</x>
+     <y>669</y>
     </hint>
     <hint type="destinationlabel">
      <x>435</x>
@@ -7584,7 +7664,7 @@ p, li { white-space: pre-wrap; }
    <slot>setVisible(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>644</x>
+     <x>646</x>
      <y>809</y>
     </hint>
     <hint type="destinationlabel">
@@ -7648,8 +7728,8 @@ p, li { white-space: pre-wrap; }
    <slot>setVisible(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>348</x>
-     <y>529</y>
+     <x>219</x>
+     <y>573</y>
     </hint>
     <hint type="destinationlabel">
      <x>352</x>
@@ -7808,12 +7888,12 @@ p, li { white-space: pre-wrap; }
    <slot>click()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>191</x>
-     <y>653</y>
+     <x>223</x>
+     <y>669</y>
     </hint>
     <hint type="destinationlabel">
-     <x>213</x>
-     <y>674</y>
+     <x>245</x>
+     <y>690</y>
     </hint>
    </hints>
   </connection>
@@ -7872,8 +7952,8 @@ p, li { white-space: pre-wrap; }
    <slot>setVisible(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>251</x>
-     <y>674</y>
+     <x>259</x>
+     <y>690</y>
     </hint>
     <hint type="destinationlabel">
      <x>435</x>
@@ -7888,12 +7968,12 @@ p, li { white-space: pre-wrap; }
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>191</x>
-     <y>653</y>
+     <x>223</x>
+     <y>669</y>
     </hint>
     <hint type="destinationlabel">
-     <x>251</x>
-     <y>674</y>
+     <x>259</x>
+     <y>690</y>
     </hint>
    </hints>
   </connection>
@@ -7969,11 +8049,11 @@ p, li { white-space: pre-wrap; }
    <hints>
     <hint type="sourcelabel">
      <x>467</x>
-     <y>708</y>
+     <y>732</y>
     </hint>
     <hint type="destinationlabel">
      <x>351</x>
-     <y>731</y>
+     <y>757</y>
     </hint>
    </hints>
   </connection>
@@ -8117,7 +8197,7 @@ p, li { white-space: pre-wrap; }
     </hint>
     <hint type="destinationlabel">
      <x>411</x>
-     <y>698</y>
+     <y>733</y>
     </hint>
    </hints>
   </connection>
@@ -8180,7 +8260,7 @@ p, li { white-space: pre-wrap; }
      <y>92</y>
     </hint>
     <hint type="destinationlabel">
-     <x>624</x>
+     <x>573</x>
      <y>116</y>
     </hint>
    </hints>
@@ -8196,8 +8276,8 @@ p, li { white-space: pre-wrap; }
      <y>92</y>
     </hint>
     <hint type="destinationlabel">
-     <x>623</x>
-     <y>183</y>
+     <x>573</x>
+     <y>271</y>
     </hint>
    </hints>
   </connection>
@@ -8212,7 +8292,7 @@ p, li { white-space: pre-wrap; }
      <y>91</y>
     </hint>
     <hint type="destinationlabel">
-     <x>623</x>
+     <x>573</x>
      <y>119</y>
     </hint>
    </hints>
@@ -8228,8 +8308,8 @@ p, li { white-space: pre-wrap; }
      <y>94</y>
     </hint>
     <hint type="destinationlabel">
-     <x>625</x>
-     <y>191</y>
+     <x>573</x>
+     <y>271</y>
     </hint>
    </hints>
   </connection>
@@ -8256,7 +8336,7 @@ p, li { white-space: pre-wrap; }
    <slot>setHidden(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>435</x>
+     <x>304</x>
      <y>97</y>
     </hint>
     <hint type="destinationlabel">
@@ -8288,12 +8368,12 @@ p, li { white-space: pre-wrap; }
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>643</x>
+     <x>430</x>
      <y>97</y>
     </hint>
     <hint type="destinationlabel">
-     <x>642</x>
-     <y>285</y>
+     <x>562</x>
+     <y>317</y>
     </hint>
    </hints>
   </connection>
@@ -8304,12 +8384,12 @@ p, li { white-space: pre-wrap; }
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>581</x>
+     <x>394</x>
      <y>97</y>
     </hint>
     <hint type="destinationlabel">
-     <x>642</x>
-     <y>334</y>
+     <x>562</x>
+     <y>366</y>
     </hint>
    </hints>
   </connection>
@@ -8320,12 +8400,12 @@ p, li { white-space: pre-wrap; }
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>643</x>
+     <x>430</x>
      <y>97</y>
     </hint>
     <hint type="destinationlabel">
-     <x>300</x>
-     <y>285</y>
+     <x>297</x>
+     <y>317</y>
     </hint>
    </hints>
   </connection>
@@ -8336,7 +8416,7 @@ p, li { white-space: pre-wrap; }
    <slot>setVisible(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>428</x>
+     <x>304</x>
      <y>97</y>
     </hint>
     <hint type="destinationlabel">
@@ -8356,8 +8436,8 @@ p, li { white-space: pre-wrap; }
      <y>91</y>
     </hint>
     <hint type="destinationlabel">
-     <x>85</x>
-     <y>325</y>
+     <x>89</x>
+     <y>376</y>
     </hint>
    </hints>
   </connection>
@@ -8368,12 +8448,12 @@ p, li { white-space: pre-wrap; }
    <slot>setHidden(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>437</x>
+     <x>304</x>
      <y>97</y>
     </hint>
     <hint type="destinationlabel">
-     <x>239</x>
-     <y>325</y>
+     <x>243</x>
+     <y>376</y>
     </hint>
    </hints>
   </connection>
@@ -8384,12 +8464,12 @@ p, li { white-space: pre-wrap; }
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>545</x>
+     <x>412</x>
      <y>97</y>
     </hint>
     <hint type="destinationlabel">
-     <x>130</x>
-     <y>315</y>
+     <x>144</x>
+     <y>366</y>
     </hint>
    </hints>
   </connection>
@@ -8464,12 +8544,44 @@ p, li { white-space: pre-wrap; }
    <slot>setVisible(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>459</x>
+     <x>326</x>
      <y>85</y>
     </hint>
     <hint type="destinationlabel">
-     <x>340</x>
-     <y>246</y>
+     <x>343</x>
+     <y>377</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>option_single_mun_p1</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>Option_omit_previous</receiver>
+   <slot>setDisabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>213</x>
+     <y>86</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>498</x>
+     <y>86</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>option_multiple_mun_p1</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>Option_omit_previous</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>149</x>
+     <y>82</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>490</x>
+     <y>89</y>
     </hint>
    </hints>
   </connection>
