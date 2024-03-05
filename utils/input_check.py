@@ -6,7 +6,9 @@ Created on Fri Apr 21 16:25:46 2023
 """
 
 #global imports
-from os.path import dirname, basename, join
+from os.path import basename
+
+#------------------------------------------------------------------------------
 
 def input_check (filename, component, typology, form):
     ''' Check if the filename has all specified elements: correct extension
@@ -67,7 +69,8 @@ def input_check (filename, component, typology, form):
         
         # check if any of the correspondent variables are contained in the 
         # name of the file. If all conditions are met return True, otherwise 
-        # return False 
+        # return False
+        
         if (cl_1 in split_comp or cu_1 in split_comp or\
              cl_2 in split_comp or cu_2 in split_comp) and\
             (tl in split_comp or tu in split_comp):

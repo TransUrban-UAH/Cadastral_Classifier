@@ -87,7 +87,6 @@ def table_type_generator(file_path, list_of_interest, output_csv):
     # get the name of the input file 
     file_name = basename(file_path)
 
-
     # decompress the CAT file if the used gives as input the raw downloaded file
     if file_name[-3:] == ".gz":
         

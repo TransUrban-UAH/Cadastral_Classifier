@@ -134,11 +134,14 @@ def unzip_files (zip_shp, dest_filepath, zip_path, comp):
         makedirs(dest_filepath, exist_ok = True)
         makedirs(temp_path, exist_ok = True)
         
-        # open the zip object
-        zip_object = ZipFile(zip_shp, 'r')
+        if zip_shp[-4:] == ".zip":
+            # open the zip object
+            zip_object = ZipFile(zip_shp, 'r')
     
-        # extract the internal file to a temporal path
-        temp_result = zip_object.extract(zip_path, temp_path)
+            # extract the internal file to a temporal path
+            temp_result = zip_object.extract(zip_path, temp_path)
+        else:
+            temp_result = join(zip_shp, zip_path)
         
         # extact them again to the final destination path
         zip_object2 = ZipFile(temp_result, 'r')
@@ -162,12 +165,16 @@ def unzip_files (zip_shp, dest_filepath, zip_path, comp):
         # create the final destination and temporal directories
         makedirs(dest_filepath, exist_ok = True)
         
-        # open the zip object
-        zip_object = ZipFile(zip_shp, 'r')
+        if zip_shp[-4:] == ".zip":
+            # open the zip object
+            zip_object = ZipFile(zip_shp, 'r')
     
-        # extract the internal file to a temporal path
-        CAT_result = zip_object.extract(zip_path, dest_filepath)
+            # extract the internal file to a temporal path
+            CAT_result = zip_object.extract(zip_path, dest_filepath)
         
+        else:
+            CAT_result = join(zip_shp, zip_path)
+            
         return CAT_result
 
 ###############################################################################
