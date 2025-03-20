@@ -3,7 +3,7 @@ name=Cadastral Classifier
 qgisMinimumVersion=3.0
 description=<p><p>Clasificación parcelaria de municipios españoles utilizando información catastral<p><p>Parcel classification of Spanish municipalities using cadastral information
 
-version=3.0
+version=3.5
 author=Nikolai Shurupov (Universidad de Alcalá de Henares)
 email=nikolai.shurupov@edu.uah.es
 
@@ -20,8 +20,9 @@ changelog=
 	2022/3/12 - v1.3: Deleted max floor information due to the imprecision of input data, solved classification module input data minor issue, fixed critial error when classifying multipart geometries (different parcels with same cadastral reference)
 	2023/4/13 - v2.0: Adapted to the new cadastral data file structure, that allow to classify multiple municipalities. Added an option to incoporate OSM data to classify green zones parcels. UI modified accoirdingly, fixed some issues and improved performance. Added year of oldest construction and a more precise floor value to each parcel information. Added new tab with useful info and moved the external links there
 	2023/4/22 - v2.1: Fixed an issue with single municipality classification, an issue with green zone classification in monicipalities whose CRS was different from 25830 and an issue when generating the municipalities listing of a 1-9 coded province. Added coloring method to ensure proper files are selected when selecting input data and updated help panels
-    2024/3/04 - v3.0: Changed processes to work as QGIS task, adapted and enhanced data incorporation to match new cadastral formats, added new icons
-
+    	2024/3/04 - v3.0: Changed processes to work as QGIS task, adapted and enhanced data incorporation to match new cadastral formats, added new icons
+	2025/3/20 - v3.5: Significantly improved efficiency of data pre-processing module, fixed various variable definition bugs, fixed UI minimum size, fixed Qgis task cancellation
+ 
 tags=catastro, cadastre, parcel, classification, clasificacion, Spain, España
 
 category=Plugins, Vectorial, Database

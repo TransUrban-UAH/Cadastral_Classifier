@@ -134,7 +134,7 @@ def unzip_files (zip_shp, dest_filepath, zip_path, comp):
         makedirs(dest_filepath, exist_ok = True)
         makedirs(temp_path, exist_ok = True)
         
-        if zip_shp[-4:] == ".zip":
+        if zip_shp.lower().endswith('.zip'):
             # open the zip object
             zip_object = ZipFile(zip_shp, 'r')
     
@@ -165,7 +165,7 @@ def unzip_files (zip_shp, dest_filepath, zip_path, comp):
         # create the final destination and temporal directories
         makedirs(dest_filepath, exist_ok = True)
         
-        if zip_shp[-4:] == ".zip":
+        if zip_shp.lower().endswith('.zip'):
             # open the zip object
             zip_object = ZipFile(zip_shp, 'r')
     
@@ -236,10 +236,10 @@ def shp_copy(shp_filepath, result_filepath):
     name_result = basename(result_filepath)
 
     # delete the extensions from the names
-    if name_result[-4:].lower() == ".shp":
+    if name_result.lower().endswith('.shp'):
         name_result = name_result[0:-4]
         
-    if name_shp[-4:].lower() == ".shp":
+    if name_shp.lower().endswith('.shp'):
         name_shp = name_shp[0:-4]
     
     # set new directory
@@ -256,7 +256,7 @@ def shp_copy(shp_filepath, result_filepath):
         file_path = join(wd_root_shp, file)
         copied_file_path = join(wd_root_result, (name_result + extension.lower()))
         copyfile(file_path, copied_file_path)
-  
+
     chdir(cwd) # set original working directory
     
     return result_filepath

@@ -25,7 +25,7 @@ Created on Thu Apr 22 19:31:08 2021
 # a start position, length, type, description, and internal codification are
 # declared. 
 
-# link/enlace http://www.catastro.meh.es/documentos/formatos_intercambio/catastro_fin_cat_2006.pdf
+# link/enlace http://www.catastro.hacienda.gob.es/documentos/formatos_intercambio/catastro_fin_cat_2006.pdf
 
 #------------------------------------------------------------------------------
 
@@ -215,81 +215,6 @@ catstruct[17] = [
     [127, 3, 'X', 'codigo_modalidad_reparto', "127_modl"] 
 ]
 
-# 46 - Registro de situaciones finales de titularidad
-catstruct[46] = [
-    [24, 2, 'N', 'codigo_delegacion_meh', "24_cd"],
-    [26, 3, 'N', 'codigo_municipio_dgc', "26_cmc"],
-    [29, 2, 'X', 'naturaleza_suelo_ocupado', "29_cn"], 
-    [31, 14, 'X', 'parcela_catastral', "31_pc"],
-    [45, 4, 'X', 'codigo_subparcela', "45_cspr"],
-    [49, 1, 'X', 'primer_carac_control', "49_pcc"],
-    [50, 1, 'X', 'segundo_carac_control', "50_scc"],
-    [51, 2, 'X', 'codigo_derecho', "51_cd"],
-    [53, 5, 'N', 'porcentage_derecho', "53_pd"],
-    [58, 3, 'N', 'ordinal_derecho', "58_od"],
-    [61, 9, 'X', 'nif_titular', "61_nt"],
-    [70, 60, 'X', 'nombre_titular', "71_nt"], 
-    [130, 1, 'X', 'motivo_no_nif', "130_mnn"],
-    [131, 2, 'N', 'codigo_provincia_ine', "131_cpi"],
-    [133, 25, 'X', 'nombre_provincia', "133_np"],
-    [158, 3, 'N', 'codigo_municipio_dgc', "158_cmc"],
-    [161, 3, 'N', 'codigo_municipio_ine', "161_cm"],
-    [164, 40, 'X', 'nombre_municipio', "164_nm"],
-    [204, 30, 'X', 'nombre_entidad_menor', "204_nem"],
-    [235, 5, 'N', 'codigo_via_publica_dgc', "235_cvpc"],
-    [239, 5, 'X', 'tipo_via', "239_tv"],
-    [244, 25, 'X', 'nombre_via', "244_nv"],
-    [269, 4, 'N', 'primer_numero_policia', "269_pnp"],
-    [273, 1, 'X', 'primera_letra', "273_pl"],
-    [274, 4, 'N', 'segundo_numero_policia', "274_snp"],
-    [278, 1, 'X', 'segunda_letra', "278_sl"],
-    [279, 5, 'N', 'kilometro_por_cien', "279_km"],
-    [284, 4, 'X', 'bloque', "284_bl"],
-    [288, 2, 'X', 'escalera', "288_es"],
-    [290, 3, 'X', 'planta', "290_pl"],
-    [293, 3, 'X', 'puerta', "293_pu"],
-    [296, 25, 'X', 'direccion_no_estructurada', "296_dne"],
-    [321, 5, 'N', 'codigo_postal', "321_cp"],
-    [326, 5, 'N', 'apartado_correos', "326_ac"],
-    [331, 9, 'X', 'nif_conyuge', "331_nc"],
-    [340, 9, 'X', 'nif_cb', "340_ ncb"],
-    [349, 20, 'X', 'complemento_titularidad', "349_ct"]
-]
-
-# 47 - Registro de comunidad de bienes formalmente constituida presente en una situación final
-catstruct[47] = [
-    [24, 2, 'N', 'codigo_delegacion_meh', "24_cd"],
-    [26, 3, 'N', 'codigo_municipio_dgc', "26_cmc"],
-    [29, 2, 'X', 'naturaleza_suelo_ocupado', "29_cn"], 
-    [31, 14, 'X', 'parcela_catastral', "31_pc"],
-    [45, 4, 'X', 'codigo_subparcela', "45_cspr"],
-    [49, 1, 'X', 'primer_carac_control', "49_pcc"],
-    [50, 1, 'X', 'segundo_carac_control', "50_scc"],
-    [51, 9, 'X', 'nif_comunidad_bienes', "51_ncb"],
-    [60, 60, 'X', 'denominacion_razon_socil', "60_drc"],
-    [120, 2, 'N', 'codigo_provincia_ine', "120_cp"],
-    [122, 25, 'X', 'nombre_provincia', "np"],
-    [147, 3, 'N', 'codigo_municipio_dgc', "147_cmc"],
-    [150, 3, 'N', 'codigo_municipio_ine', "150_cp"],
-    [153, 40, 'X', 'nombre_municipio', "153_nm"],
-    [193, 30, 'X', 'nombre_entidad_menor', "193_nem"],
-    [223, 5, 'N', 'codigo_via_publica_dgc', "cvpc"],
-    [228, 5, 'X', 'tipo_via', "228_tv"],
-    [233, 25, 'X', 'nombre_via', "233_nv"],
-    [258, 4, 'N', 'primer_numero_policia', "258_pnp"],
-    [262, 1, 'X', 'primera_letra', "262_pl"],
-    [263, 4, 'N', 'segundo_numero_policia', "263_snp"],
-    [267, 1, 'X', 'segunda_letra', "267_sl"],
-    [268, 5, 'N', 'kilometro_por_cien', "268_km"],
-    [273, 4, 'X', 'bloque', "273_bl"],
-    [277, 2, 'X', 'escalera', "277_es"],
-    [279, 3, 'X', 'planta', "279_pl"],
-    [282, 3, 'X', 'puerta', "282_pu"],
-    [285, 25, 'X', 'direccion_no_estructurada', "285_dne"],
-    [310, 5, 'N', 'codigo_postal', "310_cp"],
-    [315, 5, 'N', 'apartado_correos', "315_ac"]
-]
-
 # 90 - Registro de cola
 catstruct[90] = [
     [10, 7, 'N', 'numero_registros_tipo_11', "10_nrt_11"],
@@ -298,7 +223,5 @@ catstruct[90] = [
     [38, 7, 'N', 'numero_registros_tipo_15', "38_nrt_15"],
     [45, 7, 'N', 'numero_registros_tipo_16', "45_nrt_16"],
     [52, 7, 'N', 'numero_registros_tipo_17', "52_nrt_17"],
-    [59, 7, 'N', 'numero_registros_tipo_46', "59_nrt_46"],
-    [66, 7, 'N', 'numero_registros_tipo_47', "66_nrt_47"]
 ]
 

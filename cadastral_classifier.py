@@ -10,7 +10,7 @@
         copyright            : (C) 2021 by Nikolai Shurupov (Universidad de 
                                                              Alcalá de 
                                                              Henares)
-        email                : nikolai.shurupov@edu.uah.es
+        email                : nikolai.shurupov@uah.es
 
 /***************************************************************************
  *                                                                         *
@@ -55,6 +55,7 @@ from copy import deepcopy
 from glob import glob
 from zipfile import ZipFile
 import processing
+from pathlib import Path
 
 # Local imports for processing
 from .utils.table_type_generator import table_type_generator
@@ -151,8 +152,8 @@ class setup_data_Task(QgsTask):
         
         As well as adding each use area, each parcel will also have a field that 
         determine the total built area, the built area on the surface level
-        (floor 0 or floor 1, to ensure avoiding some multifamily built issues),
-        the maximum number of floors, the year of the oldest construction 
+        (floor 0 or floor 1, to ensure avoiding some multifamily buildings issues),
+        the highest floors, the year of the oldest construction 
         present and the number of residential bulidings on the parcels that have
         any residential building.
         '''
@@ -203,7 +204,7 @@ class setup_data_Task(QgsTask):
             
             # get the directry path to save the outputs
             dest_filepath = self.dlg.dir_output_result_p1.text()
-             
+        
             #------------------------------------------------------------------
             
             if self.dlg.option_multiple_mun_p1.isChecked() == True:
@@ -245,9 +246,16 @@ class setup_data_Task(QgsTask):
             #------------------------------------------------------------------
             
             progress_each_mun = 100/len(selected_muns_codes) # state the progress bar evolution caps
-            
+ 
+            # list of the fileds that are interesting to extraxt from the .shp
+            SHP_fields_of_interest = ["REFCAT", "AREA", "COORX", "COORY", "TIPO"]
+                        
             i = 0 # store numerically the initialization
             for selected in selected_muns_codes:
+                
+                if self.isCanceled():
+                    QgsMessageLog.logMessage("User cancelled the operation!", MESSAGE_CATEGORY, Qgis.Warning)
+                    return False  # Task cancellation acknowledged here
                 
                 progress_start = i * progress_each_mun
                 # state the cap that has to be reached once all the operations
@@ -278,59 +286,63 @@ class setup_data_Task(QgsTask):
                     if self.dlg.Option_omit_previous.isChecked() == False or (self.dlg.Option_omit_previous.isChecked() == True and exists(mun_path) == False):
                         
                         proceed = True
-                        
+                        P_U = None
+                        urb_path = None
+                        P_R = None 
+                        rural_path = None
+
                         # path to save the table tipe generations
                         output_csv = join(mun_path, "tablas_tipo")
                         
-                        # unzip urban parcels file and save the path of the results
-                        P_U = unzip_files(urban_SHP_file_path, join(mun_path, "SHP_URBANO"), path_P_U, 
-                                          "parcelario")
+                        if path_P_U:
+                            # unzip urban parcels file and save the path of the results
+                            P_U = unzip_files(urban_SHP_file_path, join(mun_path, "SHP_URBANO"), path_P_U, 
+                                              "parcelario")
                         
-                        # unzip urban CAT file and save the path of the results
-                        CAT_U = unzip_files(urban_CAT_file_path, output_csv, path_CAT_U, 
-                                          "cat")
+                        if path_CAT_U:
+                            # unzip urban CAT file and save the path of the results
+                            CAT_U = unzip_files(urban_CAT_file_path, output_csv, path_CAT_U, 
+                                              "cat")
+                            # generate the file(s) and table-type(s) using a function included
+                            # in utils folder
+                            urb_path = table_type_generator(CAT_U, list_of_interest, output_csv)            
+
                         # if the rural option has been selected unzip in the same way 
                         # the files
                         if self.dlg.Option_include_rural.isChecked() == True:
-        
                             
-                            P_R = unzip_files(rural_SHP_file_path, join(mun_path, "SHP_RUSTICO"), path_P_R, 
-                                              "parcelario")
+                            if path_P_R:
+                                P_R = unzip_files(rural_SHP_file_path, join(mun_path, "SHP_RUSTICO"), path_P_R, 
+                                                  "parcelario")
                             
-                            CAT_R = unzip_files(rural_CAT_file_path, output_csv, path_CAT_R, 
-                                              "cat")
-        
-                        # generate the file(s) and table-type(s) using a function included
-                        # in utils folder
-                        urb_path = table_type_generator(CAT_U, list_of_interest, output_csv)            
-                        table_type_14_path = join(urb_path, "Tipo_14.csv")
-                        
+                            if path_CAT_R:
+                                CAT_R = unzip_files(rural_CAT_file_path, output_csv, path_CAT_R, 
+                                                  "cat")
+                                # generate the file(s) in the same way as previously
+                                rural_path = table_type_generator(CAT_R, list_of_interest, output_csv)
+
                         #------------------------------------------------------
                         
-                        # if user also selected the rural file option
-                        if rural_CAT_file_path:
-                            
-                            # generate the file(s) in the same way as previously
-                            rural_path = table_type_generator(CAT_R, list_of_interest, output_csv)
-                                        
-                            # itera sobre las tablas tipo que se ha querido generar y las une una a una
-                            # iterate over all the table-types selected
-                            for table_type in list_of_interest:
-                                
-                                # read each table-type file (.csv, urban and rural)
+                        # itera sobre las tablas tipo que se ha querido generar y las une una a una
+                        # iterate over all the table-types selected
+                        for table_type in list_of_interest:
+                                                        
+                            if urb_path:
+                            # read each table-type file (.csv, urban and rural)
                                 df_type_urban = read_csv(join(urb_path, ('Tipo_' + str(table_type)\
                                                           + '.csv')), dtype = str)
-                    
+                            if rural_path:
                                 df_type_rural = read_csv(join(rural_path, ('Tipo_' + str(table_type)\
-                                                           + '.csv')), dtype = str) 
-                                
-                                # due to a possible differences between the column types of the 
-                                # data that each table-type has (rural an urban), it is needed
-                                # to perform an unification of the formats. Iterate over the 
-                                # urban one and checks the data types. If they differ try to 
-                                # change the types in one direction, and in the other one if 
-                                # it fails
-                                
+                                                           + '.csv')), dtype = str)
+                            
+                            # due to a possible differences between the column types of the 
+                            # data that each table-type has (rural an urban), it is needed
+                            # to perform an unification of the formats. Iterate over the 
+                            # urban one and checks the data types. If they differ try to 
+                            # change the types in one direction, and in the other one if 
+                            # it fails
+                            
+                            if urb_path and rural_path:
                                 for column in df_type_urban.columns:
                                     if df_type_urban[column].dtype != df_type_rural[column].dtype:
                                         
@@ -347,29 +359,35 @@ class setup_data_Task(QgsTask):
                                 df_type_merge = merge(df_type_urban, df_type_rural, how = "outer")
                     
                                 # Save the file as .csv format
-                                df_type_merge.to_csv(join(output_csv, ('Tipo_' + str(table_type) + ".csv")))
+                                df_type_merge.to_csv(join(output_csv, ('Tipo_' + str(table_type) + "_U_R.csv")))
                                 
                                 # add the table-type-14 path to the variable used on next
                                 # processes
                                 if table_type == 14:
-                                    table_type_14_path = join(output_csv, ('Tipo_' + str(table_type) + ".csv"))
+                                    table_type_14_path = join(output_csv, ('Tipo_' + str(table_type) + "_U_R.csv"))
                                     
+                            elif urb_path and not rural_path:
+                                table_type_14_path = (join(urb_path, "Tipo_14.csv"))
+                                
+                            elif rural_path and not urb_path:
+                                table_type_14_path = (join(rural_path, "Tipo_14.csv"))
+                                
                         #------------------------------------------------------
-                        
+
                         # if user also included rural parcels to the analysis
-                        if rural_SHP_file_path:
+                        if P_U and P_R:
                                 
                             # use qgis merge function (util folder) to perform the union of 
                             # both SHP files (urban and rural), that generates a new file
                             wd_shp = merge_qgis(P_R, P_U, join(mun_path, "procesado_" + basename(mun_path) + ".shp"))
                             
-                            # list of the fileds that are interesting to extraxt from the .shp
-                            fields_of_interest = ["REFCAT", "AREA", "COORX", "COORY", "TIPO"]
                 
-                        else:
+                        elif P_U and not P_R:
                             # copy the .shp of urban parcels
                             wd_shp = shp_copy(P_U, join(mun_path, "procesado_" + basename(mun_path) + ".shp"))
-                            fields_of_interest = ["REFCAT", "AREA", "COORX", "COORY"]
+                        
+                        elif P_R and not P_U:
+                            wd_shp = shp_copy(P_R, join(mun_path, "procesado_" + basename(mun_path) + ".shp"))
                         
                         #------------------------------------------------------
                         
@@ -382,22 +400,22 @@ class setup_data_Task(QgsTask):
                     result_file_path = join(dest_filepath, "procesado_SHP.shp")
                                                                 
                     proceed = True
-                
+
                     # generates a new path to save the mid-process files (the
                     # unzipped CAT files and the table-type files)
                     output_csv = join(dirname(result_file_path), "tablas_tipo")
                         
-                    #--------------------------------------------------------------
+                    #----------------------------------------------------------
                     
                     # if a route of urban CAT has been selected
                     if urban_CAT_file_path:
                         
                         # generate the file(s) and table-type(s) using a function included
                         # in utils folder
-                        urb_path = table_type_generator(urban_CAT_file_path, list_of_interest, output_csv)            
-                        table_type_14_path = (join(urb_path, "Tipo_14.csv"))
+                        urb_path = table_type_generator(urban_CAT_file_path, list_of_interest, output_csv)
+                        table_type_14_path = join(urb_path, "Tipo_14.csv")
                     
-                    #--------------------------------------------------------------
+                    #----------------------------------------------------------
                     
                     # if user also selected the rural file option
                     if rural_CAT_file_path:
@@ -439,47 +457,55 @@ class setup_data_Task(QgsTask):
                             df_type_merge = merge(df_type_urban, df_type_rural, how = "outer")
                 
                             # Save the file as .csv format
-                            df_type_merge.to_csv(join(output_csv, ('Tipo_' + str(table_type) + ".csv")))
+                            df_type_merge.to_csv(join(output_csv, ('Tipo_' + str(table_type) + "_U_R.csv")))
                             
                             # add the table-type-14 path to the variable used on next
                             # processes
                             if table_type == 14:
-                                table_type_14_path = join(output_csv, ('Tipo_' + str(table_type) + ".csv"))
+                                table_type_14_path = join(output_csv, ('Tipo_' + str(table_type) + "_U_R.csv"))
                                 
-                    #--------------------------------------------------------------
+                    #----------------------------------------------------------
                     
                     # if the input SHP file is compressed in zip format, unzip it and 
                     # store the row of the new .shp file
-                    if urban_SHP_file_path[-4:].lower() == ".zip":
-                        wd_urb = unzip_shp(urban_SHP_file_path)
-                        
+                    
+                    if urban_SHP_file_path:
+
+                        if urban_SHP_file_path.lower().endswith("zip"):
+                            wd_urb = unzip_shp(urban_SHP_file_path)
+                            
+                        else:
+                            wd_urb = urban_SHP_file_path
+                   
                     else:
-                        wd_urb = urban_SHP_file_path
-                    
-                    #--------------------------------------------------------------
-                    
+                        wd_urb = None
+
+                    #----------------------------------------------------------
                     # if user also included rural parcels to the analysis
                     if rural_SHP_file_path:
                         
                         # follow same process as for urban parcels
-                        if rural_SHP_file_path[-4:].lower() == ".zip": 
+                        if rural_SHP_file_path[-4:].lower().endswith("zip"): 
                             wd_rus = unzip_shp(rural_SHP_file_path)
                             
                         else:
                             wd_rus = rural_SHP_file_path
-                            
+                    
+                    else:
+                        wd_rus = None
+                        
+                    if wd_rus and wd_urb:
                         # use qgis merge function (util folder) to perform the union of 
                         # both SHP files (urban and rural), that generates a new file
                         wd_shp = merge_qgis(wd_rus, wd_urb, result_file_path)
-                        
-                        # list of the fileds that are interesting to extraxt from the .shp
-                        fields_of_interest = ["REFCAT", "AREA", "COORX", "COORY", "TIPO"]
-        
-                    else:
+                                
+                    elif wd_rus and not wd_urb:
                         # copy the .shp of urban parcels
+                        wd_shp = shp_copy(wd_rus, result_file_path)
+                        
+                    elif wd_urb and not wd_rus:
                         wd_shp = shp_copy(wd_urb, result_file_path)
-                        fields_of_interest = ["REFCAT", "AREA", "COORX", "COORY"]
-    
+
                 # update progress
                 progress += 0.01 * progress_total_increase
                 self.setProgress(progress)
@@ -492,17 +518,16 @@ class setup_data_Task(QgsTask):
                         layer = QgsVectorLayer(wd_shp, "", "ogr")
                         layer_provider = layer.dataProvider()
                         layer.startEditing()
-                        
-                        #----------------------------------------------------------
+                                                
+                        #------------------------------------------------------
                         
                         # if the rural parcels were included, it is needed to remove the parcels
                         # with type "X"
-                        if rural_SHP_file_path:
                                         
-                            listOfIds = [feat.id() for feat in layer.getFeatures() if feat['TIPO'] == 'X']     
-                            layer.deleteFeatures(listOfIds)
+                        listOfIds = [feat.id() for feat in layer.getFeatures() if feat['TIPO'] == 'X']     
+                        layer.deleteFeatures(listOfIds)
                             
-                        #----------------------------------------------------------
+                        #------------------------------------------------------
                         
                         # get the fields names of the layer
                         fields_name = layer.fields().names()
@@ -514,7 +539,7 @@ class setup_data_Task(QgsTask):
                         for field in fields_name:
                             
                             # if it is not in the list of fields of interest
-                            if field not in fields_of_interest:
+                            if field not in SHP_fields_of_interest:
                                 
                                 # appendt it to remove list
                                 remove_indexers.append(fields_name.index(field))
@@ -523,7 +548,7 @@ class setup_data_Task(QgsTask):
                         layer_provider.deleteAttributes(remove_indexers)
                         layer.updateFields()
                         
-                        #----------------------------------------------------------
+                        #------------------------------------------------------
                         
                         # get the new fields
                         fields_name = layer.fields().names()
@@ -582,21 +607,22 @@ class setup_data_Task(QgsTask):
                                     layer_provider.changeAttributeValues({parcel:attr_value})
                             
                         #----------------------------------------------------------
-                        
+
                         # update progress
                         progress += 0.01 * progress_total_increase
                         self.setProgress(progress)
-                        
+                        #print (table_type_14_path)
                         # read the table-type-14 csv as pandas dataframe. All data is read as string
                         df_type_14 = read_csv(table_type_14_path, dtype = str, encoding='latin-1')
-                        
+
                         # delete the fifth element of the use typology codification, since it 
                         # dont give any relevant information for the classification
-                        df_type_14["105_tip"] = df_type_14["105_tip"].apply(lambda x: str(x)[0:4])
                         
+                        df_type_14['TIPOLOGIA'] = df_type_14['105_tip'].astype(str).str[0:4]
+
                         # remove any row that has code '0000' since its a 'non edified category
                         # and just introduces disturbances in future processes
-                        if "0000" in list(set(df_type_14["105_tip"])):
+                        if "0000" in list(set(df_type_14["TIPOLOGIA"])):
                             rows_to_remove = list(df_type_14[df_type_14["105_tip"] == "0000"].index)
                             df_type_14 = df_type_14.drop(rows_to_remove)
                             
@@ -641,15 +667,18 @@ class setup_data_Task(QgsTask):
                                 
                         # create a dictionary that will contain as keys each of the unique 
                         # cadastral reference numbers, and set the value to 0
-                        d_base = dict.fromkeys(ref_CAT, 0)
+                        d_base_num = dict.fromkeys(ref_CAT, 0)
+                        #d_base_list = {key: [] for key in ref_CAT}
                         
                         # create a list with the fields to be added to the resulting shp
-                        list_uses = ["A_TOT_EDIF", "SUP_ED_0","SUP_ED_1", "ANTIGUEDAD",
-                                     "N_PLANTAS", "NUM_INM_R",]
+                        list_uses = ["A_TOT_EDIF", "SUP_ED_0", "SUP_ED_1", "ANTIGUEDAD",
+                                     "N_PLANTAS", "NUM_INM_R"]
                         
                         # add to the previous list all the possible codification of categorical
                         # use present in the dataframe
-                        list_uses.extend(list(set(df_type_14["105_tip"])))
+                        list_tp  = list(set(df_type_14["TIPOLOGIA"]))
+                        list_tp = [x for x in list_tp if x not in ["nan", "NaN", "Null", "null", None]]
+                        list_uses.extend(list_tp)
                         
                         # add all the list element to the layer as a new field with integet type
                         for use in list_uses:
@@ -657,7 +686,6 @@ class setup_data_Task(QgsTask):
                          
                         # update the fields and layer provider
                         layer.updateFields()
-                        layer_provider = layer.dataProvider()
                         
                         # create a second dictionary with all the new fields as keys 
                         d_evaluation = dict.fromkeys(list_uses)
@@ -665,8 +693,8 @@ class setup_data_Task(QgsTask):
                         # for each key of the second one, add as its value a copy of the first
                         # dictionary
                         for key in d_evaluation.keys():
-                            d_evaluation[key] = deepcopy(d_base)
-                        
+                            d_evaluation[key] = deepcopy(d_base_num)
+
                         #----------------------------------------------------------------------
                         
                         # update progress
@@ -682,12 +710,16 @@ class setup_data_Task(QgsTask):
                         # iterate over all the table-type-14 rows (cadastral registers)
                         for index, row in df_type_14.iterrows():
                             
+                            if self.isCanceled():
+                                QgsMessageLog.logMessage("User cancelled the operation!", MESSAGE_CATEGORY, Qgis.Warning)
+                                return False  # Task cancellation acknowledged here
+                            
                             cad_ref = row["31_pc"] # cadastral reference number
-                            tp_parc = row["105_tip"] # edification typology
+                            tp_parc = row["TIPOLOGIA"] # edification typology
                             area = float(row["84_stl"]) # area of the edification
                             floor = int(row["65_pt"]) # floor of the edification
                             building_date = int(row["79_aec"]) # year of construcion building
-                                                    
+                        
                             # iterate over all the uses (new fields that were added)
                             for use in list_uses:
                                 
@@ -702,6 +734,7 @@ class setup_data_Task(QgsTask):
                                 # set it to 0(no data) if there is no value or update it 
                                 # with the most old one if the year value is, at least, 
                                 # superior to 1000
+                                                                        
                                 if use == "ANTIGUEDAD":
                                     if (d_evaluation[use][cad_ref] == 0 and building_date > 1000):
                                         d_evaluation[use][cad_ref] = building_date
@@ -734,62 +767,53 @@ class setup_data_Task(QgsTask):
                                 # to each code, adding it to the dictionary
                                 elif tp_parc == use:
                                     d_evaluation[use][cad_ref] += area
+                                    d_evaluation['A_TOT_EDIF'][cad_ref] += area
                             
                             # update the progress bar value, using the previous value and the 
                             # currect index and maximum number of iterations
                             progress += progress_1st_process_increase
                             self.setProgress(progress)
                         
-                        #----------------------------------------------------------------------
+                        #------------------------------------------------------
                         
                         # get the new updated features, and layer field names        
                         features = layer.getFeatures()
                         fields_name = layer.fields().names()
-                        
-                        # save the index value of the total edification field
-                        tot_built_index = fields_name.index("A_TOT_EDIF")
-                        
+
                         max_iter_p2 = layer.featureCount()
                         progress_2nd_process_increase = ((progress_cap - progress_start)*0.68)/max_iter_p2
     
-                        # iterate over all features
-                        for f in features:
-                            
-                            # get feature id
-                            f_id = f.id()
+                        # transform the names of the variables in their index
+                        # value inside the layer, for later attribute change
+                        d_name_index_relation = {}
+                        for key in d_evaluation.keys():
+                            d_name_index_relation[key] = fields_name.index(key)
                         
-                            # declare variable to store the total edification area present in 
-                            # the parcel
-                            total_built_area = 0
-                            
-                            # iterate over all uses
-                            for use in list_uses:
+                        d_transposed = {}
+                        
+                        # Iterate through the outer dictionary
+                        for var, id_dict in d_evaluation.items():
+                            for identifier, value in id_dict.items():
                                 
-                                # get the dictionary use value for the cadfet the current feature
-                                value = d_evaluation[use][f["REFCAT"]]
-                                
-                                # get the index of the use field
-                                use_index = fields_name.index(use)
-                                
-                                # generate a tuple with the index of field and it's new value
-                                attr_value = {use_index:value}
-                                
-                                # update the value with the layer_provider and the index of the
-                                # feature
-                                layer_provider.changeAttributeValues({f_id:attr_value})
-                
-                                # add up the different codified uses to the total edified 
-                                # area variable (excluding the fields that are related to 
-                                # different analysis)
-                                if use not in ["A_TOT_EDIF", "SUP_ED_0", "SUP_ED_1",
-                                               "N_PLANTAS", "NUM_INM_R", "ANTIGUEDAD"]:
+                                # Initialize the inner dictionary if the identifier is not already a key
+                                if identifier not in d_transposed:
+                                    d_transposed[identifier] = {}
                                     
-                                    total_built_area += value
-                                
-                            # same process as previously, create a tuple and update value, in 
-                            # this case to the total edif area (using its index)
-                            attr_value = {tot_built_index:total_built_area}
-                            layer_provider.changeAttributeValues({f_id:attr_value})
+                                # Assign the value to the corresponding variable in the inner dictionary
+                                d_transposed[identifier][d_name_index_relation[var]] = value
+                        
+                        d_translated = {}
+                        
+                        # Apply the key mapping
+                        for old_key, new_key in unique_ref_cat.items():
+                            if old_key in d_transposed:
+                                for nk in new_key:
+                                    d_translated[nk] = d_transposed[old_key]
+
+                        #------------------------------------------------------
+                        for key in d_translated.keys():
+                            
+                            layer_provider.changeAttributeValues({key:d_translated[key]})
                             
                             # update the progress bar
                             progress += progress_2nd_process_increase
@@ -948,7 +972,7 @@ class clasif_Task(QgsTask):
         self.taskStarted.emit()  # Emit signal at start of the task
         
         try:
-            
+                        
 			# setup for progress bar ad message
             QgsMessageLog.logMessage("Iniciada la clasificación", MESSAGE_CATEGORY, Qgis.Info)
             
@@ -985,7 +1009,7 @@ class clasif_Task(QgsTask):
             if not output_filename_p2:
                 output_filename_p2 = "clasificacion.shp"
                 
-            elif output_filename_p2[-4:] != ".shp":
+            elif output_filename_p2.lower().endswith('.shp') == False:
                 output_filename_p2 = output_filename_p2 + ".shp"
             
             # set the progress value of the progress bar to 0
@@ -999,6 +1023,10 @@ class clasif_Task(QgsTask):
                     
             # iterate over all municipalities that the selected directory has
             for mun in ls_mun:
+                
+                if self.isCanceled():
+                    QgsMessageLog.logMessage("User cancelled the operation!", MESSAGE_CATEGORY, Qgis.Warning)
+                    return False  # Task cancellation acknowledged here
                 
                 progress_start = z * progress_each_mun
                 # state the cap that has to be reached once all the operations
@@ -1124,7 +1152,7 @@ class clasif_Task(QgsTask):
                         # if a color is present, fill it 
                         if colors[i]:
                             d_palettes[key] = colors[i]
-                        
+                   
                         # in other case generate a random one
                         else:
                             d_palettes[key] = random_color()
@@ -1403,6 +1431,10 @@ class clasif_Task(QgsTask):
             
                     # iterate over all features
                     for f in features:
+                        
+                        if self.isCanceled():
+                            QgsMessageLog.logMessage("User cancelled the operation!", MESSAGE_CATEGORY, Qgis.Warning)
+                            return False  # Task cancellation acknowledged here
                         
                         # get the id
                         f_id = f.id()
@@ -1702,7 +1734,7 @@ class clasif_Task(QgsTask):
 				# raise UserAbortedNotification('USER Killed')
                 return False
                         
-            # check if results are valid, and raise succed_codesssful finish
+            # check if results are valid, and raise successful finish
             if layer.isValid():
 				# return success
                 return True
@@ -1760,6 +1792,9 @@ class cadastral_classifier:
         # First starter checker
         self.first_start = False
         
+        # d_codes variable declaration
+        self.d_codes = None
+
         #----------------------------------------------------------------------
 
         ### Create the connections with the bottons and their functions
@@ -1793,7 +1828,7 @@ class cadastral_classifier:
         self.dlg.mun_list.itemClicked.connect(self.update_items)
         self.dlg.button_selec_todos_mun.clicked.connect(self.select_all_mun)
         self.dlg.button_deselec_todos_mun.clicked.connect(self.deselect_all_mun)
-        self.dlg.Option_include_rural.clicked.connect(self.update_mun_list)
+        self.dlg.Option_include_rural.toggled.connect(self.check_all_inputs)
                 
         #----------------------------------------------------------------------
         
@@ -2116,19 +2151,152 @@ class cadastral_classifier:
         aswell. It is executed anytime user selects any of the paths or checks/
         unchecks the rural option'''
         
+        #----------------------------------------------------------------------
+        
+        def available_multi_mun(input_CAT, input_CAT_type, input_SHP, input_SHP_type,
+                                parcel_type = None):
+            
+            if parcel_type:
+                
+                d_info = {"Name": None,
+                          
+                          "SHP_path_U": None,
+                          "SHP_path_R": None,
+
+                          "CAT_path_U": None,
+                          "CAT_path_R": None}
+                
+                if input_CAT_type == 'zip':
+                    
+                    # read the zip file of the CAT file
+                    zip_obj_cat = ZipFile(input_CAT, 'r')
+                    
+                    # get a list of the paths that it contains
+                    files_list_cat = zip_obj_cat.namelist() # list with the files in it
+                                    
+                elif input_CAT_type == 'directory':
+                    
+                    # get current working directory
+                    get_current_cwd = getcwd()
+                    
+                    # set as working directory the introduced by user
+                    chdir(input_CAT)
+                    
+                    # get the list of the files inside the introduced directory
+                    files_list_cat = glob('*')
+                    
+                    # get back to previous directory
+                    chdir(get_current_cwd)
+                                
+                # defines adictionary that will store for each municipality code (key)
+                # its relevant infomration
+                d_codes = {}
+                
+                # iterate over all the files inside the zip
+                for file in files_list_cat:
+                    
+                    # copy the structured dictionaty
+                    d_info_copy = deepcopy(d_info)
+                    d_info_copy["CAT_path_" + parcel_type] = file # add the internal path of the file
+                                    
+                    # get the code of the municipality
+                    cat_code = basename(file)[:5]
+        
+                    # if it is not an empty string (possible routes to itself)
+                    if cat_code != '':
+                        
+                        # assign the route
+                        d_codes[cat_code] = d_info_copy
+                
+                if input_SHP_type == 'zip':
+                    
+                    # read the zip file of the SHP file
+                    with ZipFile(input_SHP, 'r') as zip_obj_shp:
+                        files_list_shp = [info.filename for info in zip_obj_shp.infolist() if not info.is_dir()]
+
+                elif input_SHP_type == 'directory':
+                    
+                    input_SHP_path = Path(input_SHP)
+                    files_list_shp = [str(p) for p in input_SHP_path.rglob('*') if p.is_file()]
+                    
+                # iterate over all the files that it contains
+                for file in files_list_shp:
+                    
+                    file_path = Path(file)
+        
+                    # if it is not a reference to itself
+                    if  file_path.parts and file_path.name != "":
+
+                        # get different components to deconstruct the  filename
+                        split_names = file_path.parent.name
+                        split_raw_files = file_path.name
+                        split_names_spaces = split_names.split(" ")
+                        split_names_code = split_names[:5]
+                        split_names_mun = ' '.join(split_names_spaces[2:])
+                        split_file_comp = split_raw_files.split("_")
+                        component = split_file_comp[3][:-4] # get the component (parcel, block, etc)
+                        
+                        # save the route to the parcel file
+                        if component.lower() == 'parcela':
+                                            
+                            d_codes[split_names_code]["SHP_path_" + parcel_type] = file # save internal path
+                            
+                            # name is saved here because CAT only use municipality codes
+                            d_codes[split_names_code]["Name"] = split_names_mun
+                            
+                return d_codes
+            
+        #----------------------------------------------------------------------
+        
+        def merge_dictionaries(dict1, dict2):
+            
+            if not dict2:
+                return dict1.copy()
+            
+            else:
+                
+                merged_dict = {}
+    
+                # Get all unique keys from both dictionaries
+                all_keys = set(dict1.keys()).union(dict2.keys())
+                
+                for key in all_keys:
+                    # Retrieve nested dictionaries, defaulting to empty dict if key not found
+                    nested_dict1 = dict1.get(key, {})
+                    nested_dict2 = dict2.get(key, {})
+                    
+                    all_nested_keys = set(nested_dict1.keys()).union(nested_dict2.keys())
+                    
+                    # Merge the nested dictionaries
+                    merged_nested = {}
+                    
+                    for nested_key in all_nested_keys:
+                        
+                        value1 = nested_dict1.get(nested_key)
+                        value2 = nested_dict2.get(nested_key)
+                        
+                        # Choose the value that is not None, preferring value2 over value1
+                        if value1 is not None:
+                            merged_nested[nested_key] = value1
+                            
+                        elif value2 is not None:
+                            merged_nested[nested_key] = value2
+                            
+                        else:
+                            merged_nested[nested_key] = None  # Both are None or missing
+                    
+                    merged_dict[key] = merged_nested
+                    
+                return merged_dict
+
+        #----------------------------------------------------------------------
+        
         # clear the current mun list object
         self.dlg.mun_list.clear()
         self.dlg.mun_list_selected.clear()
         
         # define a dictionary to save the internals paths of the zip filess 
         # with a given structure
-        d_info = {"Name": None,
-                  
-                  "SHP_path_U": None,
-                  "SHP_path_R": None,
-
-                  "CAT_path_U": None,
-                  "CAT_path_R": None}
         
         # get each path
         text_cat_urb_multi = self.dlg.dir_cat_urb_multi.text()
@@ -2136,208 +2304,57 @@ class cadastral_classifier:
         text_cat_rust_multi = self.dlg.dir_cat_rust_multi.text()
         text_shp_rust_multi= self.dlg.dir_shp_rust_multi.text()
         
-        # check if all path conditions are me to show the list of municipalitiess
-        if self.dlg.Option_include_rural.isChecked() == False and text_cat_urb_multi\
-            and text_shp_urb_multi:
-            
-            self.dlg.frame_seleccion_mun.setEnabled(True)
-            enable_filtering = True
+        d_codes_urb = {}
+        d_codes_rust = {}
         
-        elif self.dlg.Option_include_rural.isChecked() == True and text_cat_urb_multi\
-            and text_shp_urb_multi and text_cat_rust_multi and text_shp_rust_multi:
-                
-            self.dlg.frame_seleccion_mun.setEnabled(True)
-            enable_filtering = True
-
-        else:
-            self.dlg.frame_seleccion_mun.setEnabled(False)
-            enable_filtering = False
-            
-        # if all the conditions are met
-        if enable_filtering == True:
-            
-            if self.dlg.input_CAT_URB_multi_type == 'zip':
-                
-                # read the zip file of the urban CAT file
-                zip_obj_cat_urb = ZipFile(text_cat_urb_multi, 'r')
-                
-                # get a list of the paths that it contains
-                files_list_cat_urb = zip_obj_cat_urb.namelist() # list with the files in it
-                
-                separator = "/"
-                
-            elif self.dlg.input_CAT_URB_multi_type == 'directory':
-                
-                # get current working directory
-                get_current_cwd = getcwd()
-                
-                # set as working directory the introduced by user
-                chdir(text_cat_urb_multi)
-                
-                # get the list of the files inside the introduced directory
-                files_list_cat_urb = glob('*')
-                
-                # get back to previous directory
-                chdir(get_current_cwd)
-                
-                separator = "\\"
-            
-            # defines adictionary that will store for each municipality code (key)
-            # its relevant infomration
-            d_codes = {}
-            
-            # iterate over all the files inside the zip
-            for file in files_list_cat_urb:
-                
-                # copy the structured dictionaty
-                d_info_copy = deepcopy(d_info)
-                d_info_copy["CAT_path_U"] = file # add the internal path of the file
-                
-                # get the code of the municipality
-                cat_urb_code = file.split(separator)[-1][:5]
-                
-                # if it is not an empty string (possible routes to itself)
-                if cat_urb_code != '':
-                    
-                    # assign the route
-                    d_codes[cat_urb_code] = d_info_copy
-            
-            if self.dlg.input_SHP_URB_multi_type == 'zip':
-                
-                # read the zip file of the urban SHP file
-                #text_shp_urb_multi = 'G:/catastro_v2/Islas baleares/07_UA_05012023_SHP.zip'
-                zip_obj_shp_urb = ZipFile(text_shp_urb_multi, 'r')
-                files_list_shp_urb = zip_obj_shp_urb.namelist() # list with the files in it
-                separator = "/" # define a separator used for files
-                expected_length = 3
-                
-            elif self.dlg.input_SHP_URB_multi_type == 'directory':
-                
-                get_current_cwd = getcwd()
-                chdir(text_shp_urb_multi)
-                files_list_shp_urb = glob('*/*')
-                chdir(get_current_cwd)
-                separator = "\\" # define a separator used for directories
-                expected_length = 2
-            
-            # iterate over all the files that it contains
-            for file in files_list_shp_urb:
-                
-                # get the splits of the file path
-                split = file.split(separator)
-
-                # if it is not a reference to itself
-                if len(split) >= expected_length and split[-1] != "":
-                    
-                    # get different splits to deconstruct the structured name
-                    split_names = split[-2] 
-                    split_raw_files = split[-1] 
-                    split_names_spaces = split_names.split(" ")
-                    
-                    split_names_code = split_names[:5]
-                    
-                    if split_names_code in d_codes.keys():
+        # check if all path conditions are me to show the list of municipalitiess
+        if text_cat_urb_multi and text_shp_urb_multi:
                         
-                        split_names_mun = ' '.join(split_names_spaces[2:])
-                                            
-                        split_file_comp = split_raw_files.split("_")
-                        component = split_file_comp[3][:-4] # get the component (parcel, block, etc)
-                        
-                        # save the route to the parcel file
-                        if component.lower() == 'parcela':
-                                            
-                            d_codes[split_names_code]["SHP_path_U"] = file # save internal path
+            d_codes_urb = available_multi_mun(input_CAT = text_cat_urb_multi,
+                                          input_CAT_type = self.dlg.input_CAT_URB_multi_type,
+                                          input_SHP = text_shp_urb_multi,
+                                          input_SHP_type = self.dlg.input_SHP_URB_multi_type,
+                                          parcel_type = "U")
+            
+        if self.dlg.Option_include_rural.isChecked() == True and\
+            text_cat_rust_multi and text_shp_rust_multi:
                             
-                            # name is saved here because CAT only use municipality codes
-                            d_codes[split_names_code]["Name"] = split_names_mun   
-                        
-            keys_to_delete = []
+            d_codes_rust = available_multi_mun(input_CAT = text_cat_rust_multi,
+                                          input_CAT_type = self.dlg.input_CAT_RUS_multi_type,
+                                          input_SHP = text_shp_rust_multi,
+                                          input_SHP_type = self.dlg.input_SHP_RUS_multi_type,
+                                          parcel_type = "R")
+                      
+        d_codes =  merge_dictionaries(d_codes_urb, d_codes_rust)
+
+        keys_to_delete = []
+        
+        for key in d_codes.keys():
+            code = d_codes[key]
             
-            for key in d_codes.keys():
-                code = d_codes[key]
-                
-                if not code["SHP_path_U"] or not code["Name"]:
-                    keys_to_delete.append(key)
+            if not code["SHP_path_U"] and not code["SHP_path_R"]:
+               keys_to_delete.append(key)
+
+        for key in set(keys_to_delete):
+            d_codes.pop(key)
+        
+        # once all the data has been sorted add the items to the list
+        # one by one using the dictionary keys and the municipality name
+        for mun_key in sorted(d_codes):
             
-            # if the rural option has been selected perform the same
-            # operations but with rural files
-            if self.dlg.Option_include_rural.isChecked() == True:
+            if d_codes[mun_key]["Name"]:
+                mun_item = QListWidgetItem("[" + str(mun_key) + "] " + d_codes[mun_key]["Name"])
                 
-                if self.dlg.input_CAT_RUS_multi_type == 'zip':
-                    zip_obj_cat_rust = ZipFile(text_cat_rust_multi, 'r')
-                    files_list_cat_rust = zip_obj_cat_rust.namelist()
-                    separator = "/"
-                    
-                elif self.dlg.input_CAT_RUS_multi_type == 'directory': 
-                    get_current_cwd = getcwd()
-                    chdir(text_cat_rust_multi)
-                    files_list_cat_rust = glob('*')
-                    chdir(get_current_cwd)
-                    separator = "\\"
-                
-                for file in files_list_cat_rust:
+            else:
+                mun_item = QListWidgetItem("[" + str(mun_key) + "]")
 
-                    cat_rust_code = file.split(separator)[-1][:5]
-                    
-                    if cat_rust_code in d_codes.keys():
-    
-                        d_codes[cat_rust_code]["CAT_path_R"] = file
+            mun_item.setFlags(Qt.ItemIsUserCheckable | Qt.ItemIsEnabled)
+            mun_item.setCheckState(Qt.Unchecked)
 
-                if self.dlg.input_SHP_RUS_multi_type == 'zip':
-                    zip_obj_shp_rust = ZipFile(text_shp_rust_multi, 'r')
-                    files_list_shp_rust = zip_obj_shp_rust.namelist()
-                    separator = "/"
-                    expected_length = 3
-                    
-                elif self.dlg.input_SHP_RUS_multi_type == 'directory':
-                    get_current_cwd = getcwd()
-                    chdir(text_shp_rust_multi)
-                    files_list_shp_rust = glob('*/*')
-                    chdir(get_current_cwd)
-                    separator = "\\"
-                    expected_length = 2
-
-                for file in files_list_shp_rust:
-                    
-                    split = file.split(separator)
-                                        
-                    if len(split) >= expected_length and split[-1] != "":
-                        split_names = split[-2]
-                        split_raw_files = split[-1]
-                        
-                        split_names_code = split_names[:5]
-                        
-                        if split_names_code in d_codes.keys():
-
-                            split_file_comp = split_raw_files.split("_")
-                            component = split_file_comp[3][:-4]
-                            
-                            if component.lower() == 'parcela':
-                                d_codes[split_names_code]["SHP_path_R"] = file
-                            
-                for key in d_codes.keys():
-                    code = d_codes[key]
-                    
-                    if not code["SHP_path_U"] or not code["Name"] or\
-                       not code["SHP_path_R"] or not code["CAT_path_R"]:
-                           
-                       keys_to_delete.append(key)
-                        
-            for key in set(keys_to_delete):
-                d_codes.pop(key)
-                            
-            # once all the data has been sorted add the items to the list
-            # one by one using the dictionary keys and the municipality name
-            for mun_key in d_codes:
-                                
-                mun_item = QListWidgetItem("[" + str(mun_key) + "] " + d_codes[mun_key]["Name"]) 
-                mun_item.setFlags(Qt.ItemIsUserCheckable | Qt.ItemIsEnabled)
-                mun_item.setCheckState(Qt.Unchecked)
-    
-                self.dlg.mun_list.addItem(mun_item)
-            
-            # save the variable
-            self.d_codes = d_codes
+            self.dlg.mun_list.addItem(mun_item)
+        
+        # save the variable
+        self.d_codes = d_codes
     
     #--------------------------------------------------------------------------
     ''' All these functions aim to manage the input and output file paths/names'''
@@ -2525,7 +2542,7 @@ class cadastral_classifier:
         else:
             self.dlg.dir_root_multi_p2.setStyleSheet("background-color: rgb(255, 200, 200)") 
 
-    #------------------------------------------------------------------------------
+    #--------------------------------------------------------------------------
         
     def check_all_inputs(self):  
         ''' Function that checks if the input files are correct'''
@@ -2599,6 +2616,7 @@ class cadastral_classifier:
                     self.dlg.dir_cat_urb_multi.setStyleSheet(green)
                     self.dlg.dir_shp_urb_multi.setStyleSheet(green)
                     self.update_mun_list()
+                    self.dlg.frame_seleccion_mun.setEnabled(True)
                 
                 # if onlye one is correct, in its format, set it to yellow and 
                 # the other one to red. Delete and clear the selected muns
@@ -2607,6 +2625,7 @@ class cadastral_classifier:
                     self.dlg.dir_shp_urb_multi.setStyleSheet(red)
                     self.dlg.mun_list.clear()
                     self.dlg.mun_list_selected.clear()
+                    self.dlg.frame_seleccion_mun.setEnabled(False)
                 
                 # same but viceversa
                 elif input_correct_cat_urb == False and input_correct_shp_urb == True:
@@ -2614,44 +2633,50 @@ class cadastral_classifier:
                     self.dlg.dir_shp_urb_multi.setStyleSheet(yellow)
                     self.dlg.mun_list.clear()
                     self.dlg.mun_list_selected.clear()
-                
+                    self.dlg.frame_seleccion_mun.setEnabled(False)
+
                 #otherwise set all to red
                 else:
-                    
                     self.dlg.dir_cat_urb_multi.setStyleSheet(red)
                     self.dlg.dir_shp_urb_multi.setStyleSheet(red)
                     self.dlg.mun_list.clear()
                     self.dlg.mun_list_selected.clear()
+                    self.dlg.frame_seleccion_mun.setEnabled(False)
                 
                 # check if rural option is checked
                 if self.dlg.Option_include_rural.isChecked() == True:
                     
-                    # same proceeding as before but with rural data
-                    if input_correct_cat_rust == True and input_correct_shp_rust == True:
-    
-                        self.dlg.dir_cat_rust_multi.setStyleSheet(green)
-                        self.dlg.dir_shp_rust_multi.setStyleSheet(green)
-                        self.update_mun_list()
-                        
-                    elif input_correct_cat_rust == True and input_correct_shp_rust == False:
-                        self.dlg.dir_cat_rust_multi.setStyleSheet(yellow)
-                        self.dlg.dir_shp_rust_multi.setStyleSheet(red)
-                        self.dlg.mun_list.clear()
-                        self.dlg.mun_list_selected.clear()
+                    if input_correct_cat_urb == True and input_correct_shp_urb == True:
 
-                    elif input_correct_cat_rust == False and input_correct_shp_rust == True:
-                        self.dlg.dir_cat_rust_multi.setStyleSheet(red)
-                        self.dlg.dir_shp_rust_multi.setStyleSheet(yellow)
-                        self.dlg.mun_list.clear()
-                        self.dlg.mun_list_selected.clear()
-                        
-                    else:
-                        
-                        self.dlg.dir_cat_rust_multi.setStyleSheet(red)
-                        self.dlg.dir_shp_rust_multi.setStyleSheet(red)
-                        self.dlg.mun_list.clear()
-                        self.dlg.mun_list_selected.clear()
-            
+                        # same proceeding as before but with rural data
+                        if input_correct_cat_rust == True and input_correct_shp_rust == True:
+        
+                            self.dlg.dir_cat_rust_multi.setStyleSheet(green)
+                            self.dlg.dir_shp_rust_multi.setStyleSheet(green)
+                            self.update_mun_list()
+                            self.dlg.frame_seleccion_mun.setEnabled(True)
+                            
+                        elif input_correct_cat_rust == True and input_correct_shp_rust == False:
+                            self.dlg.dir_cat_rust_multi.setStyleSheet(yellow)
+                            self.dlg.dir_shp_rust_multi.setStyleSheet(red)
+                            self.dlg.mun_list.clear()
+                            self.dlg.mun_list_selected.clear()
+                            self.dlg.frame_seleccion_mun.setEnabled(False)
+    
+                        elif input_correct_cat_rust == False and input_correct_shp_rust == True:
+                            self.dlg.dir_cat_rust_multi.setStyleSheet(red)
+                            self.dlg.dir_shp_rust_multi.setStyleSheet(yellow)
+                            self.dlg.mun_list.clear()
+                            self.dlg.mun_list_selected.clear()
+                            self.dlg.frame_seleccion_mun.setEnabled(False)
+                            
+                        else:
+                            self.dlg.dir_cat_rust_multi.setStyleSheet(red)
+                            self.dlg.dir_shp_rust_multi.setStyleSheet(red)
+                            self.dlg.mun_list.clear()
+                            self.dlg.mun_list_selected.clear()
+                            self.dlg.frame_seleccion_mun.setEnabled(False)
+    
             # set all to red if there are more than 1 municipality code
             else:
     
@@ -2661,6 +2686,7 @@ class cadastral_classifier:
                 self.dlg.dir_shp_rust_multi.setStyleSheet(red)
                 self.dlg.mun_list.clear()
                 self.dlg.mun_list_selected.clear()
+                self.dlg.frame_seleccion_mun.setEnabled(False)
                     
     #--------------------------------------------------------------------------
     
@@ -3298,6 +3324,3 @@ class cadastral_classifier:
         
         # show the interface
         self.dlg.show()
-        
-
-        
