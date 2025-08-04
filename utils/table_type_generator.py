@@ -16,6 +16,7 @@ from os import chdir, makedirs
 from time import time
 from csv import writer
 from os.path import basename, isfile, join
+from copy import deepcopy
 
 # local imports
 from .cadastral_structure import catstruct
@@ -171,20 +172,26 @@ def table_type_generator(file_path, list_of_interest, output_csv):
         # read line by line the CAT file and add the information to each table
         # type that user selected, using the cadastral structure info
         for line in rf.readlines():
-            row = []
-            type_ = int(line[0:2]) # table type
             
-            if type_ in list_of_interest:
-                output_file_name = join(wd_each_table, ('Tipo_' + str(type_) + '.csv'))
+            row = []
+            type_ = line[0:2] # table type
+            
+            if type_.strip() != '':
+                type_int = int(type_)
+            else:
+                type_int = None
+                
+            if type_int in list_of_interest:
+                output_file_name = join(wd_each_table, ('Tipo_' + type_ + '.csv'))
                 
                 # for each column(field) get the value using positions declared
                 # in the catstruct dictionaries
-                for fields in catstruct[type_]:
+                for fields in catstruct[type_int]:
                     valor = line[fields[0]-1 : fields[0]-1 + fields[1]].strip()
                     row.append(valor)
                 
                 # write the values
-                writer(wf[type_]).writerow(row)
+                writer(wf[type_int]).writerow(row)
         
     except:
         
@@ -192,24 +199,31 @@ def table_type_generator(file_path, list_of_interest, output_csv):
         rf = open(unziped_name, encoding = "ISO-8859-1")
                 
         #----------------------------------------------------------------------
-        
+                
         # read line by line the CAT file and add the information to each table
         # type that user selected, using the cadastral structure info
+
         for line in rf.readlines():
-            row = []
-            type_ = int(line[0:2])
             
-            if type_ in list_of_interest:
-                output_file_name = join(wd_each_table, ('Tipo_' + str(type_) + '.csv'))
+            row = []
+            type_ = line[0:2]
+            
+            if type_.strip() != '':
+                type_int = int(type_)
+            else:
+                type_int = None
+            
+            if type_int in list_of_interest:
+                output_file_name = join(wd_each_table, ('Tipo_' + type_ + '.csv'))
                 
                 # for each column(field) get the value using positions declared
                 # in the catstruct dictionaries
-                for fields in catstruct[type_]:
+                for fields in catstruct[type_int]:
                     valor = line[fields[0]-1 : fields[0]-1 + fields[1]].strip()
                     row.append(valor)
                 
-                writer(wf[type_]).writerow(row)
-                
+                writer(wf[type_int]).writerow(row)
+                    
     # close all the files
     for f in wf:
         wf[f].close()
