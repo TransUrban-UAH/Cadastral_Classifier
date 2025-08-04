@@ -16,7 +16,6 @@ from os import chdir, makedirs
 from time import time
 from csv import writer
 from os.path import basename, isfile, join
-from copy import deepcopy
 
 # local imports
 from .cadastral_structure import catstruct
@@ -240,4 +239,5 @@ def table_type_generator(file_path, list_of_interest, output_csv):
     
     print("Process time: " + str(round(t_process, 2)) + "seconds.")
   
+
     return wd_each_table
